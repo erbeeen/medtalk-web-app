@@ -1,11 +1,11 @@
 {
   "name": "medtalk-web-app",
   "version": "1.0.0",
-  "main": "backend/server.js",
-  "type": "commonjs",
+  "main": "backend/server.ts",
+  "type": "module",
   "scripts": {
-    "dev": "nodemon backed/server.js",
-    "build": "npm i && npm i --prefix frontend && npm runi build --prefix frontend",
+    "dev": "tsx backend/server.ts",
+    "build": "npm i && npm i --prefix frontend && tsc && npm run build --prefix frontend",
     "start": "node backend/server.js",
     "test": "echo \"Error: no test specified\" && exit 1"
   },

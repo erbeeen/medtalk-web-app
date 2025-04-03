@@ -1,8 +1,8 @@
-const mongoose = require("mongoose");
+import mongoose from "mongoose";
 
-async function dbConnect() {
+export default async function dbConnect() {
   try {
-    const conn = await mongoose.connect(process.env.MONGODB_URI, {
+    const conn = await mongoose.connect(process.env.MONGODB_URI!, {
       dbName: "medtalk-database"
     });
     console.log(`MongoDB Connected: ${conn.connection.host}`);
@@ -11,7 +11,3 @@ async function dbConnect() {
     process.exit(1);
   }
 }
-
-module.exports = {
-  dbConnect,
-};
