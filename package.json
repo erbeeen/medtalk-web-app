@@ -1,11 +1,11 @@
 {
   "name": "medtalk-web-app",
   "version": "1.0.0",
-  "main": "backend/server.js",
-  "type": "commonjs",
+  "main": "backend/server.ts",
+  "type": "module",
   "scripts": {
-    "dev": "nodemon backed/server.js",
-    "build": "npm i && npm i --prefix frontend && npm runi build --prefix frontend",
+    "dev": "tsx backend/server.ts",
+    "build": "npm i && npm i --prefix frontend && tsc && npm run build --prefix frontend",
     "start": "node backend/server.js",
     "test": "echo \"Error: no test specified\" && exit 1"
   },
@@ -20,9 +20,15 @@
     "mongoose": "^8.13.1"
   },
   "devDependencies": {
-    "nodemon": "^3.1.9"
+    "@types/cors": "^2.8.17",
+    "@types/express": "^5.0.1",
+    "@types/mongoose": "^5.11.96",
+    "@types/node": "^22.14.0",
+    "nodemon": "^3.1.9",
+    "tsx": "^4.19.3",
+    "typescript": "^5.8.2"
   },
   "engines": {
     "node": "22.x"
-  },
+  }
 }
