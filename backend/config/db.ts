@@ -2,8 +2,8 @@ import mongoose from "mongoose";
 
 export default async function dbConnect() {
   try {
-    const conn = await mongoose.connect(process.env.MONGODB_URI!, {
-      dbName: "medtalk-database"
+    const conn = await mongoose.connect(process.env.MEDICINE_MONGODB_URI!, {
+      dbName: "FDA-CLUSTER"
     });
     console.log(`MongoDB Connected: ${conn.connection.host}`);
   } catch (err) {
