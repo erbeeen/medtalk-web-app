@@ -6,8 +6,7 @@
   "scripts": {
     "dev": "tsx backend/server.ts",
     "buildserver": "tsc",
-    "build": "npm i && npm i --prefix frontend && npm run build --prefix frontend",
-    "postinstall": "tsc",
+    "build": "npm i --production=false && npm i --prefix frontend && tsc && npm run build --prefix frontend",
     "start": "node dist/server.js",
     "test": "echo \"Error: no test specified\" && exit 1"
   },
