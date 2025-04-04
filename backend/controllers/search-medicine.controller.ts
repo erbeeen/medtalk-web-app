@@ -26,7 +26,7 @@ export default class SearchMedicineController {
 
         //await medicine.save();
 
-        console.log(medicine);
+        //console.log(medicine);
         
 
         res.status(200).json({ success: true, data: medicine });
@@ -41,8 +41,8 @@ export default class SearchMedicineController {
           },
         });
 
-        console.log(medicineArray);
-        
+        //console.log(medicineArray);
+
 
         res.status(200).json({ success: true, data: medicineArray });
         return;
