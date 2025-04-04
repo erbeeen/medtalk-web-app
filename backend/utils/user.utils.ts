@@ -1,4 +1,4 @@
-import User from "../models/user.model";
+import User from "../models/user.model.js";
 
 export async function doesUserExist(username: string): Promise<boolean | null> {
   try {

@@ -1,6 +1,6 @@
 import express from "express";
 import cors from "cors";
-import UserController from "../controllers/user.controller";
+import UserController from "../controllers/user.controller.js";
 
 const userRouter = express.Router();
 const uc = new UserController();

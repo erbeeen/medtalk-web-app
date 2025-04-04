@@ -2,11 +2,13 @@ import path from "path";
 import express, { json, static as static_ } from "express";
 import dotenv from "dotenv";
 import cors from "cors";
-import dbConnect from "./config/db";
-import userRouter from "./routes/user.route";
+import dbConnect from "./config/db.js";
+import userRouter from "./routes/user.route.js";
+import { fileURLToPath } from "url";
 dotenv.config()
 
 const app = express();
+const __dirname = path.dirname(fileURLToPath(import.meta.url));
 const PORT = process.env.PORT;
 
 app.use(json());

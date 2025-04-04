@@ -1,6 +1,6 @@
 import { Request, Response } from "express";
-import User from "../models/user.model";
-import { doesUserExist } from "../utils/user.utils";
+import User from "../models/user.model.js";
+import { doesUserExist } from "../utils/user.utils.js";
 
 export default class UserController {
   constructor() {}
