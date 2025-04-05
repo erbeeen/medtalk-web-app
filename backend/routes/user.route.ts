@@ -6,6 +6,10 @@ const userRouter: Router = Router();
 const uc: UserController = new UserController();
 userRouter.use(cors());
 
-userRouter.post("/", uc.registerUser);
+userRouter.get("/:id", uc.getUser);
+userRouter.post("/register", uc.registerUser);
+userRouter.post("/login", uc.loginUser);
+userRouter.put("/update/:id", uc.updateUser);
+userRouter.delete("/delete/:id", uc.deleteUser);
 
 export default userRouter;

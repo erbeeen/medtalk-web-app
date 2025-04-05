@@ -47,8 +47,8 @@ export default class SearchMedicineController {
         res.status(200).json({ success: true, data: medicineArray });
         return;
       }
-    } catch (err: Error | any) {
-      console.error("searchMedicine: ", err.message);
+    } catch (err: any) {
+      console.error("searchMedicine error: ", err);
       res.status(500).json({ success: false, data: "internal server error" });
       return;
     }

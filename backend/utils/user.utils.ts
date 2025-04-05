@@ -1,5 +1,4 @@
-import User, { UserDocument, UserModel } from "../models/user.model.js";
-import mongoose from "mongoose";
+import User, { UserDocument } from "../models/user.model.js";
 import bcrypt from "bcrypt";
 
 export async function doesUserExist(username: string): Promise<boolean | null> {
@@ -9,10 +8,17 @@ export async function doesUserExist(username: string): Promise<boolean | null> {
       return true;
     }
     return false;
-  } catch (err: Error | any) {
-    console.error(`doesUserExist: ${err}`);
+  } catch (err: any) {
+    console.error(`doesUserExist error: ${err}`);
     return null;
   }
+}
+
+export async function fetchUserByName(
+  username: string,
+): Promise<UserDocument | null> {
+  const user: UserDocument = await User.findOne({ username: username });
+  return user;
 }
 
 export function hashPassword(password: string): string {
@@ -28,29 +34,19 @@ export function hashPassword(password: string): string {
   return "";
 }
 
-export async function fetchUserById(id: string): Promise<UserDocument | null> {
-  if (!mongoose.Types.ObjectId.isValid(id)) {
-    return null;
-  }
-
-  try {
-    const result: UserDocument = await User.findById(id);
-    return result;
-  } catch (err: Error | any) {
-    console.error(`fetchUser: ${err}`);
-    return null;
-  }
+export function comparePassword(
+  password: string,
+  hashedPassword: string,
+): boolean|Error|null {
+  bcrypt.compare(
+    password,
+    hashedPassword,
+    (err: Error, result: boolean) => {
+      if (err) {
+        return err;
+      }
+      return result;
+    },
+  );
+  return null;
 }
-
-export async function fetchUserByName(
-  username: string,
-): Promise<UserDocument | null> {
-  try {
-    const user: UserDocument = await User.findOne({username: username});
-    return user;
-  } catch (err: Error|any) {
-    console.error(`fetchUserByName: ${err}`);
-    return null;
-  }
-}
-

@@ -23,7 +23,9 @@ const userSchema = new mongoose.Schema({
   },
 });
 
-interface UserInterface {
+const User = mongoose.model("users", userSchema);
+
+export interface UserInterface {
   firstName: string,
   lastName: string,
   email: string,
@@ -31,8 +33,6 @@ interface UserInterface {
   password: string,
 };
 
-const User = mongoose.model("User", userSchema)
-
 export type UserDocument = UserInterface & mongoose.Document;
-export type UserModel = mongoose.Model<UserDocument>;
+//export type UserModel = mongoose.Model<UserDocument>;
 export default User;

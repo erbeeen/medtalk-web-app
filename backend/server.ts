@@ -14,7 +14,7 @@ const PORT = process.env.PORT;
 
 app.use(json());
 app.use(cors());
-app.use("/api/users", userRouter);
+app.use("/api/user", userRouter);
 app.use("/api/medicine/search", searchMedRouter);
 
 if (process.env.NODE_ENV === "production") {
