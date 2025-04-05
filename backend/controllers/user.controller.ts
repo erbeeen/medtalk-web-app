@@ -37,4 +37,9 @@ export default class UserController {
       return;
     }
   };
+
+  getUser = async (req: Request, res: Response): Promise<void> => {
+    return;
+  }
+
 }
