@@ -1,18 +1,24 @@
-import { Request, Response } from "express";
+import { NextFunction, Request, Response } from "express";
 import mongoose from "mongoose";
-import User, { UserInterface, UserDocument } from "../models/user.model.js";
+import User, { UserType, UserDocument } from "../models/user.model.js";
 import {
   fetchUserByName,
   doesUserExist,
   hashPassword,
   comparePassword,
 } from "../utils/user.utils.js";
+import sendResponse from "utils/httpResponder.js";
+
+type LoginCredentials = {
+  username: string;
+  password: string;
+};
 
 export default class UserController {
   constructor() {}
 
-  registerUser = async (req: Request, res: Response) => {
-    const user = req.body;
+  registerUser = async (req: Request, res: Response, next: NextFunction) => {
+    const user: UserType = req.body;
     if (
       !user.firstName ||
       !user.lastName ||
@@ -20,84 +26,92 @@ export default class UserController {
       !user.username ||
       !user.password
     ) {
-      res.status(400).json({
-        success: false,
-        message: "provide all fields.",
-      });
+      sendResponse(res, 400, "provide all fields");
       return;
     }
 
+    const [userExists, userExistsErr] = await doesUserExist(user.username);
+    if (userExistsErr !== null) {
+      next(userExistsErr);
+      sendResponse(res, 500);
+      return;
+    }
+
+    if (userExists) {
+      sendResponse(res, 409, "username is already taken");
+      return;
+    }
+
+    const [hashedPassword, hashErr] = hashPassword(user.password);
+    if (hashErr) {
+      next(hashErr);
+      sendResponse(res, 500);
+    }
+
+    user.password = hashedPassword;
+    const newUser: UserDocument = new User(user);
+
     try {
-      if (await doesUserExist(user.username)) {
-        res.status(409).json({
-          success: false,
-          message: "username already taken.",
-        });
-        return;
-      }
-
-      user.password = hashPassword(user.password);
-      const newUser: mongoose.Document = new User(user);
-
       await newUser.save();
-      res.status(201).json({ success: true, data: newUser });
+      sendResponse(res, 201, "user created.");
       return;
-    } catch (err: any) {
-      console.error(`registerUser error:, ${err}`);
-      res
-        .status(500)
-        .json({ success: false, message: "internal server error" });
-      return;
+    } catch (err) {
+      next(err);
+      sendResponse(res, 500);
     }
   };
 
-  loginUser = async (req: Request, res: Response) => {
-    const credentials = req.body;
+  loginUser = async (req: Request, res: Response, next: NextFunction) => {
+    const credentials: LoginCredentials = req.body;
 
     if (!credentials.username || !credentials.password) {
-      res.status(400).json({
-        success: false,
-        data: "provide all fields.",
-      });
+      sendResponse(res, 400, "provide all fields");
       return;
     }
 
-    try {
-      const user: UserDocument = await fetchUserByName(credentials.username);
-      if (user === null) {
-        res.status(404).json({
-          success: true,
-          data: "invalid username or password",
-        });
-        return;
-      }
-
-      const storedPassword: string = user.password;
-
-      const isPasswordCorrect: boolean | Error | null = comparePassword(
-        credentials.password,
-        storedPassword,
-      );
-
-      if (isPasswordCorrect instanceof Error) {
-        throw isPasswordCorrect;
-      } else if (isPasswordCorrect === null) {
-        throw new Error("bcrypt.compare did not function and was skipped");
-      }
-    } catch (err: any) {
-      console.error(`loginUser error: ${err}`);
-      res.status(500).json({
-        success: false,
-        data: "internal server error",
-      });
+    //const user: UserDocument = await fetchUserByName(credentials.username);
+    const [user, fetchUserErr] = await fetchUserByName(credentials.username);
+    if (fetchUserErr) {
+      next(fetchUserErr);
+      sendResponse(res, 500);
       return;
     }
+
+    if (user === null) {
+      sendResponse(res, 404, "invalid username or password");
+      return;
+    }
+
+    const storedPassword: string = user.password;
+
+    const [isPasswordCorrect, comparePasswordErr] = comparePassword(
+      credentials.password,
+      storedPassword,
+    );
+
+    if (comparePasswordErr) {
+      next(comparePasswordErr);
+      sendResponse(res, 500);
+      return;
+    }
+
+    if (!isPasswordCorrect) {
+      sendResponse(res, 404, "invalid username or password");
+      return;
+    }
+
+    // TODO: Login credentials is correct. Do authentication
   };
 
-  getUser = async (req: Request, res: Response) => {
+  getAllUsers = async (Req: Request, res: Response, next: NextFunction) => {
+    // TODO: return all users in db
+  };
+
+  getUser = async (req: Request, res: Response, next: NextFunction) => {
     const { username } = req.params;
 
     try {
+      // TODO: refactor to use [value, err] format
       const user = await fetchUserByName(username);
       if (user === null) {
         res.status(404).json({
@@ -122,9 +136,10 @@ export default class UserController {
     }
   };
 
-  updateUser = async (req: Request, res: Response) => {
+  updateUser = async (req: Request, res: Response, next: NextFunction) => {
+    // TODO: refactor
     const { id } = req.params;
-    const editedUserDetails: UserInterface = req.body;
+    const editedUserDetails: UserType = req.body;
 
     if (!mongoose.Types.ObjectId.isValid(id)) {
       res.status(400).json({
@@ -153,8 +168,9 @@ export default class UserController {
     }
   };
 
-  deleteUser = async (req: Request, res: Response) => {
+  deleteUser = async (req: Request, res: Response, next: NextFunction) => {
     const { id } = req.params;
+    // TODO: refactor to use sendResponse
     if (!mongoose.Types.ObjectId.isValid(id)) {
       res.status(400).json({
         success: false,

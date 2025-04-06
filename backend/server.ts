@@ -6,6 +6,7 @@ import dbConnect from "./config/db.js";
 import userRouter from "./routes/user.route.js";
 import searchMedRouter from "./routes/search-medicine.route.js";
 import { fileURLToPath } from "url";
+import logger from "middleware/logger.js";
 dotenv.config()
 
 const app = express();
@@ -14,7 +15,7 @@ const PORT = process.env.PORT;
 
 app.use(json());
 app.use(cors());
-app.use("/api/user", userRouter);
+app.use("/api/users", userRouter);
 app.use("/api/medicine/search", searchMedRouter);
 
 if (process.env.NODE_ENV === "production") {
@@ -24,6 +25,9 @@ if (process.env.NODE_ENV === "production") {
     res.sendFile(path.resolve(__dirname, "static", "index.html"));
   });
 }
+
+// TODO: Add express' built in error handler middleware
+userRouter.use(logger);
 
 app.listen(PORT, async () => {
   await dbConnect();
