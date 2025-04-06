@@ -12,12 +12,4 @@ userRouter.put("/update/", uc.updateUser);
 userRouter.delete("/delete/", uc.deleteUser);
 userRouter.get("/", uc.getUsers);
 
-//{
-//  "firstName": "john",
-//  "lastName": "doe",
-//  "email": "sample@gmail.com",
-//  "username": "erbeen",
-//  "password": "$2b$10$ULQ1z.SAbo6A432oGejiCexz5JCy/kK6RzOO442d4cQJNf.pxJYau",
-//},
-
 export default userRouter;
