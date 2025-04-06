@@ -1,21 +1,23 @@
 import { Router } from "express";
 import cors from "cors";
 import UserController from "../controllers/user.controller.js";
-import ErrorHandler from "middleware/errorHandler.js";
-import logger from "middleware/logger.js";
 
 const userRouter: Router = Router();
 const uc: UserController = new UserController();
-const errorHandler: ErrorHandler = new ErrorHandler();
 userRouter.use(cors());
 
-userRouter.get("/:id", uc.getUser);
 userRouter.post("/register", uc.registerUser);
 userRouter.post("/login", uc.loginUser);
-userRouter.put("/update/:id", uc.updateUser);
-userRouter.delete("/delete/:id", uc.deleteUser);
+userRouter.put("/update/", uc.updateUser);
+userRouter.delete("/delete/", uc.deleteUser);
+userRouter.get("/", uc.getUsers);
 
-userRouter.use(errorHandler.handleAllError);
-userRouter.use(logger);
+//{
+//  "firstName": "john",
+//  "lastName": "doe",
+//  "email": "sample@gmail.com",
+//  "username": "erbeen",
+//  "password": "$2b$10$ULQ1z.SAbo6A432oGejiCexz5JCy/kK6RzOO442d4cQJNf.pxJYau",
+//},
 
 export default userRouter;

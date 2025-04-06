@@ -1,6 +1,6 @@
 import { Response } from "express";
 
-export default function sendResponse(res: Response, statusCode: number, data?: string) {
+export default function sendResponse(res: Response, statusCode: number, data?: any) {
   let success: boolean;
   if (statusCode >= 200 && statusCode < 300) {
     success = true;
@@ -13,5 +13,5 @@ export default function sendResponse(res: Response, statusCode: number, data?: s
   res.status(statusCode).json({
     "success": success,
     "data": data
-  })
+  });
 }

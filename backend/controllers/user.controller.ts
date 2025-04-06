@@ -4,10 +4,10 @@ import User, { UserType, UserDocument } from "../models/user.model.js";
 import {
   fetchUserByName,
   doesUserExist,
-  hashPassword,
-  comparePassword,
+  doesUserIdExist,
 } from "../utils/user.utils.js";
-import sendResponse from "utils/httpResponder.js";
+import bcrypt from "bcrypt";
+import sendJsonResponse from "utils/httpResponder.js";
 
 type LoginCredentials = {
   username: string;
@@ -18,7 +18,8 @@ export default class UserController {
   constructor() {}
 
   registerUser = async (req: Request, res: Response, next: NextFunction) => {
-    const user: UserType = req.body;
+    let user: UserType = req.body;
+    const saltRounds = 10;
     if (
       !user.firstName ||
       !user.lastName ||
@@ -26,126 +27,158 @@ export default class UserController {
       !user.username ||
       !user.password
     ) {
-      sendResponse(res, 400, "provide all fields");
+      sendJsonResponse(res, 400, "provide all fields");
       return;
     }
 
     const [userExists, userExistsErr] = await doesUserExist(user.username);
     if (userExistsErr !== null) {
       next(userExistsErr);
-      sendResponse(res, 500);
+      sendJsonResponse(res, 500);
       return;
     }
 
     if (userExists) {
-      sendResponse(res, 409, "username is already taken");
+      sendJsonResponse(res, 409, "username is already taken");
       return;
     }
 
-    const [hashedPassword, hashErr] = hashPassword(user.password);
-    if (hashErr) {
-      next(hashErr);
-      sendResponse(res, 500);
-    }
+    bcrypt.hash(user.password, saltRounds, (error: Error, hashed: string) => {
+      if (error) {
+        console.error("registerUser bcrypt.hash error");
+        next(error);
+        sendJsonResponse(res, 500);
+      } else {
+        const newUser: UserDocument = new User({
+          firstName: user.firstName,
+          lastName: user.lastName,
+          email: user.email,
+          username: user.username,
+          password: hashed,
+        });
 
-    user.password = hashedPassword;
-    const newUser: UserDocument = new User(user);
-
-    try {
-      await newUser.save();
-      sendResponse(res, 201, "user created.");
-      return;
-    } catch (err) {
-      next(err);
-      sendResponse(res, 500);
-    }
+        try {
+          const result = newUser.save();
+          sendJsonResponse(res, 201, result);
+        } catch (err: any) {
+          console.error("registerUser newUser.save error");
+          next(err);
+          sendJsonResponse(res, 500);
+        } finally {
+          return;
+        }
+      }
+    });
   };
 
   loginUser = async (req: Request, res: Response, next: NextFunction) => {
     const credentials: LoginCredentials = req.body;
 
     if (!credentials.username || !credentials.password) {
-      sendResponse(res, 400, "provide all fields");
+      sendJsonResponse(res, 400, "provide all fields");
       return;
     }
 
-    //const user: UserDocument = await fetchUserByName(credentials.username);
     const [user, fetchUserErr] = await fetchUserByName(credentials.username);
+
     if (fetchUserErr) {
       next(fetchUserErr);
-      sendResponse(res, 500);
+      sendJsonResponse(res, 500);
       return;
     }
 
     if (user === null) {
-      sendResponse(res, 404, "invalid username or password");
+      sendJsonResponse(res, 401, "invalid username or password");
       return;
     }
 
     const storedPassword: string = user.password;
 
-    const [isPasswordCorrect, comparePasswordErr] = comparePassword(
+    bcrypt.compare(
       credentials.password,
       storedPassword,
+      (err: Error, result: boolean) => {
+        if (err) {
+          next(err);
+          sendJsonResponse(res, 500);
+        }
+        if (!result) {
+          sendJsonResponse(res, 401, "invalid username or password");
+          return;
+        }
+        // TODO: Login credentials is correct. Do authentication
+        sendJsonResponse(res, 200, user);
+        return;
+      },
     );
-
-    if (comparePasswordErr) {
-      next(comparePasswordErr);
-      sendResponse(res, 500);
-      return;
-    }
-
-    if (!isPasswordCorrect) {
-      sendResponse(res, 404, "invalid username or password");
-      return;
-    }
-
-    // TODO: Login credentials is correct. Do authentication
   };
 
-  getAllUsers = async (Req: Request, res: Response, next: NextFunction) => {
-    // TODO: return all users in db
-  };
+  getUsers = async (req: Request, res: Response, next: NextFunction) => {
+    // TODO: when sending back the user, don't show the password
+    const id = String(req.query.id);
 
-  getUser = async (req: Request, res: Response, next: NextFunction) => {
-    const { username } = req.params;
-
-    try {
-      // TODO: refactor to use [value, err] format
-      const user = await fetchUserByName(username);
-      if (user === null) {
-        res.status(404).json({
-          success: true,
-          data: "user not found",
-        });
+    if (id !== "undefined") {
+      if (!mongoose.Types.ObjectId.isValid(id)) {
+        sendJsonResponse(res, 400, "invalid id");
         return;
       }
 
-      res.status(200).json({
-        success: true,
-        data: user,
-      });
-      return;
-    } catch (err: any) {
-      console.error(`getUser error: ${err}`);
-      res.status(500).json({
-        success: false,
-        data: "internal server error",
-      });
+      try {
+        const user: UserDocument = await User.findById(id);
+
+        if (user === null) {
+          sendJsonResponse(res, 404, `no user with id ${id}`);
+        } else {
+          sendJsonResponse(res, 200, user);
+        }
+      } catch (err: any) {
+        console.error("User.findByID error:");
+        next(err);
+        sendJsonResponse(res, 500);
+      } finally {
+        return;
+      }
+    }
+    try {
+      const users: Array<UserType> = await User.find({});
+      sendJsonResponse(res, 200, users);
+    } catch (err) {
+      console.error("User.find error:");
+      next(err);
+      sendJsonResponse(res, 500);
+    } finally {
       return;
     }
   };
 
   updateUser = async (req: Request, res: Response, next: NextFunction) => {
-    // TODO: refactor
-    const { id } = req.params;
+    // TODO: what to do when the password is used
+    const id: string = String(req.query.id);
     const editedUserDetails: UserType = req.body;
 
+    if (id === "undefined") {
+      sendJsonResponse(res, 400, "no id included");
+      return;
+    }
+
     if (!mongoose.Types.ObjectId.isValid(id)) {
-      res.status(400).json({
-        success: false,
-        data: "invalid id",
-      });
+      sendJsonResponse(res, 400, "invalid id");
+      return;
+    }
+
+    try {
+      const [userIdExists, userIdErr] = await doesUserIdExist(id);
+      if (userIdErr !== null) {
+        sendJsonResponse(res, 500);
+        return;
+      } else if (!userIdExists) {
+        sendJsonResponse(res, 404, `no user with id ${id}`);
+        return;
+      }
+    } catch (err) {
+      console.error("updateUser doesUserIdExist error");
+      next(err);
+      sendJsonResponse(res, 500);
       return;
     }
 
@@ -153,39 +186,53 @@ export default class UserController {
       const updatedUser = await User.findByIdAndUpdate(id, editedUserDetails, {
         new: true,
       });
-      res.status(201).json({
-        success: true,
-        data: updatedUser,
-      });
-      return;
+      sendJsonResponse(res, 201, updatedUser);
     } catch (err: any) {
-      console.error(`updateUser error: ${err}`);
-      res.status(500).json({
-        success: false,
-        data: "internal server error",
-      });
+      console.error("updateUser User.findByIdandUpdate error");
+      next(err);
+      sendJsonResponse(res, 500);
+    } finally {
       return;
     }
   };
 
   deleteUser = async (req: Request, res: Response, next: NextFunction) => {
-    const { id } = req.params;
-    // TODO: refactor to use sendResponse
+    const id: string = String(req.query.id);
+
+    if (id === "undefined") {
+      sendJsonResponse(res, 400, "no id included");
+      return;
+    }
+
     if (!mongoose.Types.ObjectId.isValid(id)) {
-      res.status(400).json({
-        success: false,
-        data: "invalid id",
-      });
+      sendJsonResponse(res, 400, "invalid id");
     }
 
     try {
-      const deletedUser = await User.findByIdAndDelete(id);
-      res.status(204).json({ success: true, data: deletedUser });
+      const [userIdExists, userIdErr] = await doesUserIdExist(id);
+      if (userIdErr !== null) {
+        sendJsonResponse(res, 500);
+        return;
+      } else if (!userIdExists) {
+        sendJsonResponse(res, 404, `no user with id ${id}`);
+        return;
+      }
+    } catch (err) {
+      console.error("deleteUser doesUserIdExist error");
+      next(err);
+      sendJsonResponse(res, 500);
+      return;
+    }
+
+    try {
+      await User.findByIdAndDelete(id);
+      sendJsonResponse(res, 204, "user deleted");
     } catch (err: any) {
-      res.status(500).json({
-        success: false,
-        data: "internal server error",
-      });
+      console.error("deleteUser User.findByIdandDelete error");
+      next(err);
+      sendJsonResponse(res, 500);
+    } finally {
+      return;
     }
   };
 }

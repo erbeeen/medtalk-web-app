@@ -1,30 +1,5 @@
 import mongoose from "mongoose";
 
-const userSchema = new mongoose.Schema({
-  firstName: {
-    type: String,
-    required: true,
-  },
-  lastName: {
-    type: String,
-    required: true,
-  },
-  email: {
-    type: String,
-    required: true,
-  },
-  username: {
-    type: String,
-    required: true,
-  },
-  password: {
-    type: String,
-    required: true,
-  },
-});
-
-const User = mongoose.model("users", userSchema);
-
 export type UserType = {
   firstName: string,
   lastName: string,
@@ -34,5 +9,36 @@ export type UserType = {
 };
 
 export type UserDocument = UserType & mongoose.Document;
-//export type UserModel = mongoose.Model<UserDocument>;
+
+const userSchema = new mongoose.Schema({
+  firstName: {
+    type: String,
+    required: true,
+    trim: true,
+  },
+  lastName: {
+    type: String,
+    required: true,
+    trim: true,
+  },
+  email: {
+    type: String,
+    required: true,
+    trim: true,
+    lowercase: true,
+  },
+  username: {
+    type: String,
+    required: true,
+    trim: true,
+  },
+  password: {
+    type: String,
+    required: true,
+    minlength: 8,
+  },
+});
+
+const User = mongoose.model("users", userSchema);
+
 export default User;
