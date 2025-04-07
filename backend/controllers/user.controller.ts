@@ -8,6 +8,7 @@ import {
 } from "../utils/user.utils.js";
 import bcrypt from "bcrypt";
 import sendJsonResponse from "utils/httpResponder.js";
+import { logError } from "middleware/logger.js";
 
 type LoginCredentials = {
   username: string;
@@ -47,6 +48,7 @@ export default class UserController {
       if (error) {
         console.error("registerUser bcrypt.hash error");
         next(error);
+        logError(error)
         sendJsonResponse(res, 500);
       } else {
         const newUser: UserDocument = new User({
@@ -63,6 +65,7 @@ export default class UserController {
         } catch (err: any) {
           console.error("registerUser newUser.save error");
           next(err);
+          logError(err);
           sendJsonResponse(res, 500);
         } finally {
           return;
@@ -134,6 +137,7 @@ export default class UserController {
       } catch (err: any) {
         console.error("User.findByID error:");
         next(err);
+        logError(err);
         sendJsonResponse(res, 500);
       } finally {
         return;
@@ -145,6 +149,7 @@ export default class UserController {
     } catch (err) {
       console.error("User.find error:");
       next(err);
+      logError(err);
       sendJsonResponse(res, 500);
     } finally {
       return;
@@ -178,6 +183,7 @@ export default class UserController {
     } catch (err) {
       console.error("updateUser doesUserIdExist error");
       next(err);
+      logError(err);
       sendJsonResponse(res, 500);
       return;
     }
@@ -190,6 +196,7 @@ export default class UserController {
     } catch (err: any) {
       console.error("updateUser User.findByIdandUpdate error");
       next(err);
+      logError(err);
       sendJsonResponse(res, 500);
     } finally {
       return;
@@ -220,6 +227,7 @@ export default class UserController {
     } catch (err) {
       console.error("deleteUser doesUserIdExist error");
       next(err);
+      logError(err);
       sendJsonResponse(res, 500);
       return;
     }
@@ -230,6 +238,7 @@ export default class UserController {
     } catch (err: any) {
       console.error("deleteUser User.findByIdandDelete error");
       next(err);
+      logError(err);
       sendJsonResponse(res, 500);
     } finally {
       return;
