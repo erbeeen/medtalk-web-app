@@ -1,16 +1,22 @@
 import mongoose from "mongoose";
 
 export type UserType = {
-  firstName: string,
-  lastName: string,
-  email: string,
-  username: string,
-  password: string,
+  id?: string;
+  role: string;
+  email: string;
+  username: string;
+  firstName: string;
+  lastName: string;
+  password?: string;
 };
 
 export type UserDocument = UserType & mongoose.Document;
 
 const userSchema = new mongoose.Schema({
+  role: {
+    type: String,
+    required: true,
+  },
   firstName: {
     type: String,
     required: true,

@@ -19,8 +19,9 @@ export default function logger(
       duration = duration / 1000;
       timeUnit = "s";
     }
-    const time = new Date();
-    const requestLog = `${time.toLocaleTimeString()} ${req.protocol.toUpperCase()}${req.httpVersion} ${req.method} ${req.originalUrl} ${res.statusCode} ${res.statusMessage} - ${duration.toFixed(2)} ${timeUnit}`;
+    const time: Date = new Date();
+    const timeString: string = time.toLocaleTimeString().split(" ").join("");
+    const requestLog = `${timeString} ${req.protocol.toUpperCase()}${req.httpVersion} ${req.method} ${req.originalUrl} ${res.statusCode} ${res.statusMessage} - ${duration.toFixed(2)} ${timeUnit}`;
     fs.appendFile(serverLogPath, `${requestLog}\n`, (err) => {
       if (err) {
         console.error("Error logging to log file", err);
@@ -32,8 +33,9 @@ export default function logger(
 }
 
 export function logError(err: Error): void {
-  const time = new Date();
-  fs.appendFile(serverLogPath, `${time.toLocaleTimeString()} ${err}\n`, (err) => {
+  const time: Date = new Date();
+    const timeString: string = time.toLocaleTimeString().split(" ").join("");
+  fs.appendFile(serverLogPath, `${timeString} ${err}\n`, (err) => {
     if (err) 
       console.error("Error logging to log file", err);
       

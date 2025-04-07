@@ -9,6 +9,7 @@ import {
 import bcrypt from "bcrypt";
 import sendJsonResponse from "utils/httpResponder.js";
 import { logError } from "middleware/logger.js";
+import { createToken } from "middleware/auth.js";
 
 type LoginCredentials = {
   username: string;
@@ -46,12 +47,13 @@ export default class UserController {
 
     bcrypt.hash(user.password, saltRounds, (error: Error, hashed: string) => {
       if (error) {
-        console.error("registerUser bcrypt.hash error");
+        console.error(`${this.registerUser.name} bcrypt.hash error`);
         next(error);
-        logError(error)
+        logError(error);
         sendJsonResponse(res, 500);
       } else {
         const newUser: UserDocument = new User({
+          role: "user",
           firstName: user.firstName,
           lastName: user.lastName,
           email: user.email,
@@ -60,10 +62,10 @@ export default class UserController {
         });
 
         try {
-          const result = newUser.save();
-          sendJsonResponse(res, 201, result);
+          newUser.save();
+          sendJsonResponse(res, 201, "user created");
         } catch (err: any) {
-          console.error("registerUser newUser.save error");
+          console.error(`${this.registerUser.name} newUser.save error`);
           next(err);
           logError(err);
           sendJsonResponse(res, 500);
@@ -95,29 +97,41 @@ export default class UserController {
       return;
     }
 
-    const storedPassword: string = user.password;
-
     bcrypt.compare(
       credentials.password,
-      storedPassword,
+      user.password,
       (err: Error, result: boolean) => {
         if (err) {
+          console.error(`${this.loginUser.name} bcrypt.compare error: ${err}`);
           next(err);
+          logError(err);
           sendJsonResponse(res, 500);
         }
         if (!result) {
           sendJsonResponse(res, 401, "invalid username or password");
           return;
         }
-        // TODO: Login credentials is correct. Do authentication
-        sendJsonResponse(res, 200, user);
-        return;
+        delete credentials.password;
+        delete user.password;
+
+        const [token, tokenErr] = createToken(String(user._id), user.email);
+        if (tokenErr !== null) {
+          console.error(`${this.loginUser.name} jwt.sign error: ${err}`);
+          next(err);
+          logError(err);
+          sendJsonResponse(res, 500);
+        }
+
+        res.status(200).json({
+          id: user._id,
+          email: user.email,
+          token: token,
+        });
       },
     );
   };
 
   getUsers = async (req: Request, res: Response, next: NextFunction) => {
-    // TODO: when sending back the user, don't show the password
     const id = String(req.query.id);
 
     if (id !== "undefined") {
@@ -127,15 +141,22 @@ export default class UserController {
       }
 
       try {
-        const user: UserDocument = await User.findById(id);
+        let user: UserDocument = await User.findById(id);
 
         if (user === null) {
           sendJsonResponse(res, 404, `no user with id ${id}`);
         } else {
-          sendJsonResponse(res, 200, user);
+          sendJsonResponse(res, 200, {
+            id: user._id,
+            role: user.role,
+            email: user.email,
+            username: user.username,
+            firstName: user.firstName,
+            lastName: user.lastName,
+          });
         }
       } catch (err: any) {
-        console.error("User.findByID error:");
+        console.error(`${this.getUsers.name} User.findByID error:`);
         next(err);
         logError(err);
         sendJsonResponse(res, 500);
@@ -144,10 +165,21 @@ export default class UserController {
       }
     }
     try {
-      const users: Array<UserType> = await User.find({});
+      const userDocuments: Array<UserDocument> = await User.find({});
+      let users: Array<UserType> = [];
+      userDocuments.map((user) =>
+        users.push({
+          id: String(user._id),
+          role: user.role,
+          email: user.email,
+          username: user.username,
+          firstName: user.firstName,
+          lastName: user.lastName,
+        }),
+      );
       sendJsonResponse(res, 200, users);
     } catch (err) {
-      console.error("User.find error:");
+      console.error(`${this.getUsers.name} User.find error:`);
       next(err);
       logError(err);
       sendJsonResponse(res, 500);
@@ -157,7 +189,7 @@ export default class UserController {
   };
 
   updateUser = async (req: Request, res: Response, next: NextFunction) => {
-    // TODO: what to do when the password is used
+    // TODO: what to do when the password is changed
     const id: string = String(req.query.id);
     const editedUserDetails: UserType = req.body;
 
@@ -181,7 +213,7 @@ export default class UserController {
         return;
       }
     } catch (err) {
-      console.error("updateUser doesUserIdExist error");
+      console.error(`${this.updateUser.name} doesUserIdExist error`);
       next(err);
       logError(err);
       sendJsonResponse(res, 500);
@@ -194,7 +226,7 @@ export default class UserController {
       });
       sendJsonResponse(res, 201, updatedUser);
     } catch (err: any) {
-      console.error("updateUser User.findByIdandUpdate error");
+      console.error(`${this.updateUser.name} User.findByIdandUpdate error`);
       next(err);
       logError(err);
       sendJsonResponse(res, 500);
@@ -225,7 +257,7 @@ export default class UserController {
         return;
       }
     } catch (err) {
-      console.error("deleteUser doesUserIdExist error");
+      console.error(`${this.deleteUser.name} doesUserIdExist error`);
       next(err);
       logError(err);
       sendJsonResponse(res, 500);
@@ -236,7 +268,7 @@ export default class UserController {
       await User.findByIdAndDelete(id);
       sendJsonResponse(res, 204, "user deleted");
     } catch (err: any) {
-      console.error("deleteUser User.findByIdandDelete error");
+      console.error(`${this.deleteUser.name} User.findByIdandDelete error`);
       next(err);
       logError(err);
       sendJsonResponse(res, 500);
