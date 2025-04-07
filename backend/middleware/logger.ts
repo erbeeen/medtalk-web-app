@@ -33,7 +33,7 @@ export default function logger(
 
 export function logError(err: Error): void {
   const time = new Date();
-  fs.appendFile(serverLogPath, `${time.toLocaleString()} ${err}\n`, (err) => {
+  fs.appendFile(serverLogPath, `${time.toLocaleTimeString()} ${err}\n`, (err) => {
     if (err) 
       console.error("Error logging to log file", err);
       
