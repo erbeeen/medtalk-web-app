@@ -5,6 +5,7 @@
   "type": "module",
   "scripts": {
     "dev": "tsx backend/server.ts",
+    "frontdev": "cd frontend && npm run dev",
     "buildserver": "tsc",
     "build": "npm i --production=false && npm i --prefix frontend --production=false && tsc && npm run build --prefix frontend",
     "start": "node dist/server.js",
