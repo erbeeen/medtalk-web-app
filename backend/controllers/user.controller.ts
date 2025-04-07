@@ -77,6 +77,8 @@ export default class UserController {
   };
 
   loginUser = async (req: Request, res: Response, next: NextFunction) => {
+    // TODO: figure out the appropriate way
+    // to send out the token
     const credentials: LoginCredentials = req.body;
 
     if (!credentials.username || !credentials.password) {
