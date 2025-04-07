@@ -6,7 +6,7 @@ import {
   fetchUserByName,
   doesUserExist,
   doesUserIdExist,
-  createToken as createUserAuthToken,
+  createUserAuthToken
 } from "../utils/user.utils.js";
 import sendJsonResponse from "utils/httpResponder.js";
 import { logError } from "../middleware/logger.js";
