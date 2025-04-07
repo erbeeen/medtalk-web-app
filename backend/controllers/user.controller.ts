@@ -1,15 +1,15 @@
 import { NextFunction, Request, Response } from "express";
 import mongoose from "mongoose";
+import bcrypt from "bcrypt";
 import User, { UserType, UserDocument } from "../models/user.model.js";
 import {
   fetchUserByName,
   doesUserExist,
   doesUserIdExist,
+  createToken as createUserAuthToken,
 } from "../utils/user.utils.js";
-import bcrypt from "bcrypt";
 import sendJsonResponse from "utils/httpResponder.js";
-import { logError } from "middleware/logger.js";
-import { createToken } from "middleware/auth.js";
+import { logError } from "../middleware/logger.js";
 
 type LoginCredentials = {
   username: string;
@@ -111,10 +111,8 @@ export default class UserController {
           sendJsonResponse(res, 401, "invalid username or password");
           return;
         }
-        delete credentials.password;
-        delete user.password;
 
-        const [token, tokenErr] = createToken(String(user._id), user.email);
+        const [token, tokenErr] = createUserAuthToken(String(user._id), user.email);
         if (tokenErr !== null) {
           console.error(`${this.loginUser.name} jwt.sign error: ${err}`);
           next(err);
@@ -122,9 +120,21 @@ export default class UserController {
           sendJsonResponse(res, 500);
         }
 
+        //res.status(200).json({
+        //  id: user._id,
+        //  email: user.email,
+        //  token: token,
+        //});
+        
+        //res.cookie("token", token, {
+        //  httpOnly: true,
+        //  //secure: true,
+          //maxAge: 10_000_000,
+          //signed: true
+        //});
+
         res.status(200).json({
-          id: user._id,
-          email: user.email,
+          success: true,
           token: token,
         });
       },

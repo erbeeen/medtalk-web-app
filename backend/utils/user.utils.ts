@@ -1,4 +1,5 @@
 import User, { UserDocument } from "../models/user.model.js";
+import jwt from "jsonwebtoken";
 
 export async function doesUserExist(
   username: string,
@@ -38,4 +39,20 @@ export async function fetchUserByName(
   } catch (err) {
     return [null, err];
   }
+}
+
+export function createToken(id: string, email: string): [string|null, Error|null] {
+  try {
+    const token = jwt.sign(
+      {
+        id: id,
+        email: email,
+      },
+      process.env.SECRET_ACCESS_TOKEN,
+      { expiresIn: "14d" },
+    );
+    return [token, null];
+  } catch (err) {
+    return [null, err];
+  } 
 }
