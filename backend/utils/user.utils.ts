@@ -48,13 +48,13 @@ export async function fetchUserByEmail(
 
 export function createUserAuthToken(
   id: string,
-  email: string,
+  username: string,
 ): [string | null, Error | null] {
   try {
     const token = jwt.sign(
       {
         id: id,
-        email: email,
+        username: username,
       },
       process.env.SECRET_ACCESS_TOKEN,
       { expiresIn: "14d" },

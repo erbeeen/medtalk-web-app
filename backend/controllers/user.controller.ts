@@ -81,7 +81,7 @@ export default class UserController {
             const user = await newUser.save();
             const [token, tokenErr] = createUserAuthToken(
               String(user._id),
-              user.email,
+              user.username,
             );
 
             if (tokenErr !== null) {
