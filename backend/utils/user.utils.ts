@@ -3,15 +3,20 @@ import jwt from "jsonwebtoken";
 
 export async function doesUserExist(
   username: string,
-): Promise<[boolean | null, Error | null]> {
+  email?: string
+): Promise<[boolean | null, boolean | null, Error | null]> {
   try {
-    const user: UserDocument = await User.findOne({ username });
-    if (user) {
-      return [true, null];
+    const userByUsername: UserDocument = await User.findOne({ username });
+    const userByEmail: UserDocument = await User.findOne({ email });
+    if (userByUsername) {
+      return [true, false, null];
     }
-    return [false, null];
+    if (userByEmail) {
+      return [false, true, null];
+    }
+    return [false, false, null];
   } catch (err) {
-    return [null, err];
+    return [null, null, err];
   }
 }
 
@@ -29,11 +34,11 @@ export async function doesUserIdExist(
   }
 }
 
-export async function fetchUserByName(
-  username: string,
+export async function fetchUserByEmail(
+  email: string,
 ): Promise<[UserDocument | null, Error | null]> {
   try {
-    const user: UserDocument = await User.findOne({ username });
+    const user: UserDocument = await User.findOne({ email });
 
     return [user, null];
   } catch (err) {
