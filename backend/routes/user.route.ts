@@ -7,8 +7,8 @@ const userRouter: Router = Router();
 const uc: UserController = new UserController();
 userRouter.use(cors());
 
-userRouter.post("/register", uc.registerUser);
-userRouter.post("/login", uc.loginUser);
+userRouter.post("/register", authenticateJwt, uc.registerUser);
+userRouter.post("/login", authenticateJwt, uc.loginUser);
 userRouter.put("/update", authenticateJwt, uc.updateUser);
 userRouter.delete("/delete", authenticateJwt, uc.deleteUser);
 userRouter.get("/", authenticateJwt, uc.getUsers);

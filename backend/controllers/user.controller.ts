@@ -6,9 +6,9 @@ import {
   fetchUserByName,
   doesUserExist,
   doesUserIdExist,
-  createUserAuthToken
+  createUserAuthToken,
 } from "../utils/user.utils.js";
-import sendJsonResponse from "utils/httpResponder.js";
+import sendJsonResponse from "../utils/httpResponder.js";
 import { logError } from "../middleware/logger.js";
 
 type LoginCredentials = {
@@ -20,6 +20,11 @@ export default class UserController {
   constructor() {}
 
   registerUser = async (req: Request, res: Response, next: NextFunction) => {
+    if (req.user !== undefined) {
+      sendJsonResponse(res, 200);
+      return;
+    }
+
     let user: UserType = req.body;
     const saltRounds = 10;
     if (
@@ -45,40 +50,68 @@ export default class UserController {
       return;
     }
 
-    bcrypt.hash(user.password, saltRounds, (error: Error, hashed: string) => {
-      if (error) {
-        console.error(`${this.registerUser.name} bcrypt.hash error`);
-        next(error);
-        logError(error);
-        sendJsonResponse(res, 500);
-      } else {
-        const newUser: UserDocument = new User({
-          role: "user",
-          firstName: user.firstName,
-          lastName: user.lastName,
-          email: user.email,
-          username: user.username,
-          password: hashed,
-        });
-
-        try {
-          newUser.save();
-          sendJsonResponse(res, 201, "user created");
-        } catch (err: any) {
-          console.error(`${this.registerUser.name} newUser.save error`);
-          next(err);
-          logError(err);
+    bcrypt.hash(
+      user.password,
+      saltRounds,
+      async (error: Error, hashed: string) => {
+        if (error) {
+          console.error(`${this.registerUser.name} bcrypt.hash error`);
+          next(error);
+          logError(error);
           sendJsonResponse(res, 500);
-        } finally {
-          return;
+        } else {
+          const newUser: UserDocument = new User({
+            role: "user",
+            firstName: user.firstName,
+            lastName: user.lastName,
+            email: user.email,
+            username: user.username,
+            password: hashed,
+          });
+
+          try {
+            const user = await newUser.save();
+            const [token, tokenErr] = createUserAuthToken(
+              String(user._id),
+              user.email,
+            );
+
+            if (tokenErr !== null) {
+              console.error(
+                `${this.loginUser.name} jwt.sign error: ${tokenErr}`,
+              );
+              next(tokenErr);
+              logError(tokenErr);
+              sendJsonResponse(res, 500);
+            } else {
+              res.cookie("token", token, {
+                httpOnly: true,
+                secure: true,
+                // maxAge: 10_000_000,
+                sameSite: "lax",
+                signed: true,
+              });
+              sendJsonResponse(res, 201, "user created");
+            }
+          } catch (err: any) {
+            console.error(`${this.registerUser.name} newUser.save error`);
+            next(err);
+            logError(err);
+            sendJsonResponse(res, 500);
+          } finally {
+            return;
+          }
         }
-      }
-    });
+      },
+    );
   };
 
   loginUser = async (req: Request, res: Response, next: NextFunction) => {
-    // TODO: figure out the appropriate way
-    // to send out the token
+    if (req.user !== undefined) {
+      sendJsonResponse(res, 200);
+      return;
+    }
+
     const credentials: LoginCredentials = req.body;
 
     if (!credentials.username || !credentials.password) {
@@ -114,11 +147,14 @@ export default class UserController {
           return;
         }
 
-        const [token, tokenErr] = createUserAuthToken(String(user._id), user.email);
+        const [token, tokenErr] = createUserAuthToken(
+          String(user._id),
+          user.email,
+        );
         if (tokenErr !== null) {
-          console.error(`${this.loginUser.name} jwt.sign error: ${err}`);
-          next(err);
-          logError(err);
+          console.error(`${this.loginUser.name} jwt.sign error: ${tokenErr}`);
+          next(tokenErr);
+          logError(tokenErr);
           sendJsonResponse(res, 500);
         }
 
@@ -127,23 +163,29 @@ export default class UserController {
         //  email: user.email,
         //  token: token,
         //});
-        
-        //res.cookie("token", token, {
-        //  httpOnly: true,
-        //  //secure: true,
-          //maxAge: 10_000_000,
-          //signed: true
-        //});
 
-        res.status(200).json({
-          success: true,
-          token: token,
+        res.cookie("token", token, {
+          httpOnly: true,
+          secure: true,
+          // maxAge: 10_000_000,
+          sameSite: "lax",
+          signed: true,
         });
+
+        sendJsonResponse(res, 200);
+        return;
       },
     );
   };
 
   getUsers = async (req: Request, res: Response, next: NextFunction) => {
+    if (req.user === undefined) {
+      sendJsonResponse(res, 403, "unauthorized");
+    }
+
+    console.log("req.user value:", req.user);
+    
+
     const id = String(req.query.id);
 
     if (id !== "undefined") {

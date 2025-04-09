@@ -15,10 +15,19 @@ export default function authenticateJwt(
 ) {
   const authHeader = req.headers["authorization"];
   const token = authHeader && authHeader.split(" ")[1];
+  
 
   if (token === undefined) {
-    res.sendStatus(401);
-    return;
+    console.log("reached token === undefined");
+    
+    if (req.originalUrl == "/api/users/login" || req.originalUrl == "/api/users/register") {
+      console.log("reached req.originalUrl = /login");
+      
+      next();
+    } else {
+      res.sendStatus(401);
+      return;
+    }
   } else {
     jwt.verify(token, process.env.SECRET_ACCESS_TOKEN, (err, user) => {
       if (err) {

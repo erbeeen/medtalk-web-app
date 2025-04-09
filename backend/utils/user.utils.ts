@@ -41,7 +41,10 @@ export async function fetchUserByName(
   }
 }
 
-export function createUserAuthToken(id: string, email: string): [string|null, Error|null] {
+export function createUserAuthToken(
+  id: string,
+  email: string,
+): [string | null, Error | null] {
   try {
     const token = jwt.sign(
       {
@@ -54,5 +57,5 @@ export function createUserAuthToken(id: string, email: string): [string|null, Er
     return [token, null];
   } catch (err) {
     return [null, err];
-  } 
+  }
 }
