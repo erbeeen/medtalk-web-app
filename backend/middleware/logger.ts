@@ -21,10 +21,10 @@ export default function logger(
     }
     const time: Date = new Date();
     const timeString: string = time.toLocaleTimeString().split(" ").join("");
-    const requestLog = `${timeString} ${req.protocol.toUpperCase()}${req.httpVersion} ${req.method} ${req.originalUrl} ${res.statusCode} ${res.statusMessage} - ${duration.toFixed(2)} ${timeUnit}`;
+    const requestLog = `[${timeString}] ${req.protocol.toUpperCase()}${req.httpVersion} ${req.method} ${req.originalUrl} ${res.statusCode} ${res.statusMessage} - ${duration.toFixed(2)} ${timeUnit}`;
     fs.appendFile(serverLogPath, `${requestLog}\n`, (err) => {
       if (err) {
-        console.error("Error logging to log file", err);
+        console.error(`Error logging to log file: ${err}\n${err.stack}`);
       }
     });
     console.log(requestLog);
@@ -34,10 +34,12 @@ export default function logger(
 
 export function logError(err: Error): void {
   const time: Date = new Date();
-    const timeString: string = time.toLocaleTimeString().split(" ").join("");
-  fs.appendFile(serverLogPath, `${timeString} ${err}\n`, (err) => {
-    if (err) 
-      console.error("Error logging to log file", err);
-      
-  });
+  const timeString: string = time.toLocaleTimeString().split(" ").join("");
+  fs.appendFile(
+    serverLogPath,
+    `[${timeString}] ${err}:\n${err.stack}\n`,
+    (err) => {
+      if (err) console.error(`Error logging to log file: ${err}\n${err.stack}`);
+    },
+  );
 }

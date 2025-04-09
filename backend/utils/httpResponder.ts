@@ -1,6 +1,10 @@
 import { Response } from "express";
 
-export default function sendResponse(res: Response, statusCode: number, data?: any) {
+export default function sendJsonResponse(
+  res: Response,
+  statusCode: number,
+  data?: any,
+) {
   let success: boolean;
   if (statusCode >= 200 && statusCode < 300) {
     success = true;
@@ -10,8 +14,15 @@ export default function sendResponse(res: Response, statusCode: number, data?: a
   if (statusCode === 500) {
     data = "internal server error";
   }
-  res.status(statusCode).json({
-    "success": success,
-    "data": data
-  });
+
+  if (data) {
+    res.status(statusCode).json({
+      success: success,
+      data: data,
+    });
+  } else {
+    res.status(statusCode).json({
+      success: success,
+    });
+  }
 }
