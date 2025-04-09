@@ -97,7 +97,7 @@ export default class UserController {
                 secure: true,
                 // maxAge: 10_000_000,
                 sameSite: "lax",
-                signed: true,
+                // signed: true,
               });
               sendJsonResponse(res, 201, "user created");
             }
@@ -160,10 +160,11 @@ export default class UserController {
           user.email,
         );
         if (tokenErr !== null) {
-          console.error(`${this.loginUser.name} jwt.sign error: ${tokenErr}`);
+          console.error(`${this.loginUser.name} jwt.sign error: ${tokenErr}\n${tokenErr.stack}`);
           next(tokenErr);
           logError(tokenErr);
           sendJsonResponse(res, 500);
+          return;
         }
 
         //res.status(200).json({
@@ -177,7 +178,7 @@ export default class UserController {
           secure: true,
           // maxAge: 10_000_000,
           sameSite: "lax",
-          signed: true,
+          // signed: true,
         });
 
         sendJsonResponse(res, 200);
