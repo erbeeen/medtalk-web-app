@@ -3,7 +3,7 @@ import mongoose from "mongoose";
 import bcrypt from "bcrypt";
 import User, { UserType, UserDocument } from "../models/user.model.js";
 import {
-  fetchUserByName,
+  fetchUserByEmail,
   doesUserExist,
   doesUserIdExist,
   createUserAuthToken,
@@ -12,7 +12,7 @@ import sendJsonResponse from "../utils/httpResponder.js";
 import { logError } from "../middleware/logger.js";
 
 type LoginCredentials = {
-  username: string;
+  email: string;
   password: string;
 };
 
@@ -28,25 +28,33 @@ export default class UserController {
     let user: UserType = req.body;
     const saltRounds = 10;
     if (
-      !user.firstName ||
-      !user.lastName ||
       !user.email ||
       !user.username ||
+      !user.firstName ||
+      !user.lastName ||
       !user.password
     ) {
       sendJsonResponse(res, 400, "provide all fields");
       return;
     }
 
-    const [userExists, userExistsErr] = await doesUserExist(user.username);
+    const [usernameExists, emailExists, userExistsErr] = await doesUserExist(
+      user.username,
+      user.email,
+    );
     if (userExistsErr !== null) {
       next(userExistsErr);
       sendJsonResponse(res, 500);
       return;
     }
 
-    if (userExists) {
+    if (usernameExists) {
       sendJsonResponse(res, 409, "username is already taken");
+      return;
+    }
+
+    if (emailExists) {
+      sendJsonResponse(res, 409, "email is already taken");
       return;
     }
 
@@ -114,12 +122,12 @@ export default class UserController {
 
     const credentials: LoginCredentials = req.body;
 
-    if (!credentials.username || !credentials.password) {
+    if (!credentials.email || !credentials.password) {
       sendJsonResponse(res, 400, "provide all fields");
       return;
     }
 
-    const [user, fetchUserErr] = await fetchUserByName(credentials.username);
+    const [user, fetchUserErr] = await fetchUserByEmail(credentials.email);
 
     if (fetchUserErr) {
       next(fetchUserErr);
@@ -128,7 +136,7 @@ export default class UserController {
     }
 
     if (user === null) {
-      sendJsonResponse(res, 401, "invalid username or password");
+      sendJsonResponse(res, 401, "invalid email or password");
       return;
     }
 
@@ -143,7 +151,7 @@ export default class UserController {
           sendJsonResponse(res, 500);
         }
         if (!result) {
-          sendJsonResponse(res, 401, "invalid username or password");
+          sendJsonResponse(res, 401, "invalid email or password");
           return;
         }
 
@@ -179,13 +187,6 @@ export default class UserController {
   };
 
   getUsers = async (req: Request, res: Response, next: NextFunction) => {
-    if (req.user === undefined) {
-      sendJsonResponse(res, 403, "unauthorized");
-    }
-
-    console.log("req.user value:", req.user);
-    
-
     const id = String(req.query.id);
 
     if (id !== "undefined") {
@@ -244,6 +245,9 @@ export default class UserController {
 
   updateUser = async (req: Request, res: Response, next: NextFunction) => {
     // TODO: what to do when the password is changed
+    // TODO: proceed with the update only when the request
+    // is from the same user, from an admin/super admin.
+
     const id: string = String(req.query.id);
     const editedUserDetails: UserType = req.body;
 
@@ -257,28 +261,34 @@ export default class UserController {
       return;
     }
 
-    try {
-      const [userIdExists, userIdErr] = await doesUserIdExist(id);
-      if (userIdErr !== null) {
-        sendJsonResponse(res, 500);
-        return;
-      } else if (!userIdExists) {
-        sendJsonResponse(res, 404, `no user with id ${id}`);
-        return;
-      }
-    } catch (err) {
+    const [userIdExists, userIdErr] = await doesUserIdExist(id);
+    if (userIdErr !== null) {
       console.error(`${this.updateUser.name} doesUserIdExist error`);
-      next(err);
-      logError(err);
+      next(userIdErr);
+      logError(userIdErr);
       sendJsonResponse(res, 500);
+      return;
+    } else if (!userIdExists) {
+      sendJsonResponse(res, 404, `no user with id ${id}`);
       return;
     }
 
     try {
-      const updatedUser = await User.findByIdAndUpdate(id, editedUserDetails, {
-        new: true,
+      const updatedUser: UserDocument = await User.findByIdAndUpdate(
+        id,
+        editedUserDetails,
+        {
+          new: true,
+        },
+      );
+      sendJsonResponse(res, 201, {
+        id: String(updatedUser._id),
+        role: updatedUser.role,
+        email: updatedUser.email,
+        username: updatedUser.username,
+        firstName: updatedUser.firstName,
+        lastName: updatedUser.lastName,
       });
-      sendJsonResponse(res, 201, updatedUser);
     } catch (err: any) {
       console.error(`${this.updateUser.name} User.findByIdandUpdate error`);
       next(err);
@@ -290,6 +300,9 @@ export default class UserController {
   };
 
   deleteUser = async (req: Request, res: Response, next: NextFunction) => {
+    // TODO: proceed with the update only when the request
+    // is from the same user or from a super admin.
+
     const id: string = String(req.query.id);
 
     if (id === "undefined") {
@@ -322,7 +335,7 @@ export default class UserController {
       await User.findByIdAndDelete(id);
       sendJsonResponse(res, 204, "user deleted");
     } catch (err: any) {
-      console.error(`${this.deleteUser.name} User.findByIdandDelete error`);
+      console.error(`${this.deleteUser.name} User.findByIdAndDelete error`);
       next(err);
       logError(err);
       sendJsonResponse(res, 500);
