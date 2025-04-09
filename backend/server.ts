@@ -6,7 +6,7 @@ import dbConnect from "./config/db.js";
 import userRouter from "./routes/user.route.js";
 import searchMedRouter from "./routes/search-medicine.route.js";
 import { fileURLToPath } from "url";
-import logger from "middleware/logger.js";
+import logger from "./middleware/logger.js";
 dotenv.config();
 
 const app = express();
