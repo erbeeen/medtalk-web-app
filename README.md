@@ -25,4 +25,4 @@
 
 ## Git Commit formats
 Follow the conventional commits as much as possible for commit tracking
-[](https://www.conventionalcommits.org/en/v1.0.0/)
+[https://www.conventionalcommits.org/en/v1.0.0/](https://www.conventionalcommits.org/en/v1.0.0/)
