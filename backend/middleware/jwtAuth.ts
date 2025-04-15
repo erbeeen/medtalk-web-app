@@ -1,6 +1,5 @@
 import { Request, Response, NextFunction } from "express";
 import jwt from "jsonwebtoken";
-import { logError } from "./logger.js";
 
 declare module "express" {
   interface Request {
@@ -15,14 +14,12 @@ export default function authenticateJwt(
 ) {
   const authHeader = req.headers["authorization"];
   const token = authHeader && authHeader.split(" ")[1];
-  
-
   if (token === undefined) {
-    console.log("reached token === undefined");
-    
-    if (req.originalUrl == "/api/users/login" || req.originalUrl == "/api/users/register") {
-      console.log("reached req.originalUrl = /login");
-      
+    if (
+      req.originalUrl == "/api/users/login" ||
+      req.originalUrl == "/api/users/register" ||
+      req.originalUrl == "/api/users/token"
+    ) {
       next();
     } else {
       res.sendStatus(401);
@@ -31,8 +28,7 @@ export default function authenticateJwt(
   } else {
     jwt.verify(token, process.env.SECRET_ACCESS_TOKEN, (err, user) => {
       if (err) {
-        logError(err);
-        res.status(403);
+        res.sendStatus(403);
         return;
       } else {
         req.user = user;

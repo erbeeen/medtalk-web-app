@@ -9,6 +9,7 @@ userRouter.use(cors());
 
 userRouter.post("/register", authenticateJwt, uc.registerUser);
 userRouter.post("/login", authenticateJwt, uc.loginUser);
+userRouter.post("/token", authenticateJwt, uc.refreshAccessToken);
 userRouter.put("/update", authenticateJwt, uc.updateUser);
 userRouter.delete("/delete", authenticateJwt, uc.deleteUser);
 userRouter.get("/", authenticateJwt, uc.getUsers);

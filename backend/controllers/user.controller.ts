@@ -1,15 +1,22 @@
-import { NextFunction, Request, Response } from "express";
-import mongoose from "mongoose";
 import bcrypt from "bcrypt";
-import User, { UserType, UserDocument } from "../models/user.model.js";
 import {
-  fetchUserByEmail,
   doesUserExist,
   doesUserIdExist,
-  createUserAuthToken,
+  fetchUserByEmail,
 } from "../utils/user.utils.js";
-import sendJsonResponse from "../utils/httpResponder.js";
+import {
+  generateAccessToken,
+  generateRefreshToken,
+  refreshAccessToken,
+} from "auth/auth.js";
 import { logError } from "../middleware/logger.js";
+import mongoose from "mongoose";
+import { NextFunction, Request, Response } from "express";
+import RefreshToken, {
+  RefreshTokenDocument,
+} from "../models/refresh-token.model.js";
+import sendJsonResponse from "../utils/httpResponder.js";
+import User, { UserType, UserDocument } from "../models/user.model.js";
 
 type LoginCredentials = {
   email: string;
@@ -64,51 +71,70 @@ export default class UserController {
       async (error: Error, hashed: string) => {
         if (error) {
           console.error(`${this.registerUser.name} bcrypt.hash error`);
-          next(error);
           logError(error);
           sendJsonResponse(res, 500);
-        } else {
-          const newUser: UserDocument = new User({
-            role: "user",
-            firstName: user.firstName,
-            lastName: user.lastName,
-            email: user.email,
-            username: user.username,
-            password: hashed,
+          next(error);
+          return;
+        }
+        const newUser: UserDocument = new User({
+          role: "user",
+          firstName: user.firstName,
+          lastName: user.lastName,
+          email: user.email,
+          username: user.username,
+          password: hashed,
+        });
+
+        try {
+          const user = await newUser.save();
+          const [accessToken, accessTokenErr] = generateAccessToken(
+            String(user._id),
+            user.username,
+          );
+          const [refreshToken, refreshTokenErr] = generateRefreshToken(
+            String(user._id),
+            user.username,
+          );
+          const newToken: RefreshTokenDocument = new RefreshToken({
+            token: refreshToken,
           });
-
-          try {
-            const user = await newUser.save();
-            const [token, tokenErr] = createUserAuthToken(
-              String(user._id),
-              user.username,
+          const token = await newToken.save();
+          if (accessTokenErr !== null) {
+            console.error(
+              `${this.registerUser.name} generate access token error: ${accessTokenErr}\n${accessTokenErr.stack}`,
             );
-
-            if (tokenErr !== null) {
-              console.error(
-                `${this.loginUser.name} jwt.sign error: ${tokenErr}`,
-              );
-              next(tokenErr);
-              logError(tokenErr);
-              sendJsonResponse(res, 500);
-            } else {
-              res.cookie("token", token, {
-                httpOnly: true,
-                secure: true,
-                // maxAge: 10_000_000,
-                sameSite: "lax",
-                // signed: true,
-              });
-              sendJsonResponse(res, 201, "user created");
-            }
-          } catch (err: any) {
-            console.error(`${this.registerUser.name} newUser.save error`);
-            next(err);
-            logError(err);
+            logError(accessTokenErr);
             sendJsonResponse(res, 500);
-          } finally {
+            next(accessTokenErr);
             return;
           }
+          if (refreshTokenErr !== null) {
+            console.error(
+              `${this.registerUser.name} generate refresh token error: ${refreshTokenErr}\n${refreshTokenErr.stack}`,
+            );
+            logError(refreshTokenErr);
+            sendJsonResponse(res, 500);
+            next(refreshTokenErr);
+            return;
+          }
+          res.cookie("accessToken", accessToken, {
+            httpOnly: true,
+            secure: true,
+            sameSite: "lax",
+          });
+          res.cookie("refreshToken", refreshToken, {
+            httpOnly: true,
+            secure: true,
+            sameSite: "lax",
+          });
+          sendJsonResponse(res, 201, "user created");
+          return;
+        } catch (err) {
+          console.error(`${this.registerUser.name} newUser.save error`);
+          logError(err);
+          sendJsonResponse(res, 500);
+          next(err);
+          return;
         }
       },
     );
@@ -143,48 +169,123 @@ export default class UserController {
     bcrypt.compare(
       credentials.password,
       user.password,
-      (err: Error, result: boolean) => {
+      async (err: Error, result: boolean) => {
         if (err) {
           console.error(`${this.loginUser.name} bcrypt.compare error: ${err}`);
-          next(err);
           logError(err);
           sendJsonResponse(res, 500);
+          next(err);
         }
         if (!result) {
           sendJsonResponse(res, 401, "invalid email or password");
           return;
         }
 
-        const [token, tokenErr] = createUserAuthToken(
+        const [accessToken, accessTokenErr] = generateAccessToken(
           String(user._id),
           user.email,
         );
-        if (tokenErr !== null) {
-          console.error(`${this.loginUser.name} jwt.sign error: ${tokenErr}\n${tokenErr.stack}`);
-          next(tokenErr);
-          logError(tokenErr);
+        const [refreshToken, refreshTokenErr] = generateRefreshToken(
+          String(user._id),
+          user.email,
+        );
+        if (accessTokenErr !== null) {
+          console.error(
+            `${this.loginUser.name} Generate Access Token error: ${accessTokenErr}\n${accessTokenErr.stack}`,
+          );
+          logError(accessTokenErr);
           sendJsonResponse(res, 500);
+          next(accessTokenErr);
           return;
         }
 
-        //res.status(200).json({
-        //  id: user._id,
-        //  email: user.email,
-        //  token: token,
-        //});
+        if (refreshTokenErr !== null) {
+          console.error(
+            `${this.loginUser.name} Generate Refresh Token Error: ${refreshTokenErr}\n${refreshTokenErr.stack}`,
+          );
+          logError(refreshTokenErr);
+          sendJsonResponse(res, 500);
+          next(refreshTokenErr);
+          return;
+        }
 
-        res.cookie("token", token, {
-          httpOnly: true,
-          secure: true,
-          // maxAge: 10_000_000,
-          sameSite: "lax",
-          // signed: true,
-        });
-
-        sendJsonResponse(res, 200);
-        return;
+        try {
+          const newToken = new RefreshToken({
+            token: refreshToken,
+          });
+          await newToken.save();
+          res.cookie("accessToken", accessToken, {
+            httpOnly: true,
+            secure: true,
+            sameSite: "lax",
+          });
+          res.cookie("refreshToken", refreshToken, {
+            httpOnly: true,
+            secure: true,
+            sameSite: "lax",
+          });
+          sendJsonResponse(res, 200);
+          return;
+        } catch (err) {
+          console.error(
+            `${this.registerUser.name} save refresh token error: ${err}\n${err.stack}`,
+          );
+          logError(err);
+          sendJsonResponse(res, 500);
+          next(err);
+          return;
+        }
       },
     );
+  };
+
+  refreshAccessToken = async (
+    req: Request,
+    res: Response,
+    next: NextFunction,
+  ) => {
+    const refreshToken = req.body.token;
+    if (refreshToken === undefined) {
+      res.sendStatus(401);
+      return;
+    }
+    try {
+      const tokenFromDb = await RefreshToken.findOne({ refreshToken });
+      if (tokenFromDb === null) {
+        res.sendStatus(403);
+        return;
+      }
+      const [accessToken, isTokenValid, accessTokenErr] =
+        refreshAccessToken(refreshToken);
+      if (accessTokenErr !== null) {
+        console.error(
+          `${this.refreshAccessToken.name} access token error: ${accessTokenErr}\n${accessTokenErr.stack}`,
+        );
+        logError(accessTokenErr);
+        sendJsonResponse(res, 500);
+        next(accessTokenErr);
+        return;
+      }
+      if (!isTokenValid) {
+        sendJsonResponse(res, 403);
+        return;
+      }
+      res.cookie("accessToken", accessToken, {
+        httpOnly: true,
+        secure: true,
+        sameSite: "lax"
+      })
+      sendJsonResponse(res, 201, "new token created.");
+      return;
+    } catch (err) {
+      console.error(
+        `${this.refreshAccessToken.name} db query error: ${err}\n${err.stack}`,
+      );
+      logError(err);
+      sendJsonResponse(res, 500);
+      next(err);
+      return;
+    }
   };
 
   getUsers = async (req: Request, res: Response, next: NextFunction) => {
@@ -211,11 +312,11 @@ export default class UserController {
             lastName: user.lastName,
           });
         }
-      } catch (err: any) {
+      } catch (err) {
         console.error(`${this.getUsers.name} User.findByID error:`);
-        next(err);
         logError(err);
         sendJsonResponse(res, 500);
+        next(err);
       } finally {
         return;
       }
@@ -236,9 +337,9 @@ export default class UserController {
       sendJsonResponse(res, 200, users);
     } catch (err) {
       console.error(`${this.getUsers.name} User.find error:`);
-      next(err);
       logError(err);
       sendJsonResponse(res, 500);
+      next(err);
     } finally {
       return;
     }
@@ -265,9 +366,9 @@ export default class UserController {
     const [userIdExists, userIdErr] = await doesUserIdExist(id);
     if (userIdErr !== null) {
       console.error(`${this.updateUser.name} doesUserIdExist error`);
-      next(userIdErr);
       logError(userIdErr);
       sendJsonResponse(res, 500);
+      next(userIdErr);
       return;
     } else if (!userIdExists) {
       sendJsonResponse(res, 404, `no user with id ${id}`);
@@ -290,11 +391,11 @@ export default class UserController {
         firstName: updatedUser.firstName,
         lastName: updatedUser.lastName,
       });
-    } catch (err: any) {
+    } catch (err) {
       console.error(`${this.updateUser.name} User.findByIdandUpdate error`);
-      next(err);
       logError(err);
       sendJsonResponse(res, 500);
+      next(err);
     } finally {
       return;
     }
@@ -326,20 +427,20 @@ export default class UserController {
       }
     } catch (err) {
       console.error(`${this.deleteUser.name} doesUserIdExist error`);
-      next(err);
       logError(err);
       sendJsonResponse(res, 500);
+      next(err);
       return;
     }
 
     try {
       await User.findByIdAndDelete(id);
       sendJsonResponse(res, 204, "user deleted");
-    } catch (err: any) {
+    } catch (err) {
       console.error(`${this.deleteUser.name} User.findByIdAndDelete error`);
-      next(err);
       logError(err);
       sendJsonResponse(res, 500);
+      next(err);
     } finally {
       return;
     }
