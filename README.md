@@ -3,7 +3,7 @@
 `npm i`
 
 ## Set up your .env file which will need the following fields:
-- MEDICINE_MONGODB_URI=<your-mongodb-uri>
+- MEDICINE_MONGODB_URI=<your mongodb connection string from MongoDB Atlas>
 - PORT=<desired port (usually 3000 for express)>
 - SECRET_ACCESS_TOKEN=<Generate a random string using node's crypto module and save to this field>
 - SECRET_REFRESH_TOKEN=<Generate a random string using node's crypto module and save to this field>
