@@ -8,7 +8,7 @@ import {
   generateAccessToken,
   generateRefreshToken,
   refreshAccessToken,
-} from "auth/auth.js";
+} from "../auth/auth.js";
 import { logError } from "../middleware/logger.js";
 import mongoose from "mongoose";
 import { NextFunction, Request, Response } from "express";
