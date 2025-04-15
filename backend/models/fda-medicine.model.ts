@@ -1,6 +1,6 @@
 import mongoose from "mongoose";
 
-const searchMedicine = new mongoose.Schema({
+const fdaMedicine = new mongoose.Schema({
   "Product Information": {
     type: String,
     required: false,
@@ -63,5 +63,5 @@ const searchMedicine = new mongoose.Schema({
   },
 });
 
-const SearchMedicine = mongoose.model("medicine_database", searchMedicine, "medicine_database");
-export default SearchMedicine;
+const FDAMedicine = mongoose.model("fda_medicine_database", fdaMedicine, "fda_medicine_database");
+export default FDAMedicine;

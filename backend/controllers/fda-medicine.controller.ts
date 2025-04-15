@@ -1,7 +1,7 @@
 import { Request, Response } from "express";
-import SearchMedicine from "../models/search-medicine.model.js";
+import FDAMedicine from "../models/fda-medicine.model.js";
 
-export default class SearchMedicineController {
+export default class FDAMedicineController {
   constructor() {}
 
   searchMedicine = async (req: Request, res: Response): Promise<void> => {
@@ -11,7 +11,7 @@ export default class SearchMedicineController {
       if (medicineToSearch["Brand Name"]) {
         console.log("Reached Searching Brand Name");
         
-        const medicine = await SearchMedicine.findOne({
+        const medicine = await FDAMedicine.findOne({
           "Brand Name": {
             $regex: medicineToSearch["Brand Name"],
             $options: "i",
@@ -34,7 +34,7 @@ export default class SearchMedicineController {
       } else if (medicineToSearch["Generic Name"]) {
         console.log("Reached Searching Generic Name");
         
-        const medicineArray = await SearchMedicine.find({
+        const medicineArray = await FDAMedicine.find({
           "Generic Name": {
             $regex: medicineToSearch["Generic Name"],
             $options: "i",
