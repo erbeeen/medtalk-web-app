@@ -288,6 +288,9 @@ export default class UserController {
     }
   };
 
+  // TODO: Create a logout route where the refresh token of the user
+  // gets deleted in the database
+
   getUsers = async (req: Request, res: Response, next: NextFunction) => {
     const id = String(req.query.id);
 
@@ -402,7 +405,7 @@ export default class UserController {
   };
 
   deleteUser = async (req: Request, res: Response, next: NextFunction) => {
-    // TODO: proceed with the update only when the request
+    // TODO: proceed with the deletion only when the request
     // is from the same user or from a super admin.
 
     const id: string = String(req.query.id);
