@@ -1,13 +1,43 @@
-import { Request, Response } from "express";
 import FDAMedicine from "../models/fda-medicine.model.js";
+import { Request, Response } from "express";
+import sendJsonResponse from "utils/httpResponder.js";
+
+type MedicineSearchType = {
+  "Brand Name": string
+  "Generic Name": string
+};
 
 export default class FDAMedicineController {
   constructor() {}
 
   searchMedicine = async (req: Request, res: Response): Promise<void> => {
-    const medicineToSearch = req.body;
+    const medicineToSearch: MedicineSearchType = req.body;
 
     try {
+      if (medicineToSearch["Brand Name"] && medicineToSearch["Generic Name"]) {
+        console.log("Reached Searching both brand and generic name");
+        
+        const medicine = await FDAMedicine.findOne({
+          "Brand Name": {
+            $regex: medicineToSearch["Brand Name"],
+            $options: "i",
+          },
+          "Generic Name": {
+            $regex: medicineToSearch["Generic Name"],
+            $option: "i",
+          },
+        });
+
+        if (medicine === null) {
+          res.sendStatus(404);
+          return;
+        }
+
+        sendJsonResponse(res, 200, medicine);
+        return;
+      }
+
+
       if (medicineToSearch["Brand Name"]) {
         console.log("Reached Searching Brand Name");
         
@@ -17,7 +47,7 @@ export default class FDAMedicineController {
             $options: "i",
           },
         });
-        //
+
         //const medicine = await SearchMedicine.findOne({
         //  "Brand Name": medicineToSearch["Brand Name"],
         //});
