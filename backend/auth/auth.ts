@@ -52,14 +52,32 @@ export function refreshAccessToken(
       if (err) {
         return [null, false, null];
       } else {
-        const [accessToken, accessTokenErr] = generateAccessToken(user.id, user.username);
+        const [accessToken, accessTokenErr] = generateAccessToken(
+          user.id,
+          user.username,
+        );
         if (accessTokenErr) {
           return [null, false, accessTokenErr];
         }
         return [accessToken, true, null];
-
       }
     },
   );
   return ["", false, Error("jwt.verify did not function")];
+}
+
+export function validateRefreshToken(
+  token: string,
+): [boolean | null, Error | null] {
+  jwt.verify(
+    token,
+    process.env.SECRET_REFRESH_TOKEN,
+    (err, user: CustomJwtPayload) => {
+      if (err) {
+        return [false, null];
+      }
+      return [true, null];
+    },
+  );
+  return [false, Error("jwt.verify did not run")];
 }
