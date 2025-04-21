@@ -1,6 +1,6 @@
-import { Router } from "express";
 import cors from "cors";
 import FDAMedicineController from "../controllers/fda-medicine.controller.js";
+import { Router } from "express";
 
 const fdaMedRouter: Router = Router();
 const fdaMedController: FDAMedicineController =

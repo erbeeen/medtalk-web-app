@@ -1,7 +1,7 @@
-import { Router } from "express";
-import cors from "cors";
-import UserController from "../controllers/user.controller.js";
 import authenticateJwt from "../middleware/jwtAuth.js";
+import cors from "cors";
+import { Router } from "express";
+import UserController from "../controllers/user.controller.js";
 
 const userRouter: Router = Router();
 const uc: UserController = new UserController();

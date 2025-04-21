@@ -1,7 +1,7 @@
-import { Request, Response, NextFunction } from "express";
+import { fileURLToPath } from "node:url";
 import fs from "node:fs";
 import path from "node:path";
-import { fileURLToPath } from "node:url";
+import { Request, Response, NextFunction } from "express";
 
 const __dirname = path.dirname(fileURLToPath(import.meta.url));
 const serverLogPath = path.join(__dirname, "..", "server.log");

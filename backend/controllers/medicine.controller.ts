@@ -1,5 +1,5 @@
-import { Request, Response } from "express";
 import Medicine from "models/medicine.model.js";
+import { Request, Response } from "express";
 
 export default class MedicineController {
   constructor() {}
