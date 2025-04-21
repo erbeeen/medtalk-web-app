@@ -8,6 +8,7 @@ import {
   generateAccessToken,
   generateRefreshToken,
   refreshAccessToken,
+  validateRefreshToken,
 } from "../auth/auth.js";
 import { logError } from "../middleware/logger.js";
 import mongoose from "mongoose";
@@ -273,8 +274,8 @@ export default class UserController {
       res.cookie("accessToken", accessToken, {
         httpOnly: true,
         secure: true,
-        sameSite: "lax"
-      })
+        sameSite: "lax",
+      });
       sendJsonResponse(res, 201, "new token created.");
       return;
     } catch (err) {
@@ -288,8 +289,37 @@ export default class UserController {
     }
   };
 
-  // TODO: Create a logout route where the refresh token of the user
-  // gets deleted in the database
+  logoutUser = async (req: Request, res: Response, next: NextFunction) => {
+    // TODO: Test the functionality
+    const refreshToken: string = req.body.token;
+
+    if (refreshToken === undefined) {
+      sendJsonResponse(res, 400, "provide refreshToken");
+      return;
+    }
+
+    const [isTokenValid, tokenValidErr] = validateRefreshToken(refreshToken);
+    if (tokenValidErr !== null) {
+      logError(tokenValidErr);
+      sendJsonResponse(res, 500);
+      next(tokenValidErr);
+      return;
+    }
+
+    if (!isTokenValid) {
+      sendJsonResponse(res, 400, "invalid token");
+      return;
+    }
+
+    try {
+      await RefreshToken.findOneAndDelete({refreshToken});
+      sendJsonResponse(res, 200, "token removed");
+    } catch (err) {
+      logError(err);
+      sendJsonResponse(res, 500);
+      next(err);
+    }
+  };
 
   getUsers = async (req: Request, res: Response, next: NextFunction) => {
     const id = String(req.query.id);
