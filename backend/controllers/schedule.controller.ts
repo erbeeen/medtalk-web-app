@@ -44,20 +44,19 @@ export default class ScheduleController {
     } finally {
       return;
     }
-
   };
 
   getSchedule = async (req: Request, res: Response, next: NextFunction) => {
     // TODO: Test Functionality
     const userID = String(req.query.id);
-    
+
     if (!mongoose.Types.ObjectId.isValid(userID)) {
       sendJsonResponse(res, 400, "invalid user id.");
       return;
     }
 
     try {
-      const result = Schedule.find({userID: userID});
+      const result = Schedule.find({ userID: userID });
       sendJsonResponse(res, 200, result);
     } catch (err) {
       logError(err);
@@ -69,16 +68,60 @@ export default class ScheduleController {
   };
 
   // TODO: Update Schedule Route
-  updateSchedule = async (
-    req: Request,
-    res: Response,
-    next: NextFunction,
-  ) => {};
+  updateSchedule = async (req: Request, res: Response, next: NextFunction) => {
+    // NOTE: This implementation uses the id of a schedule
+    // changing future doses is not yet available
+    const id = String(req.query.id);
+    const scheduleDetails: ScheduleType = req.body.schedule;
+
+    if (!mongoose.Types.ObjectId.isValid(id)) {
+      sendJsonResponse(res, 400, "invalid schedule id.");
+      return;
+    }
+
+    if (!mongoose.Types.ObjectId.isValid(scheduleDetails.userID)) {
+      sendJsonResponse(res, 400, "invalid user id.");
+      return;
+    }
+
+    try {
+      const result: ScheduleDocument = await Schedule.findByIdAndUpdate(
+        id,
+        scheduleDetails,
+        {
+          new: true,
+        },
+      );
+      sendJsonResponse(res, 201, result);
+    } catch (err) {
+      logError(err);
+      sendJsonResponse(res, 500);
+      next(err);
+    } finally {
+      return;
+    }
+  };
 
   // TODO: Delete Schedule Route
-  deleteSchedule = async (
-    req: Request,
-    res: Response,
-    next: NextFunction,
-  ) => {};
+  deleteSchedule = async (req: Request, res: Response, next: NextFunction) => {
+    // NOTE: This implementation uses the id of a schedule
+    // deleting future doses is not yet available
+    const id = String(req.query.id);
+
+    if (!mongoose.Types.ObjectId.isValid(id)) {
+      sendJsonResponse(res, 400, "invalid schedule id.");
+      return;
+    }
+
+    try {
+      const result: ScheduleDocument = await Schedule.findByIdAndDelete(id);
+      sendJsonResponse(res, 200, result);
+    } catch (err) {
+      logError(err);
+      sendJsonResponse(res, 500);
+      next(err);
+    } finally {
+      return;
+    }
+  };
 }
