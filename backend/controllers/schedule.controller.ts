@@ -48,15 +48,15 @@ export default class ScheduleController {
 
   getSchedule = async (req: Request, res: Response, next: NextFunction) => {
     // TODO: Test Functionality
-    const userID = String(req.query.id);
+    const scheduleID = String(req.query.id);
 
-    if (!mongoose.Types.ObjectId.isValid(userID)) {
+    if (!mongoose.Types.ObjectId.isValid(scheduleID)) {
       sendJsonResponse(res, 400, "invalid user id.");
       return;
     }
 
     try {
-      const result = Schedule.find({ userID: userID });
+      const result = Schedule.find({ _id: scheduleID });
       sendJsonResponse(res, 200, result);
     } catch (err) {
       logError(err);
@@ -71,10 +71,10 @@ export default class ScheduleController {
   updateSchedule = async (req: Request, res: Response, next: NextFunction) => {
     // NOTE: This implementation uses the id of a schedule
     // changing future doses is not yet available
-    const id = String(req.query.id);
+    const scheduleID = String(req.query.id);
     const scheduleDetails: ScheduleType = req.body.schedule;
 
-    if (!mongoose.Types.ObjectId.isValid(id)) {
+    if (!mongoose.Types.ObjectId.isValid(scheduleID)) {
       sendJsonResponse(res, 400, "invalid schedule id.");
       return;
     }
@@ -86,7 +86,7 @@ export default class ScheduleController {
 
     try {
       const result: ScheduleDocument = await Schedule.findByIdAndUpdate(
-        id,
+        scheduleID,
         scheduleDetails,
         {
           new: true,
@@ -105,16 +105,16 @@ export default class ScheduleController {
   // TODO: Delete Schedule Route
   deleteSchedule = async (req: Request, res: Response, next: NextFunction) => {
     // NOTE: This implementation uses the id of a schedule
-    // deleting future doses is not yet available
-    const id = String(req.query.id);
+    // deleting future schedules is not yet available
+    const scheduleID = String(req.query.id);
 
-    if (!mongoose.Types.ObjectId.isValid(id)) {
+    if (!mongoose.Types.ObjectId.isValid(scheduleID)) {
       sendJsonResponse(res, 400, "invalid schedule id.");
       return;
     }
 
     try {
-      const result: ScheduleDocument = await Schedule.findByIdAndDelete(id);
+      const result: ScheduleDocument = await Schedule.findByIdAndDelete(scheduleID);
       sendJsonResponse(res, 200, result);
     } catch (err) {
       logError(err);
