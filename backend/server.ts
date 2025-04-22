@@ -2,7 +2,7 @@ import cors from "cors";
 import dbConnect from "./config/db.js";
 import dotenv from "dotenv";
 import express, { static as static_ } from "express";
-import fdaMedRouter from "./routes/fda-medicine.route.js";
+import searchMedRouter from "./routes/search-medicine.route.js";
 import { fileURLToPath } from "url";
 import logger from "./middleware/logger.js";
 import path from "path";
@@ -17,7 +17,7 @@ app.use(cors());
 app.use(express.json());
 app.use(logger);
 app.use("/api/users", userRouter);
-app.use("/api/medicine/search", fdaMedRouter);
+app.use("/api/medicine/search", searchMedRouter);
 
 if (process.env.NODE_ENV === "production") {
   app.use(static_(path.join(__dirname + "/static")));
