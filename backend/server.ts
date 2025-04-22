@@ -2,10 +2,10 @@ import cors from "cors";
 import dbConnect from "./config/db.js";
 import dotenv from "dotenv";
 import express, { static as static_ } from "express";
-import searchMedRouter from "./routes/search-medicine.route.js";
 import { fileURLToPath } from "url";
 import logger from "./middleware/logger.js";
 import path from "path";
+import searchMedRouter from "./routes/search-medicine.route.js";
 import userRouter from "./routes/user.route.js";
 dotenv.config();
 
