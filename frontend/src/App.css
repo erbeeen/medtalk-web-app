@@ -1,8 +1,36 @@
-.dashboard {
-  padding: 1rem;
+#root {
+  width: 100%;
   min-height: 100vh;
-  height: 200vh;
-  display: flex;
+  margin: 0 auto;
+  /* display: flex; */
+  /* flex-direction: row; */
+  /* flex-wrap: nowrap; */
+}
+
+#navbar {
+  width: 10%;
+  padding: 1rem;
+  height: inherit;
+  border-right: 1px solid black;
+}
+
+#navbar-links {
+  list-style: none;
+}
+
+#navbar-links li {
+  /* TODO: add some container design */
+}
+
+.user-info {
+  margin-bottom: 10px;
+}
+
+.profile-pic {
+  height: 75px;
+  width: 75px;
+  border-radius: 50%;
+  background-color: gray;
 }
 
 footer {

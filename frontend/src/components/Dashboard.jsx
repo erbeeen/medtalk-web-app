@@ -1,6 +1,6 @@
 export default function Dashboard() {
   return (
-    <div className="dashboard"> 
+    <div id="dashboard" className="w-inherit h-inherit flex"> 
       <h1>Dashboard</h1>
     </div>
   );
