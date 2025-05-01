@@ -7,23 +7,11 @@
   /* flex-wrap: nowrap; */
 }
 
-#navbar {
+nav {
   width: 10%;
-  padding: 1rem;
+  padding-top: 0.5rem;
   height: inherit;
   border-right: 1px solid black;
-}
-
-#navbar-links {
-  list-style: none;
-}
-
-#navbar-links li {
-  /* TODO: add some container design */
-}
-
-.user-info {
-  margin-bottom: 10px;
 }
 
 .profile-pic {
@@ -31,6 +19,45 @@
   width: 75px;
   border-radius: 50%;
   background-color: gray;
+}
+
+.user-info {
+  height: 15%;
+  width: 100%;
+  margin-bottom: 10px;
+  align-items: center;
+}
+
+#navusername {
+  font-size: 1rem;
+  font-weight: bold;
+}
+
+#navrole {
+  font-size: 0.8rem;
+}
+
+#navbar-links {
+  height: 70%;
+  margin: 0;
+  padding-top: 0.7rem;
+  gap: 0.7rem;
+  list-style: none;
+}
+
+.navlink-container {
+  width: 80%;
+  text-align: center;
+  padding-bottom: 10px;
+  border-bottom: 1px solid black;
+}
+
+.navlink {
+  /* TODO: add some container design */
+  text-decoration: none;
+  font-weight: normal;
+  font-size: 1.2rem;
+  color: black;
 }
 
 footer {
