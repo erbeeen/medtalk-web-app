@@ -1,3 +1,5 @@
+@import "tailwindcss";
+
 #root {
   width: 100%;
   min-height: 100vh;
@@ -62,6 +64,7 @@ nav {
 
 footer {
   display: flex;
+  flex-shrink: 0;
   justify-content: center;
   justify-self: flex-end;
   width: 100%;

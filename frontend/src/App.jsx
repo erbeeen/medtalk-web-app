@@ -4,17 +4,18 @@ import Footer from './components/Footer';
 import ScheduleRoute from './routes/Schedules';
 import Home from './routes/Home';
 import Login from './routes/Login';
-import Navbar from './components/Navbar';
+import Sidebar from './components/Sidebar';
 import { Routes, Route } from 'react-router-dom';
 import './App.css';
-import './layouts.css';
+
+// TODO: Apply Tailwind css, deprecate layouts.css
 
 function App() {
   return (
     <>
-      <div id="main" className="flex-row minh-100">
-        <Navbar />
-        <div id="content-area" className='p-1'>
+      <div id="main" className="flex-row">
+        <Sidebar />
+        <div id="content-area" className="">
           <Routes>
             <Route path='/' element={<Home />} />
             <Route path='/users' element={<UsersRoute />} />
