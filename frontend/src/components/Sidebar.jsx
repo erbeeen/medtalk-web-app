@@ -2,18 +2,11 @@ import { Link } from "react-router-dom";
 
 export default function Sidebar() {
   return (
-    <nav id="navbar">
-      <div className="user-info flex-column nowrap align-center">
-        <div className="profile-pic" />
-        <h3>Username</h3>
-        <h4>Role</h4>
-      </div>
-      <ul id="navbar-links" className="p-0 flex-column nowrap align-center">
-        <li><Link to="/">Dashboard</Link></li>
-        <li><Link to="/users">Users</Link></li>
-        <li><Link to="/medicine">Medicine</Link></li>
-        <li><Link to="/schedules">Schedules</Link></li>
-      </ul>
-    </nav>
+    <div className="fixed top-0 left-0 h-screen flex flex-col p-2 text-light text-sm font-light border border-white">
+      <Link to="/">Dashboard</Link>
+      <Link to="/users">Users</Link>
+      <Link to="/medicine">Medicine</Link>
+      <Link to="/schedules">Schedules</Link>
+    </div>
   );
 }

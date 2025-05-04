@@ -13,7 +13,7 @@ import './App.css';
 function App() {
   return (
     <>
-      <div id="main" className="flex-row">
+      <div id="main">
         <Sidebar />
         <div id="content-area" className="">
           <Routes>

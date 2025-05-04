@@ -1,22 +1,39 @@
-@import url('https://fonts.googleapis.com/css2?family=Roboto:ital,wght@0,100..900;1,100..900&display=swap');
+@import url('https://fonts.googleapis.com/css2?family=Inter:ital,opsz,wght@0,14..32,100..900;1,14..32,100..900&display=swap');
 @import "tailwindcss";
+
+@theme {
+  /* --dark-shade-bg: #0d052a; */
+  --color-darktext: #000;
+  --color-light: #e8e8e8;
+  --color-dark: #05001e;
+  --color-primary: #00e5e6;
+  --color-secondary: #a061ff;
+  --color-tertiary: #03465c;
+  --color-accent: #443dff;
+
+  --font-inter: Inter, sans-serif;
+}
 
 :root {
   /* font-family: system-ui, Avenir, Helvetica, Arial, sans-serif; */
-  --light-bg: #fff;
-  --dark-bg: #000;
-  --light-text: #fff;
+  --light-bg: #e8e8e8;
+  --dark-bg: #05001e;
+  --dark-shade-bg: #0d052a;
+  --light-text: #e8e8e8;
   --dark-text: #000;
+  --primary-color: #a061ff;
+  --secondary-color: #00e5e6;
+  --tertiary-color: #03465c;
+  --accent-color: #443dff;
   /* --primary-color:  */
 
-  font-family: "Roboto", sans-serif;
+  font-family: Inter, sans-serif;
   font-size: 1.0rem;
-  line-height: 1.2;
   font-weight: 400;
 
-  color-scheme: light dark;
-  color: var(--dark-text);
-  background-color: var(--light-bg);
+  color-scheme: dark light;
+  color: var(--light-text);
+  background-color: var(--dark-bg);
 
   font-synthesis: none;
   text-rendering: optimizeLegibility;
