@@ -14,11 +14,7 @@ export default function logger(
   const start: number = Date.now();
   res.on("finish", () => {
     let duration: number = Date.now() - start;
-    let timeUnit: string = "ms";
-    if (duration >= 1000) {
-      duration = duration / 1000;
-      timeUnit = "s";
-    }
+    let timeUnit: string = duration >= 1000 ? "s": "ms";
     const time: Date = new Date();
     const timeString: string = time.toLocaleTimeString().split(" ").join("");
     const requestLog = `[${timeString}] ${req.protocol.toUpperCase()}${req.httpVersion} ${req.method} ${req.originalUrl} ${res.statusCode} ${res.statusMessage} - ${duration.toFixed(2)} ${timeUnit}`;
