@@ -33,7 +33,7 @@ export default class UserController {
       return;
     }
 
-    let user: UserType = req.body;
+    const user: UserType = req.body;
     const saltRounds = 10;
     if (
       !user.email ||
@@ -87,19 +87,12 @@ export default class UserController {
         });
 
         try {
-          const user = await newUser.save();
+          const userResult = await newUser.save();
+
           const [accessToken, accessTokenErr] = generateAccessToken(
-            String(user._id),
-            user.username,
+            String(userResult._id),
+            userResult.username,
           );
-          const [refreshToken, refreshTokenErr] = generateRefreshToken(
-            String(user._id),
-            user.username,
-          );
-          const newToken: RefreshTokenDocument = new RefreshToken({
-            token: refreshToken,
-          });
-          const token = await newToken.save();
           if (accessTokenErr !== null) {
             console.error(
               `${this.registerUser.name} generate access token error: ${accessTokenErr}\n${accessTokenErr.stack}`,
@@ -109,6 +102,11 @@ export default class UserController {
             next(accessTokenErr);
             return;
           }
+
+          const [refreshToken, refreshTokenErr] = generateRefreshToken(
+            String(userResult._id),
+            userResult.username,
+          );
           if (refreshTokenErr !== null) {
             console.error(
               `${this.registerUser.name} generate refresh token error: ${refreshTokenErr}\n${refreshTokenErr.stack}`,
@@ -118,6 +116,12 @@ export default class UserController {
             next(refreshTokenErr);
             return;
           }
+
+          const newToken: RefreshTokenDocument = new RefreshToken({
+            token: refreshToken,
+          });
+          await newToken.save();
+
           res.cookie("accessToken", accessToken, {
             httpOnly: true,
             secure: true,
@@ -157,8 +161,8 @@ export default class UserController {
     const [user, fetchUserErr] = await fetchUserByEmail(credentials.email);
 
     if (fetchUserErr) {
-      next(fetchUserErr);
       sendJsonResponse(res, 500);
+      next(fetchUserErr);
       return;
     }
 
@@ -176,6 +180,7 @@ export default class UserController {
           logError(err);
           sendJsonResponse(res, 500);
           next(err);
+          return;
         }
         if (!result) {
           sendJsonResponse(res, 401, "invalid email or password");
@@ -183,10 +188,6 @@ export default class UserController {
         }
 
         const [accessToken, accessTokenErr] = generateAccessToken(
-          String(user._id),
-          user.email,
-        );
-        const [refreshToken, refreshTokenErr] = generateRefreshToken(
           String(user._id),
           user.email,
         );
@@ -200,6 +201,10 @@ export default class UserController {
           return;
         }
 
+        const [refreshToken, refreshTokenErr] = generateRefreshToken(
+          String(user._id),
+          user.email,
+        );
         if (refreshTokenErr !== null) {
           console.error(
             `${this.loginUser.name} Generate Refresh Token Error: ${refreshTokenErr}\n${refreshTokenErr.stack}`,

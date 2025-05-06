@@ -42,4 +42,5 @@ export function logError(err: Error): void {
       if (err) console.error(`Error logging to log file: ${err}\n${err.stack}`);
     },
   );
+  return;
 }
