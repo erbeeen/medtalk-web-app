@@ -1,4 +1,16 @@
 import mongoose from "mongoose";
+import { link } from "node:fs";
+
+// TODO: New data fields:
+// UserID
+// Medication name
+// Measurement: g, mg, ml etc
+// (tbd)Amount(?) 5 *measurement
+// day
+// intake time
+// intake instruction (2 pills etc)
+// (tbd) natake na yung gamot: true/false
+// (tbd) date
 
 export type ScheduleType = {
   userID: mongoose.Types.ObjectId | string;
