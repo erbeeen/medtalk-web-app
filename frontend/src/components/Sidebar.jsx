@@ -4,28 +4,28 @@ import { FaUser, FaPills, FaCalendarAlt } from "react-icons/fa";
 
 export default function Sidebar() {
   return (
-    <div className="h-screen w-56 p-4 flex flex-col gap-1.5 font-light border-r border-white z-10 bg-gray-900">
-      <Link to="/" className="sidebar-link">
+    <div className="sidebar bg-light-800/5 dark:bg-dark-800/50 text-light-text dark:text-dark-text border-r dark:border-[#ffffff1a] border-dark/20">
+      <Link to="/" className="sidebar-link hover:bg-800 dark:hover:bg-dark-800">
         <div className="sidebar-icon">
-          <MdDashboard />
+          <MdDashboard size="1.2rem" />
         </div>
         <span className="w-8/12">Dashboard</span>
       </Link>
-      <Link to="/users" className="sidebar-link">
+      <Link to="/users" className="sidebar-link hover:bg-800 dark:hover:bg-dark-800">
         <div className="sidebar-icon">
-          <FaUser />
+          <FaUser size="1.2rem"/>
         </div>
         <span className="w-8/12">Users</span>
       </Link>
-      <Link to="/medicine" className="sidebar-link">
+      <Link to="/medicine" className="sidebar-link hover:bg-800 dark:hover:bg-dark-800">
         <div className="sidebar-icon">
-          <FaPills />
+          <FaPills size="1.2rem"/>
         </div>
         <span className="w-8/12">Medicine</span>
       </Link>
-      <Link to="/schedules" className="sidebar-link">
+      <Link to="/schedules" className="sidebar-link hover:bg-800 dark:hover:bg-dark-800">
         <div className="sidebar-icon">
-          <FaCalendarAlt />
+          <FaCalendarAlt size="1.2rem"/>
         </div>
         <span className="w-8/12">Schedule</span>
       </Link>
