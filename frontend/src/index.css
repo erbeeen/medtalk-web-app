@@ -1,16 +1,244 @@
-@import url('https://fonts.googleapis.com/css2?family=Inter:ital,opsz,wght@0,14..32,100..900;1,14..32,100..900&display=swap');
-@import url('https://fonts.googleapis.com/css2?family=Open+Sans:ital,wght@0,300..800;1,300..800&family=Poppins:ital,wght@0,100;0,200;0,300;0,400;0,500;0,600;0,700;0,800;0,900;1,100;1,200;1,300;1,400;1,500;1,600;1,700;1,800;1,900&display=swap');
+@import url("https://fonts.googleapis.com/css2?family=Inter:ital,opsz,wght@0,14..32,100..900;1,14..32,100..900&display=swap");
+@import url("https://fonts.googleapis.com/css2?family=Open+Sans:ital,wght@0,300..800;1,300..800&family=Poppins:ital,wght@0,100;0,200;0,300;0,400;0,500;0,600;0,700;0,800;0,900;1,100;1,200;1,300;1,400;1,500;1,600;1,700;1,800;1,900&display=swap");
 @import "tailwindcss";
 
 @theme {
-  /* --dark-shade-bg: #0d052a; */
-  --color-darktext: #000;
-  --color-light: #e8e8e8;
-  --color-dark: #05001e;
-  --color-primary: #00e5e6;
-  --color-secondary: #a061ff;
-  --color-tertiary: #03465c;
-  --color-accent: #443dff;
+  /* NOTE: Initial theme from logo */
+  /* --color-darktext: #000; */
+  /* --color-light: #e8e8e8; */
+  /* --color-dark: #05001e; */
+  /* --color-primary: #00e4e3; */
+  /* --color-secondary: #a061ff; */
+  /* --color-tertiary: #03465c; */
+  /* --color-accent: #443dff; */
+
+  /* --color-dark-bg: #121212; NOTE: recommended dark theme bg in some org */
+  /* NOTE: This is from realtime colors */
+  --color-light: #f4f4f4;
+
+  /* NOTE: ----------- Light Mode Colors ------------ */
+
+  /* NOTE: light text shades */
+  --color-light-text: #040316;
+  --color-light-text-900: hsl(243, 76%, 5%);
+  --color-light-text-850: hsl(243, 76%, 10%);
+  --color-light-text-800: hsl(243, 76%, 15%);
+  --color-light-text-750: hsl(243, 76%, 20%);
+  --color-light-text-700: hsl(243, 76%, 25%);
+  --color-light-text-650: hsl(243, 76%, 30%);
+  --color-light-text-600: hsl(243, 76%, 35%);
+  --color-light-text-550: hsl(243, 76%, 40%);
+  --color-light-text-500: hsl(243, 76%, 45%);
+  --color-light-text-450: hsl(243, 76%, 50%);
+  --color-light-text-400: hsl(243, 76%, 55%);
+  --color-light-text-350: hsl(243, 76%, 60%);
+  --color-light-text-300: hsl(243, 76%, 65%);
+  --color-light-text-250: hsl(243, 76%, 70%);
+  --color-light-text-200: hsl(243, 76%, 75%);
+  --color-light-text-150: hsl(243, 76%, 80%);
+  --color-light-text-100: hsl(243, 76%, 85%);
+  --color-light-text-50: hsl(243, 76%, 90%);
+  --color-light-text-0: hsl(243, 76%, 95%);
+
+  /* NOTE: light bg shades */
+  --color-light: hsl(231, 30%, 91%);
+  --color-light-900: hsl(233, 31%, 5%);
+  --color-light-850: hsl(232, 29%, 10%);
+  --color-light-800: hsl(232, 30%, 15%);
+  --color-light-750: hsl(232, 29%, 20%);
+  --color-light-700: hsl(232, 30%, 25%);
+  --color-light-650: hsl(232, 29%, 30%);
+  --color-light-600: hsl(230, 30%, 35%);
+  --color-light-550: hsl(230, 30%, 40%);
+  --color-light-500: hsl(230, 30%, 45%);
+  --color-light-450: hsl(231, 30%, 50%);
+  --color-light-400: hsl(231, 30%, 55%);
+  --color-light-350: hsl(230, 30%, 60%);
+  --color-light-300: hsl(231, 30%, 65%);
+  --color-light-250: hsl(232, 29%, 70%);
+  --color-light-200: hsl(231, 30%, 75%);
+  --color-light-150: hsl(232, 29%, 80%);
+  --color-light-100: hsl(230, 30%, 85%);
+  --color-light-50: hsl(232, 29%, 90%);
+  --color-light-0: hsl(225, 31%, 95%);
+
+  /* NOTE: light primary shades */
+  --color-primary: #1affff;
+  --color-primary-900: hsl(182, 100%, 5%);
+  --color-primary-850: hsl(182, 100%, 10%);
+  --color-primary-800: hsl(182, 100%, 15%);
+  --color-primary-750: hsl(182, 100%, 20%);
+  --color-primary-700: hsl(182, 100%, 25%);
+  --color-primary-650: hsl(182, 100%, 30%);
+  --color-primary-600: hsl(182, 100%, 35%);
+  --color-primary-550: hsl(182, 100%, 40%);
+  --color-primary-500: hsl(182, 100%, 45%);
+  --color-primary-450: hsl(182, 100%, 50%);
+  --color-primary-400: hsl(182, 100%, 55%);
+  --color-primary-350: hsl(182, 100%, 60%);
+  --color-primary-300: hsl(182, 100%, 65%);
+  --color-primary-250: hsl(182, 100%, 70%);
+  --color-primary-200: hsl(182, 100%, 75%);
+  --color-primary-150: hsl(182, 100%, 80%);
+  --color-primary-100: hsl(182, 100%, 85%);
+  --color-primary-50: hsl(182, 100%, 90%);
+  --color-primary-0: hsl(182, 100%, 95%);
+
+  /* NOTE: secondary color shades */
+  --color-secondary: #3f009e;
+  --color-secondary-900: hsl(263, 100%, 5%);
+  --color-secondary-850: hsl(264, 100%, 10%);
+  --color-secondary-800: hsl(264, 100%, 15%);
+  --color-secondary-750: hsl(264, 100%, 20%);
+  --color-secondary-700: hsl(264, 100%, 25%);
+  --color-secondary-650: hsl(264, 100%, 30%);
+  --color-secondary-600: hsl(264, 100%, 35%);
+  --color-secondary-550: hsl(264, 100%, 40%);
+  --color-secondary-500: hsl(264, 100%, 45%);
+  --color-secondary-450: hsl(264, 100%, 50%);
+  --color-secondary-400: hsl(264, 100%, 55%);
+  --color-secondary-350: hsl(264, 100%, 60%);
+  --color-secondary-300: hsl(264, 100%, 65%);
+  --color-secondary-250: hsl(264, 100%, 70%);
+  --color-secondary-200: hsl(264, 100%, 75%);
+  --color-secondary-150: hsl(264, 100%, 80%);
+  --color-secondary-100: hsl(264, 100%, 85%);
+  --color-secondary-50: hsl(264, 100%, 90%);
+  --color-secondary-0: hsl(264, 100%, 95%);
+
+  /* NOTE: accent color shades */
+  --color-accent: #0600c2;
+  --color-accent-900: hsl(242, 100%, 5%);
+  --color-accent-850: hsl(242, 100%, 10%);
+  --color-accent-800: hsl(242, 100%, 15%);
+  --color-accent-750: hsl(242, 100%, 20%);
+  --color-accent-700: hsl(242, 100%, 25%);
+  --color-accent-650: hsl(242, 100%, 30%);
+  --color-accent-600: hsl(242, 100%, 35%);
+  --color-accent-550: hsl(242, 100%, 40%);
+  --color-accent-500: hsl(242, 100%, 45%);
+  --color-accent-450: hsl(242, 100%, 50%);
+  --color-accent-400: hsl(242, 100%, 55%);
+  --color-accent-350: hsl(242, 100%, 60%);
+  --color-accent-300: hsl(242, 100%, 65%);
+  --color-accent-250: hsl(242, 100%, 70%);
+  --color-accent-200: hsl(242, 100%, 75%);
+  --color-accent-150: hsl(242, 100%, 80%);
+  --color-accent-100: hsl(242, 100%, 85%);
+  --color-accent-50: hsl(242, 100%, 90%);
+  --color-accent-0: hsl(242, 100%, 95%);
+
+  /* NOTE: ----------- Dark Mode Colors ------------- */
+
+  /* NOTE: dark text color shades */
+  --color-dark-text: #eae9fc;
+  --color-dark-text-900: hsl(246, 76%, 5%);
+  --color-dark-text-850: hsl(246, 76%, 10%);
+  --color-dark-text-800: hsl(246, 76%, 15%);
+  --color-dark-text-750: hsl(246, 76%, 20%);
+  --color-dark-text-700: hsl(246, 76%, 25%);
+  --color-dark-text-650: hsl(246, 76%, 30%);
+  --color-dark-text-600: hsl(246, 76%, 35%);
+  --color-dark-text-550: hsl(246, 76%, 40%);
+  --color-dark-text-500: hsl(246, 76%, 45%);
+  --color-dark-text-450: hsl(246, 76%, 50%);
+  --color-dark-text-400: hsl(246, 76%, 55%);
+  --color-dark-text-350: hsl(246, 76%, 60%);
+  --color-dark-text-300: hsl(246, 76%, 65%);
+  --color-dark-text-250: hsl(246, 76%, 70%);
+  --color-dark-text-200: hsl(246, 76%, 75%);
+  --color-dark-text-150: hsl(246, 76%, 80%);
+  --color-dark-text-100: hsl(245, 76%, 85%);
+  --color-dark-text-50: hsl(246, 76%, 90%);
+  --color-dark-text-0: hsl(243, 76%, 95%);
+
+  /* NOTE: dark bg shades */
+  --color-dark: hsl(231, 32%, 9%);
+  --color-dark-900: hsl(233, 31%, 5%);
+  --color-dark-850: hsl(229, 33%, 10%);
+  --color-dark-800: hsl(230, 32%, 15%);
+  --color-dark-750: hsl(231, 31%, 20%);
+  --color-dark-700: hsl(231, 32%, 25%);
+  --color-dark-650: hsl(231, 32%, 30%);
+  --color-dark-600: hsl(232, 32%, 35%);
+  --color-dark-550: hsl(231, 32%, 40%);
+  --color-dark-500: hsl(231, 32%, 45%);
+  --color-dark-450: hsl(231, 32%, 50%);
+  --color-dark-400: hsl(231, 32%, 55%);
+  --color-dark-350: hsl(231, 32%, 60%);
+  --color-dark-300: hsl(231, 32%, 65%);
+  --color-dark-250: hsl(231, 32%, 70%);
+  --color-dark-200: hsl(231, 32%, 75%);
+  --color-dark-150: hsl(231, 31%, 80%);
+  --color-dark-100: hsl(233, 32%, 85%);
+  --color-dark-50: hsl(229, 33%, 90%);
+  --color-dark-0: hsl(233, 31%, 95%);
+
+  /* NOTE: primary color shades */
+  --color-primary-dark: hsl(180, 100%, 45%);
+  --color-primary-dark-900: hsl(182, 100%, 5%);
+  --color-primary-dark-850: hsl(180, 100%, 10%);
+  --color-primary-dark-800: hsl(181, 100%, 15%);
+  --color-primary-dark-750: hsl(180, 100%, 20%);
+  --color-primary-dark-700: hsl(180, 100%, 25%);
+  --color-primary-dark-650: hsl(180, 100%, 30%);
+  --color-primary-dark-600: hsl(180, 100%, 35%);
+  --color-primary-dark-550: hsl(180, 100%, 40%);
+  --color-primary-dark-500: hsl(180, 100%, 45%);
+  --color-primary-dark-450: hsl(180, 100%, 50%);
+  --color-primary-dark-400: hsl(180, 100%, 55%);
+  --color-primary-dark-350: hsl(180, 100%, 60%);
+  --color-primary-dark-300: hsl(180, 100%, 65%);
+  --color-primary-dark-250: hsl(180, 100%, 70%);
+  --color-primary-dark-200: hsl(180, 100%, 75%);
+  --color-primary-dark-150: hsl(180, 100%, 80%);
+  --color-primary-dark-100: hsl(180, 100%, 85%);
+  --color-primary-dark-50: hsl(180, 100%, 90%);
+  --color-primary-dark-0: hsl(180, 100%, 95%);
+
+  /* NOTE: secondary color shades  */
+  --color-secondary-dark: hsl(264, 100%, 69%);
+  --color-secondary-dark-900: hsl(263, 100%, 5%);
+  --color-secondary-dark-850: hsl(264, 100%, 10%);
+  --color-secondary-dark-800: hsl(264, 100%, 15%);
+  --color-secondary-dark-750: hsl(264, 100%, 20%);
+  --color-secondary-dark-700: hsl(264, 100%, 25%);
+  --color-secondary-dark-650: hsl(264, 100%, 30%);
+  --color-secondary-dark-600: hsl(264, 100%, 35%);
+  --color-secondary-dark-550: hsl(264, 100%, 40%);
+  --color-secondary-dark-500: hsl(264, 100%, 45%);
+  --color-secondary-dark-450: hsl(264, 100%, 50%);
+  --color-secondary-dark-400: hsl(264, 100%, 55%);
+  --color-secondary-dark-350: hsl(264, 100%, 60%);
+  --color-secondary-dark-300: hsl(264, 100%, 65%);
+  --color-secondary-dark-250: hsl(264, 100%, 70%);
+  --color-secondary-dark-200: hsl(264, 100%, 75%);
+  --color-secondary-dark-150: hsl(264, 100%, 80%);
+  --color-secondary-dark-100: hsl(264, 100%, 85%);
+  --color-secondary-dark-50: hsl(264, 100%, 90%);
+  --color-secondary-dark-0: hsl(265, 100%, 95%);
+
+  /* NOTE: accent color shades */
+  --color-accent-dark: hsl(264, 100%, 69%);
+  --color-accent-dark-900: hsl(242, 100%, 5%);
+  --color-accent-dark-850: hsl(242, 100%, 10%);
+  --color-accent-dark-800: hsl(242, 100%, 15%);
+  --color-accent-dark-750: hsl(242, 100%, 20%);
+  --color-accent-dark-700: hsl(242, 100%, 25%);
+  --color-accent-dark-650: hsl(242, 100%, 30%);
+  --color-accent-dark-600: hsl(242, 100%, 35%);
+  --color-accent-dark-550: hsl(242, 100%, 40%);
+  --color-accent-dark-500: hsl(242, 100%, 45%);
+  --color-accent-dark-450: hsl(242, 100%, 50%);
+  --color-accent-dark-400: hsl(242, 100%, 55%);
+  --color-accent-dark-350: hsl(242, 100%, 60%);
+  --color-accent-dark-300: hsl(242, 100%, 65%);
+  --color-accent-dark-250: hsl(242, 100%, 70%);
+  --color-accent-dark-200: hsl(242, 100%, 75%);
+  --color-accent-dark-150: hsl(242, 100%, 80%);
+  --color-accent-dark-100: hsl(242, 100%, 85%);
+  --color-accent-dark-50: hsl(242, 100%, 90%);
+  --color-accent-dark-0: hsl(242, 100%, 95%);
 
   --font-inter: Inter, sans-serif;
   --font-poppins: "Poppins", sans-serif;
@@ -18,26 +246,7 @@
 }
 
 :root {
-  /* font-family: system-ui, Avenir, Helvetica, Arial, sans-serif; */
-  --light-bg: #e8e8e8;
-  --dark-bg: #05001e;
-  --dark-shade-bg: #0d052a;
-  --light-text: #e8e8e8;
-  --dark-text: #000;
-  --primary-color: #a061ff;
-  --secondary-color: #00e5e6;
-  --tertiary-color: #03465c;
-  --accent-color: #443dff;
-  /* --primary-color:  */
-
-  font-family: "Open Sans", sans-serif;
-  font-size: 1.0rem;
-  font-weight: 400;
-
-  color-scheme: dark light;
-  color: var(--light-text);
-  background-color: var(--dark-bg);
-
+  color-scheme: light dark;
   font-synthesis: none;
   text-rendering: optimizeLegibility;
   -webkit-font-smoothing: antialiased;
@@ -50,7 +259,12 @@ body {
   min-height: 100vh;
 }
 
-h1, h2, h3, h4, h5, h6 {
+h1,
+h2,
+h3,
+h4,
+h5,
+h6 {
   font-family: Inter, sans-serif;
   margin: 0;
   padding: 0;

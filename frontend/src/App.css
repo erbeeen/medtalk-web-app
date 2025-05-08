@@ -7,8 +7,17 @@
 }
 
 @layer components {
+  :root {
+    font-family: var(--font-open-sans);
+    color: var(--color-light);
+  }
+
+  .sidebar {
+    @apply w-56 z-10 pt-10 flex flex-col items-center font-light;
+  }
+
   .sidebar-link {
-    @apply w-full flex flex-row justify-center items-center flex-nowrap;
+    @apply w-11/12 py-4 flex flex-row justify-center items-center rounded-md flex-nowrap;
   }
 
   .sidebar-icon {
