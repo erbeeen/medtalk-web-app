@@ -1,5 +1,5 @@
 import type { AdminUserType, UserType } from "../types/user";
-import Table from "../components/AdminTable";
+import Table from "../components/Table";
 import { createColumnHelper } from "@tanstack/react-table";
 
 export default function UsersRoute() {
