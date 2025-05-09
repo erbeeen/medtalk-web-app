@@ -2,7 +2,7 @@ import MedicineRoute from './routes/Medicine';
 import UsersRoute from './routes/Users';
 import ScheduleRoute from './routes/Schedules';
 import HomeRoute from './routes/Home';
-import Login from './routes/Login';
+// import Login from './routes/Login';
 import Sidebar from './components/Sidebar';
 import { Routes, Route } from 'react-router-dom';
 import './App.css';

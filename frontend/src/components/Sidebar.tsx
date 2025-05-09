@@ -4,7 +4,8 @@ import { FaUser, FaPills, FaCalendarAlt } from "react-icons/fa";
 
 export default function Sidebar() {
   return (
-    <div className="sidebar bg-light-800/5 dark:bg-dark-800/50 text-light-text dark:text-dark-text border-r dark:border-[#ffffff1a] border-dark/20">
+    // <div className="sidebar bg-light-800/5 dark:bg-dark-800/50 text-light-text dark:text-dark-text border-r dark:border-[#ffffff1a] border-dark/20">
+    <div className="sidebar bg-light-800/5 dark:bg-gray-700/40 text-light-text dark:text-dark-text border-r dark:border-[#ffffff1a]/30 border-dark/20">
       <Link to="/" className="sidebar-link hover:bg-800 dark:hover:bg-dark-800">
         <div className="sidebar-icon">
           <MdDashboard size="1.2rem" />
