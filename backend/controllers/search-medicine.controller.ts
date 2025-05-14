@@ -7,7 +7,7 @@ import FDAMedicine, {
   FDAMedicineDocument,
 } from "../models/fda-medicine.model.js";
 import { Request, Response } from "express";
-import sendJsonResponse from "utils/httpResponder.js";
+import sendJsonResponse from "../utils/httpResponder.js";
 
 type MedicineSearchType = {
   "Brand Name": string;

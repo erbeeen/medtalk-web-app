@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { useState, type MouseEventHandler } from "react";
 import { useNavigate } from "react-router-dom";
 
 export default function Login() {
@@ -9,7 +9,7 @@ export default function Login() {
     password: "",
   });
 
-  const handleLogin = async (event) => {
+  const handleLogin: MouseEventHandler<HTMLButtonElement> = async (event) => {
     event.preventDefault();
     if (!credentials.username || !credentials.password) {
       console.log("provide all fields");
