@@ -8,7 +8,7 @@
 
 @layer components {
   :root {
-    font-family: var(--font-open-sans);
+    font-family: var(--font-inter);
     color: var(--color-light);
   }
 
