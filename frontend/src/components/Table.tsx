@@ -5,43 +5,13 @@ import {
   useReactTable,
 } from "@tanstack/react-table";
 import type { AccessorKeyColumnDef } from "@tanstack/react-table";
-// import type { }
 
 type TableProp = {
   columns: Array<AccessorKeyColumnDef<any, any>>;
   content: Array<any>;
 };
 
-export default function AdminTable({ columns, content }: TableProp) {
-
-  // const columnHelper = createColumnHelper<UserType>();
-  // const columns = [
-  //   columnHelper.accessor("id", {
-  //     header: () => "ID",
-  //     footer: info => info.column.id,
-  //   }),
-  //   columnHelper.accessor("username", {
-  //     header: () => "Username",
-  //     footer: info => info.column.id,
-  //   }),
-  //   columnHelper.accessor("firstName", {
-  //     header: () => "First Name",
-  //     footer: info => info.column.id,
-  //   }),
-  //   columnHelper.accessor("lastName", {
-  //     header: () => "Last Name",
-  //     footer: info => info.column.id,
-  //   }),
-  //   columnHelper.accessor("email", {
-  //     header: () => "Email",
-  //     footer: info => info.column.id,
-  //   }),
-  //   columnHelper.accessor("password", {
-  //     header: () => "Password",
-  //     footer: info => info.column.id,
-  //   })
-  // ]
-
+export default function Table({ columns, content }: TableProp) {
 
   const cachedData = useMemo(() => content, []);
   // const rerender = useReducer(() => ({}), {})[1];
@@ -53,13 +23,18 @@ export default function AdminTable({ columns, content }: TableProp) {
   });
 
   return (
-    <div className="w-full">
-      <table className="w-full text-left">
+    <div className="w-full h-full">
+      <table 
+        className="w-full text-left border-spacing-0 border-white/20 rounded-md"
+      >
         <thead>
           {table.getHeaderGroups().map((headerGroup) => (
             <tr key={headerGroup.id}>
+              <th className="px-3 py-5 text-center align-bottom">
+                <input type="checkbox"/>
+              </th>
               {headerGroup.headers.map((header) => (
-                <th key={header.id}>
+                <th className="px-3 py-5 align-bottom font-inter font-light border-b border-white/20" key={header.id}>
                   {header.isPlaceholder
                     ? null
                     : flexRender(
@@ -75,8 +50,11 @@ export default function AdminTable({ columns, content }: TableProp) {
         <tbody>
           {table.getRowModel().rows.map((row) => (
             <tr key={row.id}>
+              <td className="px-3 py-3 text-center align-bottom">
+                <input type="checkbox" />
+              </td>
               {row.getVisibleCells().map((cell) => (
-                <td id={cell.id}>
+                <td className="px-3 py-2 font-inter font-light align-bottom" id={cell.id}>
                   {flexRender(cell.column.columnDef.cell, cell.getContext())}
                 </td>
               ))}
