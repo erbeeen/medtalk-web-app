@@ -23,4 +23,8 @@
   .sidebar-icon {
     @apply w-4/12 flex flex-row justify-center items-center;
   }
+
+  .modal-input {
+    @apply px-3 py-1 bg-white text-black border border-white rounded-md;
+  }
 }

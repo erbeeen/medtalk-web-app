@@ -1,40 +1,49 @@
-import { useMemo } from "react";
+import type { AccessorKeyColumnDef } from "@tanstack/react-table";
 import {
   flexRender,
   getCoreRowModel,
   useReactTable,
 } from "@tanstack/react-table";
-import type { AccessorKeyColumnDef } from "@tanstack/react-table";
+// import { useState } from "react";
 
-type TableProp = {
+type TableProps = {
   columns: Array<AccessorKeyColumnDef<any, any>>;
   content: Array<any>;
+  columnFilters?: Array<any>;
 };
 
-export default function Table({ columns, content }: TableProp) {
-
-  const cachedData = useMemo(() => content, []);
-  // const rerender = useReducer(() => ({}), {})[1];
+export default function Table({ columns, content, columnFilters }: TableProps) {
+  // const [data, _setdata] = useState(content);
 
   const table = useReactTable({
-    data: cachedData,
+    data: content,
     columns: columns,
+    state: { columnFilters },
     getCoreRowModel: getCoreRowModel(),
   });
 
+  // table.getHeaderGroups().map((headerGroup) => console.log(headerGroup));
+  // console.log(table.getRowModel().rows);
+  
+
   return (
-    <div className="w-full h-full">
-      <table 
-        className="w-full text-left border-spacing-0 border-white/20 rounded-md"
+    <div className="w-full h-full flex flex-row justify-center items-center">
+      <table
+        className="w-full text-left border-spacing-0 border border-none rounded-2xl"
       >
         <thead>
           {table.getHeaderGroups().map((headerGroup) => (
-            <tr key={headerGroup.id}>
-              <th className="px-3 py-5 text-center align-bottom">
-                <input type="checkbox"/>
-              </th>
+            <tr key={headerGroup.id} className="bg-gray-700/70 rounded-xl">
               {headerGroup.headers.map((header) => (
-                <th className="px-3 py-5 align-bottom font-inter font-light border-b border-white/20" key={header.id}>
+                <th
+                  className="py-5 align-middle font-open-sans font-light"
+                  key={header.id}
+                  style={{
+                    width: header.getSize(),
+                    minWidth: header.column.columnDef.minSize,
+                    maxWidth: header.column.columnDef.maxSize
+                  }}
+                >
                   {header.isPlaceholder
                     ? null
                     : flexRender(
@@ -46,37 +55,18 @@ export default function Table({ columns, content }: TableProp) {
               ))}
             </tr>
           ))}
-        </thead>
+       </thead>
         <tbody>
           {table.getRowModel().rows.map((row) => (
-            <tr key={row.id}>
-              <td className="px-3 py-3 text-center align-bottom">
-                <input type="checkbox" />
-              </td>
+            <tr key={row.id} className="bg-gray-700/30">
               {row.getVisibleCells().map((cell) => (
-                <td className="px-3 py-2 font-inter font-light align-bottom" id={cell.id}>
+                <td className="py-4 font-open-sans font-light align-middle" key={cell.id} id={cell.id}>
                   {flexRender(cell.column.columnDef.cell, cell.getContext())}
                 </td>
               ))}
             </tr>
           ))}
         </tbody>
-        {/* <tfoot> */}
-        {/*   {table.getFooterGroups().map((footerGroup) => ( */}
-        {/*     <tr key={footerGroup.id}> */}
-        {/*       {footerGroup.headers.map((header) => ( */}
-        {/*         <th key={header.id}> */}
-        {/*           {header.isPlaceholder */}
-        {/*             ? null */}
-        {/*             : flexRender( */}
-        {/*               header.column.columnDef.footer, */}
-        {/*               header.getContext() */}
-        {/*             )} */}
-        {/*         </th> */}
-        {/*       ))} */}
-        {/*     </tr> */}
-        {/*   ))} */}
-        {/* </tfoot> */}
       </table>
     </div>
   )

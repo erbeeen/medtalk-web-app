@@ -1,57 +1,72 @@
 import type { AdminUserType } from "../types/user";
+import { FaEdit, FaTrashAlt } from "react-icons/fa";
 import Table from "../components/Table";
 import { createColumnHelper } from "@tanstack/react-table";
+import { dummyAdmins } from "../dummyData";
 
 export default function AdminsRoute() {
-  const adminColumnHelpers = createColumnHelper<AdminUserType>();
+  const adminColumnHelper = createColumnHelper<AdminUserType>();
   const adminColumns = [
-    adminColumnHelpers.accessor("id", {
+    adminColumnHelper.accessor("checkbox", {
+      header: () => <input type="checkbox" />,
+      cell: (_props) => (
+        <input type="checkbox" />
+      ),
+      size: 50,
+    }),
+    adminColumnHelper.accessor("id", {
       header: "id",
+      size: 100,
     }),
-    adminColumnHelpers.accessor("role", {
+    adminColumnHelper.accessor("role", {
       header: "Role",
+      size: 100,
     }),
-    adminColumnHelpers.accessor("username", {
+    adminColumnHelper.accessor("username", {
       header: "Username",
+      size: 100,
     }),
-    adminColumnHelpers.accessor("firstName", {
+    adminColumnHelper.accessor("firstName", {
       header: "First name",
+      size: 100,
     }),
-    adminColumnHelpers.accessor("lastName", {
+    adminColumnHelper.accessor("lastName", {
       header: "Last name",
+      size: 100,
     }),
-    adminColumnHelpers.accessor("email", {
+    adminColumnHelper.accessor("email", {
       header: "Email",
+      size: 200,
+    }),
+    adminColumnHelper.accessor("actions", {
+      header: "Actions",
+      cell: (props) => (
+        <div>
+          <button
+            className="p-1.5 mx-1.5 dark:bg-primary-dark/50 rounded-md"
+            onClick={(_e) => handleEdit(props.row.id)}
+          >
+            <FaEdit size="1.2rem"/>
+          </button>
+          <button
+            className="p-1.5 mx-1.5 dark:bg-secondary-dark/50 rounded-md"
+            onClick={(_e) => handleDelete(props.row.id)}>
+            <FaTrashAlt size="1.2rem"/>
+          </button>
+        </div>
+      )
     }),
   ];
 
-  const dummyAdmins: Array<AdminUserType> = [
-    {
-      id: "123",
-      role: "super admin",
-      username: "asdf",
-      firstName: "John",
-      lastName: "Doe",
-      email: "samplemail@gmail.com",
-    },
-    {
-      id: "234",
-      role: "admin",
-      username: "sdfg",
-      firstName: "Jane",
-      lastName: "Doe",
-      email: "samplemail2@gmail.com",
-    },
-    {
-      id: "345",
-      role: "super admin",
-      username: "dfgh",
-      firstName: "John",
-      lastName: "Doe",
-      email: "samplemail3@gmail.com",
-    },
-  ];
+  function handleEdit(_id: string) {
+    console.log("handle edit");
+    
+  }
 
+  function handleDelete (_id: string) {
+    console.log("handle delete");
+    
+  }
 
   return (
     <div className="h-full px-12 pt-12 flex flex-col items-center gap-4">

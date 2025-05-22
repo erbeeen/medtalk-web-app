@@ -1,74 +1,115 @@
-import type { UserType } from "../types/user";
-import Table from "../components/Table";
 import { createColumnHelper } from "@tanstack/react-table";
+import { dummyUsers } from "../dummyData";
+import { FaEdit, FaTrashAlt } from "react-icons/fa";
+import type { UserType } from "../types/user";
+import { useEffect, useState } from "react";
+import Table from "../components/Table";
+import EditUserModal from "../components/EditUserModal";
+import DeleteUserModal from "../components/DeleteUserModal";
+
+// TODO: Priority in order
+// make checkbox work
+// apply pagination
+// try to apply it to others (admins, medications etc)
 
 export default function UsersRoute() {
+  const [users, setUsers] = useState(dummyUsers);
+
   const userColumnHelper = createColumnHelper<UserType>();
   const userColumns = [
+    userColumnHelper.accessor("checkbox", {
+      header: () => (
+        <div className="w-full flex justify-center items-center">
+          <input type="checkbox" />
+        </div>
+      ),
+      cell: (_props) => (
+        <div className="w-full flex justify-center items-center">
+          <input type="checkbox" />
+        </div>
+      ),
+      size: 50,
+    }),
     userColumnHelper.accessor("id", {
-      header: () => "id",
-      footer: info => info.column.id,
+      header: "id",
+      size: 100,
     }),
     userColumnHelper.accessor("email", {
-      header: () => "email",
-      footer: info => info.column.id,
+      header: "Email",
+      size: 150,
+      minSize: 50,
     }),
     userColumnHelper.accessor("username", {
-      header: () => "username",
-      footer: info => info.column.id,
+      header: "Username",
+      size: 100,
     }),
     userColumnHelper.accessor("firstName", {
-      header: () => "first name",
-      footer: info => info.column.id,
+      header: "First name",
+      size: 100,
     }),
     userColumnHelper.accessor("lastName", {
-      header: () => "last name",
-      footer: info => info.column.id,
+      header: "Last name",
+      size: 100,
     }),
-    userColumnHelper.accessor("password", {
-      header: () => "password",
-      footer: info => info.column.id,
-    })
-  ]
-
-  const dummyUsers: Array<UserType> = [
-    {
-      id: "123",
-      email: "samplemail@gmail.com",
-      username: "asdf",
-      firstName: "John",
-      lastName: "Doe",
-      password: "a;sdlkfjweporuwe;l;({[`$&*({[`@);elkr",
-    },
-    {
-      id: "234",
-      email: "samplemail2@gmail.com",
-      username: "sdfg",
-      firstName: "Jane",
-      lastName: "Doe",
-      password: "a;sdlkfjweporuwe;l;({[`$&*({[`@);elkr",
-    },
-    {
-      id: "345",
-      email: "samplemail3@gmail.com",
-      username: "dfgh",
-      firstName: "John",
-      lastName: "Doe",
-      password: "a;sdlkfjweporuwe;l;({[`$&*({[`@);elkr",
-    },
+    // userColumnHelper.accessor("password", {
+    //   header: "Password",
+    //   size: 250,
+    // }),
+    userColumnHelper.accessor("actions", {
+      header: "",
+      size: 200,
+      cell: (props) => {
+        const [isEditModalOpen, setIsEditModalOpen] = useState(false);
+        const [isDeleteModalOpen, setIsDeleteModalOpen] = useState(false);
+        return (
+          <div>
+            <button
+              type="button"
+              className="p-1.5 mx-1.5 dark:bg-primary-dark/50 rounded-md cursor-pointer"
+              onClick={() => {setIsEditModalOpen(true)}}
+            >
+              <FaEdit size="1.2rem" />
+            </button>
+            {isEditModalOpen && (
+              <EditUserModal key={props.row.id}
+                onClose={() => setIsEditModalOpen(false)}
+                data={props.row.original}
+                setUsers={setUsers}
+              />
+            )}
+            <button
+              type="button"
+              className="p-1.5 mx-1.5 dark:bg-secondary-dark/50 rounded-md cursor-pointer"
+              onClick={() => {setIsDeleteModalOpen(true)}}>
+              <FaTrashAlt size="1.2rem" />
+            </button>
+            {isDeleteModalOpen && (
+              <DeleteUserModal 
+                onClose={() => setIsDeleteModalOpen(false)}
+                data={props.row.original}
+                setUsers={setUsers}
+              />
+            )}
+          </div>
+        );
+      }
+    }),
   ];
+
+  useEffect(() => {
+    console.log("Users updated: ", users);
+  }, [users]);
 
   return (
     <div className="h-full px-12 pt-12 flex flex-col items-center gap-4">
-       {/* <div className="w-full p-5 px-7 bg-primary/100 dark:bg-gray-700/50 text-light-text dark:text-dark-text rounded-md"> */}
-      <div className="self-start pl-6 text-lg">
+      {/* <div className="w-full p-5 px-7 bg-primary/100 dark:bg-gray-700/50 text-light-text dark:text-dark-text rounded-md"> */}
+      <div className="self-start mb-2 text-2xl font-bold">
         <h1>Users</h1>
       </div>
-        {/* <UserTable /> */}
-        <Table
-          columns={userColumns}
-          content={dummyUsers}
-        />
+      <Table
+        columns={userColumns}
+        content={users}
+      />
       {/* </div> */}
     </div>
   );
