@@ -1,19 +1,22 @@
 import { createColumnHelper } from "@tanstack/react-table";
 import { dummyUsers } from "../dummyData";
-import { FaEdit, FaTrashAlt } from "react-icons/fa";
+import { FaEdit, FaPlus, FaTrash } from "react-icons/fa";
 import type { UserType } from "../types/user";
-import { useEffect, useState } from "react";
+import { useState } from "react";
 import Table from "../components/Table";
 import EditUserModal from "../components/EditUserModal";
 import DeleteUserModal from "../components/DeleteUserModal";
+import AddUserModal from "../components/AddUserModal";
 
 // TODO: Priority in order
+// add button
 // make checkbox work
 // apply pagination
 // try to apply it to others (admins, medications etc)
 
 export default function UsersRoute() {
   const [users, setUsers] = useState(dummyUsers);
+  const [isAddModalOpen, setIsAddModalOpen] = useState(false);
 
   const userColumnHelper = createColumnHelper<UserType>();
   const userColumns = [
@@ -57,7 +60,8 @@ export default function UsersRoute() {
     // }),
     userColumnHelper.accessor("actions", {
       header: "",
-      size: 200,
+      size: 60,
+      minSize: 60,
       cell: (props) => {
         const [isEditModalOpen, setIsEditModalOpen] = useState(false);
         const [isDeleteModalOpen, setIsDeleteModalOpen] = useState(false);
@@ -81,7 +85,7 @@ export default function UsersRoute() {
               type="button"
               className="p-1.5 mx-1.5 dark:bg-secondary-dark/50 rounded-md cursor-pointer"
               onClick={() => {setIsDeleteModalOpen(true)}}>
-              <FaTrashAlt size="1.2rem" />
+              <FaTrash size="1.2rem" />
             </button>
             {isDeleteModalOpen && (
               <DeleteUserModal 
@@ -96,21 +100,37 @@ export default function UsersRoute() {
     }),
   ];
 
-  useEffect(() => {
-    console.log("Users updated: ", users);
-  }, [users]);
-
   return (
     <div className="h-full px-12 pt-12 flex flex-col items-center gap-4">
-      {/* <div className="w-full p-5 px-7 bg-primary/100 dark:bg-gray-700/50 text-light-text dark:text-dark-text rounded-md"> */}
-      <div className="self-start mb-2 text-2xl font-bold">
-        <h1>Users</h1>
+      <div className="h-10 w-full mb-2 self-start flex items-center">
+        <div className="w-6/12">
+          <h1 className="self-start text-2xl font-mona font-bold">Users</h1>
+        </div>
+        <div className="w-6/12 pr-5 flex justify-end">
+          <div className="p-1 flex justify-center items-center cursor-pointer
+            border dark:border-primary-dark/50 dark:hover:bg-primary-dark/50 dark:text-primary-dark/50 
+            dark:hover:text-dark-text rounded-md "
+          >
+            <button 
+              type="button" 
+              className="cursor-pointer"
+              onClick={() => setIsAddModalOpen(true)}
+            > 
+              <FaPlus size="1.2rem" className=""/>
+            </button>
+            {isAddModalOpen && (
+              <AddUserModal 
+                onClose={() => setIsAddModalOpen(false)}
+                setUsers={setUsers}
+              />
+            )}
+          </div>
+        </div>
       </div>
       <Table
         columns={userColumns}
         content={users}
       />
-      {/* </div> */}
     </div>
   );
 }

@@ -1,39 +1,34 @@
-import { useState, type Dispatch, type SetStateAction } from "react";
-import type { UserType } from "../types/user"
+import type { Dispatch, SetStateAction } from "react";
+import type { UserType } from "../types/user";
+import { useState } from "react";
 
-type EditUserModalProps = {
+type NewUserModalProps = {
   onClose: () => void;
-  data: UserType;
   setUsers: Dispatch<SetStateAction<Array<UserType>>>;
 }
 
-// TODO: create this properly
-
-export default function EditUserModal({ onClose, data, setUsers }: EditUserModalProps) {
-  const [username, setUsername] = useState(data.username);
-  const [email, setEmail] = useState(data.email);
-  const [firstName, setFirstName] = useState(data.firstName);
-  const [lastName, setLastName] = useState(data.lastName);
+export default function AddUserModal({ onClose, setUsers }: NewUserModalProps) {
+  const [username, setUsername] = useState("");
+  const [email, setEmail] = useState("");
+  const [firstName, setFirstName] = useState("");
+  const [lastName, setLastName] = useState("");
+  const [password, setPassword] = useState("");
+  const [confirmPassword, setConfirmPassword] = useState("");
 
   const handleSubmit = () => {
-    const updatedData: UserType = {
-      id: data.id,
+    const newUser: UserType = {
+      id: "69420",
       email: email,
       username: username,
       firstName: firstName,
       lastName: lastName,
-      password: data.password,
+      password: password,
     };
 
-    setUsers(prevData =>
-      prevData.map((user) =>
-        user.id === updatedData.id ? { ...updatedData } : user
-      )
-    );
-
+    setUsers(previous => [...previous, newUser]);
     onClose();
   }
-
+  
   return (
     <div className="fixed inset-0 z-50 flex justify-center items-center" onClick={onClose}>
       <div className="fixed inset-0 bg-black/30" aria-hidden={true}>
@@ -78,6 +73,24 @@ export default function EditUserModal({ onClose, data, setUsers }: EditUserModal
           className="modal-input"
           value={lastName}
           onChange={(e) => setLastName(e.target.value)}
+        />
+        <label htmlFor="password">Password</label>
+        <input
+          type="password"
+          id="password"
+          name="password"
+          className="modal-input"
+          value={password}
+          onChange={(e) => setPassword(e.target.value)}
+        />
+        <label htmlFor="confirm-password">Confirm Password</label>
+        <input
+          type="password"
+          id="confirm-password"
+          name="confirm-password"
+          className="modal-input"
+          value={confirmPassword}
+          onChange={(e) => setConfirmPassword(e.target.value)}
         />
         <div className="mt-5 flex justify-around items-center ">
           <button type="button" className="cursor-pointer" onClick={onClose}>Cancel</button>

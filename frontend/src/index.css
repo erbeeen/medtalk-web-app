@@ -1,5 +1,6 @@
 @import url("https://fonts.googleapis.com/css2?family=Inter:ital,opsz,wght@0,14..32,100..900;1,14..32,100..900&display=swap");
 @import url("https://fonts.googleapis.com/css2?family=Open+Sans:ital,wght@0,300..800;1,300..800&family=Poppins:ital,wght@0,100;0,200;0,300;0,400;0,500;0,600;0,700;0,800;0,900;1,100;1,200;1,300;1,400;1,500;1,600;1,700;1,800;1,900&display=swap");
+@import url('https://fonts.googleapis.com/css2?family=Mona+Sans:ital,wght@0,200..900;1,200..900&display=swap');
 @import "tailwindcss";
 
 @theme {
@@ -15,6 +16,8 @@
   /* --color-dark-bg: #121212; NOTE: recommended dark theme bg in some org */
   /* NOTE: This is from realtime colors */
   --color-light: #f4f4f4;
+
+  /* FIX: Get the hex codes from the opacity set from tailwind to replace the 9 shades of each  */
 
   /* NOTE: ----------- Light Mode Colors ------------ */
 
@@ -41,26 +44,26 @@
   --color-light-text-0: hsl(243, 76%, 95%);
 
   /* NOTE: light bg shades */
-  --color-light: hsl(231, 30%, 91%);
-  --color-light-900: hsl(233, 31%, 5%);
-  --color-light-850: hsl(232, 29%, 10%);
-  --color-light-800: hsl(232, 30%, 15%);
-  --color-light-750: hsl(232, 29%, 20%);
-  --color-light-700: hsl(232, 30%, 25%);
-  --color-light-650: hsl(232, 29%, 30%);
-  --color-light-600: hsl(230, 30%, 35%);
-  --color-light-550: hsl(230, 30%, 40%);
-  --color-light-500: hsl(230, 30%, 45%);
-  --color-light-450: hsl(231, 30%, 50%);
-  --color-light-400: hsl(231, 30%, 55%);
-  --color-light-350: hsl(230, 30%, 60%);
-  --color-light-300: hsl(231, 30%, 65%);
-  --color-light-250: hsl(232, 29%, 70%);
-  --color-light-200: hsl(231, 30%, 75%);
-  --color-light-150: hsl(232, 29%, 80%);
-  --color-light-100: hsl(230, 30%, 85%);
-  --color-light-50: hsl(232, 29%, 90%);
-  --color-light-0: hsl(225, 31%, 95%);
+  --color-light: hsl(240, 60%, 99%);
+  --color-light-900: hsl(240, 60%, 5%);
+  --color-light-850: hsl(240, 61%, 10%);
+  --color-light-800: hsl(240, 61%, 15%);
+  --color-light-750: hsl(240, 61%, 20%);
+  --color-light-700: hsl(240, 61%, 25%);
+  --color-light-650: hsl(240, 59%, 30%);
+  --color-light-600: hsl(240, 60%, 35%);
+  --color-light-550: hsl(240, 60%, 40%);
+  --color-light-500: hsl(240, 60%, 45%);
+  --color-light-450: hsl(240, 60%, 50%);
+  --color-light-400: hsl(240, 60%, 55%);
+  --color-light-350: hsl(240, 60%, 60%);
+  --color-light-300: hsl(240, 60%, 65%);
+  --color-light-250: hsl(240, 59%, 70%);
+  --color-light-200: hsl(240, 61%, 75%);
+  --color-light-150: hsl(240, 61%, 80%);
+  --color-light-100: hsl(240, 61%, 85%);
+  --color-light-50: hsl(240, 61%, 90%);
+  --color-light-0: hsl(240, 60%, 95%);
 
   /* NOTE: light primary shades */
   --color-primary: #1affff;
@@ -243,6 +246,8 @@
   --font-inter: Inter, sans-serif;
   --font-poppins: "Poppins", sans-serif;
   --font-open-sans: "Open Sans", sans-serif;
+  --font-segoe: "Segoe UI", sans-serif;
+  --font-mona: "Mona Sans", sans-serif;
 }
 
 :root {
@@ -265,7 +270,8 @@ h3,
 h4,
 h5,
 h6 {
-  font-family: Inter, sans-serif;
+  /* font-family: Inter, sans-serif; */
+
   margin: 0;
   padding: 0;
   height: fit-content;

@@ -27,12 +27,13 @@ export default function DeleteUserModal({ onClose, data, setUsers }: DeleteUserM
         onClick={(e) => e.stopPropagation()}
       >
         <h1 className="self-center">Confirm Deletion?</h1>
-        <label htmlFor="username">Username</label>
         <div className="mt-5 flex justify-around items-center ">
           <button type="button" className="cursor-pointer" onClick={onClose}>Cancel</button>
           <button type="button" className="cursor-pointer" onClick={() => handleDelete()}>
-            <FaTrashAlt />
-            Delete
+            <div className="flex gap-1 justify-center items-center">
+              <FaTrashAlt />
+              Delete
+            </div>
           </button>
         </div>
       </div>

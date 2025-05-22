@@ -14,7 +14,7 @@ function App() {
     <>
       <div id="main" className="flex min-h-screen bg-light dark:bg-dark text-light-text dark:text-dark-text">
         <Sidebar />
-        <div id="content-area" className="min-h-full w-full p-4 flex flex-col justify-start align-center gap-10 border-2 border-white/8 bg-light dark:bg-[#181924] text-light-text dark:text-dark-text/95">
+        <div id="content-area" className="min-h-full w-full p-4 flex flex-col justify-start align-center gap-10 bg-light dark:bg-[#181924] text-light-text dark:text-dark-text/95">
           <Routes>
             <Route path="/" element={<HomeRoute />} />
             <Route path="/users" element={<UsersRoute />} />
