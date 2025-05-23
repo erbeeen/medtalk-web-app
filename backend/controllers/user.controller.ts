@@ -24,10 +24,13 @@ type LoginCredentials = {
   password: string;
 };
 
+const USER_ROLE = "user";
+
 export default class UserController {
   constructor() {}
 
   registerUser = async (req: Request, res: Response, next: NextFunction) => {
+
     if (req.user !== undefined) {
       sendJsonResponse(res, 200);
       return;
@@ -92,6 +95,7 @@ export default class UserController {
           const [accessToken, accessTokenErr] = generateAccessToken(
             String(userResult._id),
             userResult.username,
+            USER_ROLE,
           );
           if (accessTokenErr !== null) {
             console.error(
@@ -106,6 +110,7 @@ export default class UserController {
           const [refreshToken, refreshTokenErr] = generateRefreshToken(
             String(userResult._id),
             userResult.username,
+            USER_ROLE,
           );
           if (refreshTokenErr !== null) {
             console.error(
@@ -146,6 +151,9 @@ export default class UserController {
   };
 
   loginUser = async (req: Request, res: Response, next: NextFunction) => {
+    // TODO: Check the generate access token, I added user role to parameters
+    // but this function doesn't check if the user logging in is a user, admin,
+    // or a super admin
     if (req.user !== undefined) {
       sendJsonResponse(res, 200);
       return;
@@ -190,6 +198,7 @@ export default class UserController {
         const [accessToken, accessTokenErr] = generateAccessToken(
           String(user._id),
           user.email,
+          USER_ROLE,
         );
         if (accessTokenErr !== null) {
           console.error(
@@ -204,6 +213,7 @@ export default class UserController {
         const [refreshToken, refreshTokenErr] = generateRefreshToken(
           String(user._id),
           user.email,
+          USER_ROLE,
         );
         if (refreshTokenErr !== null) {
           console.error(

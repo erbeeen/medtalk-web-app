@@ -3,17 +3,20 @@ import jwt from "jsonwebtoken";
 interface CustomJwtPayload extends jwt.JwtPayload {
   id?: string;
   username?: string;
+  role?: string;
 }
 
 export function generateAccessToken(
   id: string,
   username: string,
+  role: string,
 ): [string | null, Error | null] {
   try {
     const token = jwt.sign(
       {
         id: id,
         username: username,
+        role: role,
       },
       process.env.SECRET_ACCESS_TOKEN,
       { expiresIn: "30m" },
@@ -27,12 +30,14 @@ export function generateAccessToken(
 export function generateRefreshToken(
   id: string,
   username: string,
+  role: string,
 ): [string | null, Error | null] {
   try {
     const token = jwt.sign(
       {
         id: id,
         username: username,
+        role: role,
       },
       process.env.SECRET_REFRESH_TOKEN,
     );
