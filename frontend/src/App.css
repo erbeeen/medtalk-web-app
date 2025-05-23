@@ -8,13 +8,12 @@
 
 @layer components {
   :root {
-    /* font-family: var(--font-inter); */
     font-family: "Mona Sans",sans-serif;
     color: var(--color-light);
   }
 
   .sidebar {
-    @apply w-56 z-10 pt-10 flex flex-col items-center font-light;
+    @apply w-56 pt-10 flex flex-col items-center font-light;
   }
 
   .sidebar-link {

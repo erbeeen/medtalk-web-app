@@ -7,7 +7,7 @@ type EditUserModalProps = {
   setUsers: Dispatch<SetStateAction<Array<UserType>>>;
 }
 
-// TODO: create this properly
+// TODO: fix styling
 
 export default function EditUserModal({ onClose, data, setUsers }: EditUserModalProps) {
   const [username, setUsername] = useState(data.username);
@@ -17,7 +17,7 @@ export default function EditUserModal({ onClose, data, setUsers }: EditUserModal
 
   const handleSubmit = () => {
     const updatedData: UserType = {
-      id: data.id,
+      _id: data._id,
       email: email,
       username: username,
       firstName: firstName,
@@ -27,7 +27,7 @@ export default function EditUserModal({ onClose, data, setUsers }: EditUserModal
 
     setUsers(prevData =>
       prevData.map((user) =>
-        user.id === updatedData.id ? { ...updatedData } : user
+        user._id === updatedData._id ? { ...updatedData } : user
       )
     );
 
@@ -39,7 +39,7 @@ export default function EditUserModal({ onClose, data, setUsers }: EditUserModal
       <div className="fixed inset-0 bg-black/30" aria-hidden={true}>
       </div>
       <div
-        className="px-16 py-5 z-10 flex flex-col bg-light dark:bg-[#181924] rounded-xl"
+        className="px-16 py-5 z-10 flex flex-col bg-light dark:bg-[#181924] border dark:border-gray-700/40 rounded-xl"
         onClick={(e) => e.stopPropagation()}
       >
         <h1 className="self-center">Edit User</h1>

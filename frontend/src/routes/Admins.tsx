@@ -7,7 +7,7 @@ import { dummyAdmins } from "../dummyData";
 export default function AdminsRoute() {
   const adminColumnHelper = createColumnHelper<AdminUserType>();
   const adminColumns = [
-    adminColumnHelper.accessor("checkbox", {
+    adminColumnHelper.accessor("status", {
       header: () => <input type="checkbox" />,
       cell: (_props) => (
         <input type="checkbox" />

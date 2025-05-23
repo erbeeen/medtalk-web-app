@@ -8,16 +8,36 @@ import Sidebar from './components/Sidebar';
 import UsersRoute from './routes/Users';
 // import Login from './routes/Login';
 import './App.css';
+import { useRef } from 'react';
 
 function App() {
+  const mainContentRef = useRef<HTMLDivElement>(null);
+
+  const scrollToTop = async () => {
+    if (mainContentRef.current) {
+      mainContentRef.current.scroll({
+        top: 0,
+        left: 0,
+        behavior: "smooth",
+      });
+    }
+  }
+
   return (
     <>
-      <div id="main" className="flex min-h-screen bg-light dark:bg-dark text-light-text dark:text-dark-text">
+      <div id="main"
+        className="h-screen flex bg-light dark:bg-dark 
+        text-light-text dark:text-dark-text">
         <Sidebar />
-        <div id="content-area" className="min-h-full w-full p-4 flex flex-col justify-start align-center gap-10 bg-light dark:bg-[#181924] text-light-text dark:text-dark-text/95">
+        <div
+          ref={mainContentRef}
+          id="content-area"
+          className="w-full p-4 flex flex-col flex-1 
+          overflow-y-auto justify-start align-center gap-10 
+          bg-light dark:bg-[#181924] text-light-text dark:text-dark-text/95">
           <Routes>
             <Route path="/" element={<HomeRoute />} />
-            <Route path="/users" element={<UsersRoute />} />
+            <Route path="/users" element={<UsersRoute scrollToTop={scrollToTop} />} />
             <Route path="/admins" element={<AdminsRoute />} />
             <Route path="/medicine" element={<MedicineRoute />} />
             <Route path="/schedules" element={<ScheduleRoute />} />

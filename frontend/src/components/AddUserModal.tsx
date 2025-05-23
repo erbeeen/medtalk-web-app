@@ -17,7 +17,7 @@ export default function AddUserModal({ onClose, setUsers }: NewUserModalProps) {
 
   const handleSubmit = () => {
     const newUser: UserType = {
-      id: "69420",
+      _id: "69420",
       email: email,
       username: username,
       firstName: firstName,
@@ -25,7 +25,7 @@ export default function AddUserModal({ onClose, setUsers }: NewUserModalProps) {
       password: password,
     };
 
-    setUsers(previous => [...previous, newUser]);
+    setUsers(previous => [newUser, ...previous]);
     onClose();
   }
   

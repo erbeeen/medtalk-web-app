@@ -1,6 +1,6 @@
 export type UserType = {
-  checkbox?: string;
-  id: string;
+  status?: string;
+  _id: string;
   username: string;
   firstName: string;
   lastName: string;
@@ -10,8 +10,8 @@ export type UserType = {
 };
 
 export type AdminUserType = {
-  checkbox?: string;
-  id: string;
+  status?: string;
+  _id: string;
   username: string;
   firstName: string;
   lastName: string;

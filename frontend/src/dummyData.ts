@@ -2,7 +2,7 @@ import type { AdminUserType, UserType } from "./types/user";
 
 export const dummyAdmins: Array<AdminUserType> = [
   {
-    id: "100",
+    _id: "100",
     role: "super admin",
     username: "asdf",
     firstName: "John",
@@ -10,7 +10,7 @@ export const dummyAdmins: Array<AdminUserType> = [
     email: "samplemail@gmail.com",
   },
   {
-    id: "101",
+    _id: "101",
     role: "admin",
     username: "sdfg",
     firstName: "Jane",
@@ -18,7 +18,7 @@ export const dummyAdmins: Array<AdminUserType> = [
     email: "samplemail2@gmail.com",
   },
   {
-    id: "102",
+    _id: "102",
     role: "super admin",
     username: "dfgh",
     firstName: "John",
@@ -26,7 +26,7 @@ export const dummyAdmins: Array<AdminUserType> = [
     email: "samplemail3@gmail.com",
   },
   {
-    id: "103",
+    _id: "103",
     role: "super admin",
     username: "asdf",
     firstName: "John",
@@ -34,7 +34,7 @@ export const dummyAdmins: Array<AdminUserType> = [
     email: "samplemail@gmail.com",
   },
   {
-    id: "234",
+    _id: "234",
     role: "admin",
     username: "sdfg",
     firstName: "Jane",
@@ -42,7 +42,7 @@ export const dummyAdmins: Array<AdminUserType> = [
     email: "samplemail2@gmail.com",
   },
   {
-    id: "345",
+    _id: "345",
     role: "super admin",
     username: "dfgh",
     firstName: "John",
@@ -50,7 +50,7 @@ export const dummyAdmins: Array<AdminUserType> = [
     email: "samplemail3@gmail.com",
   },
   {
-    id: "123",
+    _id: "123",
     role: "super admin",
     username: "asdf",
     firstName: "John",
@@ -58,7 +58,7 @@ export const dummyAdmins: Array<AdminUserType> = [
     email: "samplemail@gmail.com",
   },
   {
-    id: "234",
+    _id: "234",
     role: "admin",
     username: "sdfg",
     firstName: "Jane",
@@ -66,7 +66,7 @@ export const dummyAdmins: Array<AdminUserType> = [
     email: "samplemail2@gmail.com",
   },
   {
-    id: "345",
+    _id: "345",
     role: "super admin",
     username: "dfgh",
     firstName: "John",
@@ -74,7 +74,7 @@ export const dummyAdmins: Array<AdminUserType> = [
     email: "samplemail3@gmail.com",
   },
   {
-    id: "123",
+    _id: "123",
     role: "super admin",
     username: "asdf",
     firstName: "John",
@@ -82,7 +82,7 @@ export const dummyAdmins: Array<AdminUserType> = [
     email: "samplemail@gmail.com",
   },
   {
-    id: "234",
+    _id: "234",
     role: "admin",
     username: "sdfg",
     firstName: "Jane",
@@ -90,7 +90,7 @@ export const dummyAdmins: Array<AdminUserType> = [
     email: "samplemail2@gmail.com",
   },
   {
-    id: "345",
+    _id: "345",
     role: "super admin",
     username: "dfgh",
     firstName: "John",
@@ -98,7 +98,7 @@ export const dummyAdmins: Array<AdminUserType> = [
     email: "samplemail3@gmail.com",
   },
   {
-    id: "123",
+    _id: "123",
     role: "super admin",
     username: "asdf",
     firstName: "John",
@@ -106,7 +106,7 @@ export const dummyAdmins: Array<AdminUserType> = [
     email: "samplemail@gmail.com",
   },
   {
-    id: "234",
+    _id: "234",
     role: "admin",
     username: "sdfg",
     firstName: "Jane",
@@ -114,7 +114,7 @@ export const dummyAdmins: Array<AdminUserType> = [
     email: "samplemail2@gmail.com",
   },
   {
-    id: "345",
+    _id: "345",
     role: "super admin",
     username: "dfgh",
     firstName: "John",
@@ -122,7 +122,7 @@ export const dummyAdmins: Array<AdminUserType> = [
     email: "samplemail3@gmail.com",
   },
   {
-    id: "123",
+    _id: "123",
     role: "super admin",
     username: "asdf",
     firstName: "John",
@@ -130,7 +130,7 @@ export const dummyAdmins: Array<AdminUserType> = [
     email: "samplemail@gmail.com",
   },
   {
-    id: "234",
+    _id: "234",
     role: "admin",
     username: "sdfg",
     firstName: "Jane",
@@ -138,7 +138,7 @@ export const dummyAdmins: Array<AdminUserType> = [
     email: "samplemail2@gmail.com",
   },
   {
-    id: "345",
+    _id: "345",
     role: "super admin",
     username: "dfgh",
     firstName: "John",
@@ -146,7 +146,7 @@ export const dummyAdmins: Array<AdminUserType> = [
     email: "samplemail3@gmail.com",
   },
   {
-    id: "123",
+    _id: "123",
     role: "super admin",
     username: "asdf",
     firstName: "John",
@@ -154,7 +154,7 @@ export const dummyAdmins: Array<AdminUserType> = [
     email: "samplemail@gmail.com",
   },
   {
-    id: "234",
+    _id: "234",
     role: "admin",
     username: "sdfg",
     firstName: "Jane",
@@ -162,7 +162,7 @@ export const dummyAdmins: Array<AdminUserType> = [
     email: "samplemail2@gmail.com",
   },
   {
-    id: "345",
+    _id: "345",
     role: "super admin",
     username: "dfgh",
     firstName: "John",
@@ -170,7 +170,7 @@ export const dummyAdmins: Array<AdminUserType> = [
     email: "samplemail3@gmail.com",
   },
   {
-    id: "123",
+    _id: "123",
     role: "super admin",
     username: "asdf",
     firstName: "John",
@@ -178,7 +178,7 @@ export const dummyAdmins: Array<AdminUserType> = [
     email: "samplemail@gmail.com",
   },
   {
-    id: "234",
+    _id: "234",
     role: "admin",
     username: "sdfg",
     firstName: "Jane",
@@ -186,7 +186,7 @@ export const dummyAdmins: Array<AdminUserType> = [
     email: "samplemail2@gmail.com",
   },
   {
-    id: "345",
+    _id: "345",
     role: "super admin",
     username: "dfgh",
     firstName: "John",
@@ -194,7 +194,7 @@ export const dummyAdmins: Array<AdminUserType> = [
     email: "samplemail3@gmail.com",
   },
   {
-    id: "123",
+    _id: "123",
     role: "super admin",
     username: "asdf",
     firstName: "John",
@@ -202,7 +202,7 @@ export const dummyAdmins: Array<AdminUserType> = [
     email: "samplemail@gmail.com",
   },
   {
-    id: "234",
+    _id: "234",
     role: "admin",
     username: "sdfg",
     firstName: "Jane",
@@ -210,7 +210,7 @@ export const dummyAdmins: Array<AdminUserType> = [
     email: "samplemail2@gmail.com",
   },
   {
-    id: "345",
+    _id: "345",
     role: "super admin",
     username: "dfgh",
     firstName: "John",
@@ -218,7 +218,7 @@ export const dummyAdmins: Array<AdminUserType> = [
     email: "samplemail3@gmail.com",
   },
   {
-    id: "123",
+    _id: "123",
     role: "super admin",
     username: "asdf",
     firstName: "John",
@@ -226,7 +226,7 @@ export const dummyAdmins: Array<AdminUserType> = [
     email: "samplemail@gmail.com",
   },
   {
-    id: "234",
+    _id: "234",
     role: "admin",
     username: "sdfg",
     firstName: "Jane",
@@ -234,7 +234,7 @@ export const dummyAdmins: Array<AdminUserType> = [
     email: "samplemail2@gmail.com",
   },
   {
-    id: "345",
+    _id: "345",
     role: "super admin",
     username: "dfgh",
     firstName: "John",
@@ -245,7 +245,7 @@ export const dummyAdmins: Array<AdminUserType> = [
 
 export const dummyUsers: Array<UserType> = [
   {
-    id: "100",
+    _id: "100",
     email: "samplemail@gmail.com",
     username: "asdf",
     firstName: "John",
@@ -253,7 +253,7 @@ export const dummyUsers: Array<UserType> = [
     password: "a;sdlkfjweporuwe;l;({[`$&*({[`@);elkr",
   },
   {
-    id: "101",
+    _id: "101",
     email: "samplemail2@gmail.com",
     username: "sdfg",
     firstName: "Jane",
@@ -261,7 +261,7 @@ export const dummyUsers: Array<UserType> = [
     password: "a;sdlkfjweporuwe;l;({[`$&*({[`@);elkr",
   },
   {
-    id: "102",
+    _id: "102",
     email: "samplemail3@gmail.com",
     username: "dfgh",
     firstName: "John",
@@ -269,7 +269,7 @@ export const dummyUsers: Array<UserType> = [
     password: "a;sdlkfjweporuwe;l;({[`$&*({[`@);elkr",
   },
   {
-    id: "103",
+    _id: "103",
     email: "samplemail@gmail.com",
     username: "asdf",
     firstName: "John",
@@ -277,7 +277,7 @@ export const dummyUsers: Array<UserType> = [
     password: "a;sdlkfjweporuwe;l;({[`$&*({[`@);elkr",
   },
   {
-    id: "104",
+    _id: "104",
     email: "samplemail2@gmail.com",
     username: "sdfg",
     firstName: "Jane",
@@ -285,7 +285,7 @@ export const dummyUsers: Array<UserType> = [
     password: "a;sdlkfjweporuwe;l;({[`$&*({[`@);elkr",
   },
   {
-    id: "105",
+    _id: "105",
     email: "samplemail3@gmail.com",
     username: "dfgh",
     firstName: "John",
@@ -293,7 +293,7 @@ export const dummyUsers: Array<UserType> = [
     password: "a;sdlkfjweporuwe;l;({[`$&*({[`@);elkr",
   },
   {
-    id: "106",
+    _id: "106",
     email: "samplemail@gmail.com",
     username: "asdf",
     firstName: "John",
@@ -301,7 +301,7 @@ export const dummyUsers: Array<UserType> = [
     password: "a;sdlkfjweporuwe;l;({[`$&*({[`@);elkr",
   },
   {
-    id: "107",
+    _id: "107",
     email: "samplemail2@gmail.com",
     username: "sdfg",
     firstName: "Jane",
@@ -309,7 +309,7 @@ export const dummyUsers: Array<UserType> = [
     password: "a;sdlkfjweporuwe;l;({[`$&*({[`@);elkr",
   },
   {
-    id: "108",
+    _id: "108",
     email: "samplemail3@gmail.com",
     username: "dfgh",
     firstName: "John",
@@ -317,7 +317,7 @@ export const dummyUsers: Array<UserType> = [
     password: "a;sdlkfjweporuwe;l;({[`$&*({[`@);elkr",
   },
   {
-    id: "109",
+    _id: "109",
     email: "samplemail@gmail.com",
     username: "asdf",
     firstName: "John",
@@ -325,7 +325,7 @@ export const dummyUsers: Array<UserType> = [
     password: "a;sdlkfjweporuwe;l;({[`$&*({[`@);elkr",
   },
   {
-    id: "110",
+    _id: "110",
     email: "samplemail2@gmail.com",
     username: "sdfg",
     firstName: "Jane",
@@ -333,7 +333,7 @@ export const dummyUsers: Array<UserType> = [
     password: "a;sdlkfjweporuwe;l;({[`$&*({[`@);elkr",
   },
   {
-    id: "111",
+    _id: "111",
     email: "samplemail3@gmail.com",
     username: "dfgh",
     firstName: "John",
@@ -341,7 +341,7 @@ export const dummyUsers: Array<UserType> = [
     password: "a;sdlkfjweporuwe;l;({[`$&*({[`@);elkr",
   },
   {
-    id: "112",
+    _id: "112",
     email: "samplemail@gmail.com",
     username: "asdf",
     firstName: "John",
@@ -349,7 +349,7 @@ export const dummyUsers: Array<UserType> = [
     password: "a;sdlkfjweporuwe;l;({[`$&*({[`@);elkr",
   },
   {
-    id: "113",
+    _id: "113",
     email: "samplemail2@gmail.com",
     username: "sdfg",
     firstName: "Jane",
@@ -357,7 +357,7 @@ export const dummyUsers: Array<UserType> = [
     password: "a;sdlkfjweporuwe;l;({[`$&*({[`@);elkr",
   },
   {
-    id: "114",
+    _id: "114",
     email: "samplemail3@gmail.com",
     username: "dfgh",
     firstName: "John",
@@ -365,7 +365,7 @@ export const dummyUsers: Array<UserType> = [
     password: "a;sdlkfjweporuwe;l;({[`$&*({[`@);elkr",
   },
   {
-    id: "115",
+    _id: "115",
     email: "samplemail@gmail.com",
     username: "asdf",
     firstName: "John",
@@ -373,7 +373,7 @@ export const dummyUsers: Array<UserType> = [
     password: "a;sdlkfjweporuwe;l;({[`$&*({[`@);elkr",
   },
   {
-    id: "116",
+    _id: "116",
     email: "samplemail2@gmail.com",
     username: "sdfg",
     firstName: "Jane",
@@ -381,7 +381,7 @@ export const dummyUsers: Array<UserType> = [
     password: "a;sdlkfjweporuwe;l;({[`$&*({[`@);elkr",
   },
   {
-    id: "117",
+    _id: "117",
     email: "samplemail3@gmail.com",
     username: "dfgh",
     firstName: "John",
@@ -389,7 +389,7 @@ export const dummyUsers: Array<UserType> = [
     password: "a;sdlkfjweporuwe;l;({[`$&*({[`@);elkr",
   },
   {
-    id: "118",
+    _id: "118",
     email: "samplemail@gmail.com",
     username: "asdf",
     firstName: "John",
@@ -397,7 +397,7 @@ export const dummyUsers: Array<UserType> = [
     password: "a;sdlkfjweporuwe;l;({[`$&*({[`@);elkr",
   },
   {
-    id: "119",
+    _id: "119",
     email: "samplemail2@gmail.com",
     username: "sdfg",
     firstName: "Jane",
@@ -405,7 +405,7 @@ export const dummyUsers: Array<UserType> = [
     password: "a;sdlkfjweporuwe;l;({[`$&*({[`@);elkr",
   },
   {
-    id: "120",
+    _id: "120",
     email: "samplemail3@gmail.com",
     username: "dfgh",
     firstName: "John",
@@ -413,7 +413,7 @@ export const dummyUsers: Array<UserType> = [
     password: "a;sdlkfjweporuwe;l;({[`$&*({[`@);elkr",
   },
   {
-    id: "121",
+    _id: "121",
     email: "samplemail@gmail.com",
     username: "asdf",
     firstName: "John",
@@ -421,7 +421,7 @@ export const dummyUsers: Array<UserType> = [
     password: "a;sdlkfjweporuwe;l;({[`$&*({[`@);elkr",
   },
   {
-    id: "122",
+    _id: "122",
     email: "samplemail2@gmail.com",
     username: "sdfg",
     firstName: "Jane",
@@ -429,7 +429,7 @@ export const dummyUsers: Array<UserType> = [
     password: "a;sdlkfjweporuwe;l;({[`$&*({[`@);elkr",
   },
   {
-    id: "123",
+    _id: "123",
     email: "samplemail3@gmail.com",
     username: "dfgh",
     firstName: "John",
@@ -437,7 +437,7 @@ export const dummyUsers: Array<UserType> = [
     password: "a;sdlkfjweporuwe;l;({[`$&*({[`@);elkr",
   },
   {
-    id: "124",
+    _id: "124",
     email: "samplemail@gmail.com",
     username: "asdf",
     firstName: "John",
@@ -445,7 +445,7 @@ export const dummyUsers: Array<UserType> = [
     password: "a;sdlkfjweporuwe;l;({[`$&*({[`@);elkr",
   },
   {
-    id: "125",
+    _id: "125",
     email: "samplemail2@gmail.com",
     username: "sdfg",
     firstName: "Jane",
@@ -453,7 +453,7 @@ export const dummyUsers: Array<UserType> = [
     password: "a;sdlkfjweporuwe;l;({[`$&*({[`@);elkr",
   },
   {
-    id: "126",
+    _id: "126",
     email: "samplemail3@gmail.com",
     username: "dfgh",
     firstName: "John",
@@ -461,7 +461,7 @@ export const dummyUsers: Array<UserType> = [
     password: "a;sdlkfjweporuwe;l;({[`$&*({[`@);elkr",
   },
   {
-    id: "127",
+    _id: "127",
     email: "samplemail@gmail.com",
     username: "asdf",
     firstName: "John",
@@ -469,7 +469,7 @@ export const dummyUsers: Array<UserType> = [
     password: "a;sdlkfjweporuwe;l;({[`$&*({[`@);elkr",
   },
   {
-    id: "128",
+    _id: "128",
     email: "samplemail2@gmail.com",
     username: "sdfg",
     firstName: "Jane",
@@ -477,7 +477,7 @@ export const dummyUsers: Array<UserType> = [
     password: "a;sdlkfjweporuwe;l;({[`$&*({[`@);elkr",
   },
   {
-    id: "129",
+    _id: "129",
     email: "samplemail3@gmail.com",
     username: "dfgh",
     firstName: "John",
