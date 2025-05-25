@@ -1,6 +1,6 @@
 import { useState, type Dispatch, type SetStateAction } from "react";
-import type { UserType } from "../types/user"
-import CloseButton from "./CloseButton";
+import type { UserType } from "../../types/user"
+import CloseButton from ".././CloseButton";
 
 type EditUserModalProps = {
   onClose: () => void;
@@ -12,7 +12,7 @@ type EditUserModalProps = {
 // add animations
 // add api request to edit record on database
 
-export default function EditUserModal({ onClose, data, setUsers }: EditUserModalProps) {
+export default function UserEditModal({ onClose, data, setUsers }: EditUserModalProps) {
   const [username, setUsername] = useState(data.username);
   const [email, setEmail] = useState(data.email);
   const [firstName, setFirstName] = useState(data.firstName);
@@ -37,7 +37,7 @@ export default function EditUserModal({ onClose, data, setUsers }: EditUserModal
   }
 
   return (
-    <div className="fixed inset-0 z-50 flex justify-center items-center" onClick={onClose}>
+    <div className="fixed inset-0 z-50 flex justify-center items-center text-left" onClick={onClose}>
       <div className="fixed inset-0 bg-black/30" aria-hidden={true}>
       </div>
       <div

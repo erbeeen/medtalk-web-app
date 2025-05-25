@@ -1,33 +1,35 @@
 import { useState, type Dispatch, type SetStateAction } from "react";
-import type { UserType } from "../types/user"
-import CloseButton from "./CloseButton";
+import type { AdminUserType } from "../../types/user"
+import CloseButton from "../CloseButton";
 
 type EditUserModalProps = {
   onClose: () => void;
-  data: UserType;
-  setUsers: Dispatch<SetStateAction<Array<UserType>>>;
+  data: AdminUserType;
+  setAdmins: Dispatch<SetStateAction<Array<AdminUserType>>>;
 }
 
 // TODO: 
 // add animations
 // add api request to edit record on database
 
-export default function EditUserModal({ onClose, data, setUsers }: EditUserModalProps) {
+export default function AdminEditModal({ onClose, data, setAdmins }: EditUserModalProps) {
+  const [role, setRole] = useState(data.role);
   const [username, setUsername] = useState(data.username);
   const [email, setEmail] = useState(data.email);
   const [firstName, setFirstName] = useState(data.firstName);
   const [lastName, setLastName] = useState(data.lastName);
 
   const handleSubmit = () => {
-    const updatedData: UserType = {
+    const updatedData: AdminUserType = {
       _id: data._id,
+      role: role,
       email: email,
       username: username,
       firstName: firstName,
       lastName: lastName,
     };
 
-    setUsers(prevData =>
+    setAdmins(prevData =>
       prevData.map((user) =>
         user._id === updatedData._id ? { ...user, ...updatedData } : user
       )
@@ -37,7 +39,7 @@ export default function EditUserModal({ onClose, data, setUsers }: EditUserModal
   }
 
   return (
-    <div className="fixed inset-0 z-50 flex justify-center items-center" onClick={onClose}>
+    <div className="fixed inset-0 z-50 flex justify-center items-center text-left" onClick={onClose}>
       <div className="fixed inset-0 bg-black/30" aria-hidden={true}>
       </div>
       <div
@@ -45,8 +47,23 @@ export default function EditUserModal({ onClose, data, setUsers }: EditUserModal
         onClick={(e) => e.stopPropagation()}
       >
         <div className="w-full mt-3 mb-5 flex justify-between items-center">
-          <h1 className="text-xl font-bold">Edit User</h1>
-          <CloseButton onClose={onClose}/>
+          <h1 className="text-xl font-bold">Edit Admin</h1>
+          <CloseButton onClose={onClose} />
+        </div>
+
+        {/* FIX: The dropdown highlight text is wrong */}
+        <div className="modal-input-container">
+          <label htmlFor="role" className="w-6/12">Role</label>
+          <select
+            name="role"
+            id="role"
+            className="modal-input"
+            value={role}
+            onChange={(e) => setRole(e.target.value)}
+          >
+            <option value="admin" >Admin</option>
+            <option value="super admin" >Super Admin</option>
+          </select>
         </div>
 
         <div className="modal-input-container">

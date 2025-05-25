@@ -1,38 +1,32 @@
-import { useState, type Dispatch, type SetStateAction } from "react";
-import type { UserType } from "../types/user"
-import CloseButton from "./CloseButton";
+import type { Dispatch, SetStateAction } from "react";
+import type { UserType } from "../../types/user";
+import { useState } from "react";
+import CloseButton from "../CloseButton";
 
-type EditUserModalProps = {
+type NewUserModalProps = {
   onClose: () => void;
-  data: UserType;
   setUsers: Dispatch<SetStateAction<Array<UserType>>>;
 }
 
-// TODO: 
-// add animations
-// add api request to edit record on database
-
-export default function EditUserModal({ onClose, data, setUsers }: EditUserModalProps) {
-  const [username, setUsername] = useState(data.username);
-  const [email, setEmail] = useState(data.email);
-  const [firstName, setFirstName] = useState(data.firstName);
-  const [lastName, setLastName] = useState(data.lastName);
+export default function UserAddModal({ onClose, setUsers }: NewUserModalProps) {
+  const [username, setUsername] = useState("");
+  const [email, setEmail] = useState("");
+  const [firstName, setFirstName] = useState("");
+  const [lastName, setLastName] = useState("");
+  const [password, setPassword] = useState("");
+  const [confirmPassword, setConfirmPassword] = useState("");
 
   const handleSubmit = () => {
-    const updatedData: UserType = {
-      _id: data._id,
+    const newUser: UserType = {
+      _id: "69420",
       email: email,
       username: username,
       firstName: firstName,
       lastName: lastName,
+      password: password,
     };
 
-    setUsers(prevData =>
-      prevData.map((user) =>
-        user._id === updatedData._id ? { ...user, ...updatedData } : user
-      )
-    );
-
+    setUsers(previous => [newUser, ...previous]);
     onClose();
   }
 
@@ -41,63 +35,84 @@ export default function EditUserModal({ onClose, data, setUsers }: EditUserModal
       <div className="fixed inset-0 bg-black/30" aria-hidden={true}>
       </div>
       <div
-        className="px-16 py-5 z-10 flex flex-col gap-4 bg-light dark:bg-[#181924] border dark:border-gray-700/40 rounded-xl"
+        className="px-16 py-5 z-10 flex flex-col gap-4 bg-light dark:bg-[#181924] rounded-xl"
         onClick={(e) => e.stopPropagation()}
       >
+
         <div className="w-full mt-3 mb-5 flex justify-between items-center">
-          <h1 className="text-xl font-bold">Edit User</h1>
-          <CloseButton onClose={onClose}/>
+          <h1 className="text-xl font-bold">Create User</h1>
+          <CloseButton onClose={onClose} />
         </div>
 
         <div className="modal-input-container">
-          <label htmlFor="username" className="w-6/12">Username</label>
+          <label htmlFor="username" className="w-8/12">Username</label>
           <input
             id="username"
             name="username"
             type="text"
             className="modal-input"
-            placeholder="username"
             value={username}
             onChange={(e) => setUsername(e.target.value)}
           />
         </div>
 
         <div className="modal-input-container">
-          <label htmlFor="email" className="w-6/12">Email</label>
+          <label htmlFor="email" className="w-8/12">Email</label>
           <input
             type="text"
             id="email"
             name="email"
             className="modal-input"
-            placeholder="email"
             value={email}
             onChange={(e) => setEmail(e.target.value)}
           />
         </div>
 
         <div className="modal-input-container">
-          <label htmlFor="first-name" className="w-6/12">First Name</label>
+          <label htmlFor="first-name" className="w-8/12">First Name</label>
           <input
             type="text"
             id="first-name"
             name="first-name"
             className="modal-input"
-            placeholder="first name"
             value={firstName}
             onChange={(e) => setFirstName(e.target.value)}
           />
         </div>
 
         <div className="modal-input-container">
-          <label htmlFor="last-name" className="w-6/12">Last Name</label>
+          <label htmlFor="last-name" className="w-8/12">Last Name</label>
           <input
             type="text"
             id="last-name"
             name="last-name"
             className="modal-input"
-            placeholder="last name"
             value={lastName}
             onChange={(e) => setLastName(e.target.value)}
+          />
+        </div>
+
+        <div className="modal-input-container">
+          <label htmlFor="password" className="w-8/12">Password</label>
+          <input
+            type="password"
+            id="password"
+            name="password"
+            className="modal-input"
+            value={password}
+            onChange={(e) => setPassword(e.target.value)}
+          />
+        </div>
+
+        <div className="modal-input-container">
+          <label htmlFor="confirm-password" className="w-8/12">Confirm Password</label>
+          <input
+            type="password"
+            id="confirm-password"
+            name="confirm-password"
+            className="modal-input"
+            value={confirmPassword}
+            onChange={(e) => setConfirmPassword(e.target.value)}
           />
         </div>
 
@@ -116,6 +131,7 @@ export default function EditUserModal({ onClose, data, setUsers }: EditUserModal
             <button type="button" className="cursor-pointer" onClick={handleSubmit}>Submit</button>
           </div>
         </div>
+
       </div>
     </div>
   )

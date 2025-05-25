@@ -1,6 +1,6 @@
 import type { Dispatch, SetStateAction } from "react";
-import { FaTrashAlt } from "react-icons/fa";
-import type { UserType } from "../types/user";
+import type { UserType } from "../../types/user";
+import CloseButton from "../CloseButton";
 
 type DeleteUserModalProps = {
   onClose: () => void;
@@ -8,19 +8,18 @@ type DeleteUserModalProps = {
   setUsers: Dispatch<SetStateAction<Array<UserType>>>;
 }
 
-// TODO: fix styling
-
-export default function DeleteUserModal({ onClose, data, setUsers }: DeleteUserModalProps) {
+export default function UserDeleteModal({ onClose, data, setUsers }: DeleteUserModalProps) {
 
   const isUserType = (data: any): data is UserType => {
     return (
-      typeof data === "object" &&
       data !== null &&
-      typeof data.id === "string" &&
+      typeof data === "object" &&
+      typeof data._id === "string" &&
       typeof data.username === "string" &&
       typeof data.email === "string"
     );
   }
+
 
   const isMapType = (data: any): data is Record<string, boolean> => {
     return (
@@ -52,21 +51,31 @@ export default function DeleteUserModal({ onClose, data, setUsers }: DeleteUserM
 
   return (
     <div className="fixed inset-0 z-50 flex justify-center items-center" onClick={onClose}>
-      <div className="fixed inset-0 bg-black/30 backdrop-blur-xs" aria-hidden={true}>
+      <div className="fixed inset-0 bg-black/30" aria-hidden={true}>
       </div>
       <div
-        className="px-16 py-5 z-10 flex flex-col bg-secondary/80 dark:bg-primary-dark/50 rounded-xl"
+        className="w-2/12 px-10 py-5 z-10 flex flex-col bg-light dark:bg-[#181924] border dark:border-gray-700/40 rounded-xl"
         onClick={(e) => e.stopPropagation()}
       >
+        <div className="w-full  mb-5 flex justify-between items-center">
+          <h1 className="text-xl font-bold">Delete</h1>
+          <CloseButton onClose={onClose} />
+        </div>
         <h1 className="self-center">{isUserType(data) ? "Confirm deletion?" : "Delete selected?"}</h1>
-        <div className="mt-5 flex justify-around items-center ">
-          <button type="button" className="cursor-pointer" onClick={onClose}>Cancel</button>
-          <button type="button" className="cursor-pointer" onClick={() => handleDelete()}>
-            <div className="flex gap-1 justify-center items-center">
-              <FaTrashAlt />
-              Delete
-            </div>
-          </button>
+        <div className="w-full mt-5 flex justify-between items-center cursor-pointer">
+          <div
+            className="py-2 px-5 font-medium text-sm border rounded-4xl dark:border-secondary-dark/70 dark:hover:bg-secondary-dark/70 cursor-pointer"
+            onClick={onClose}
+          >
+            Cancel
+          </div>
+
+          <div
+            className="py-2 px-5 font-medium text-sm border rounded-4xl dark:border-delete-dark/50 dark:hover:bg-delete-dark/70"
+            onClick={handleDelete}
+          >
+            Delete
+          </div>
         </div>
       </div>
     </div>
