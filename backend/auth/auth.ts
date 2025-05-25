@@ -60,6 +60,7 @@ export function refreshAccessToken(
         const [accessToken, accessTokenErr] = generateAccessToken(
           user.id,
           user.username,
+          user.role
         );
         if (accessTokenErr) {
           return [null, false, accessTokenErr];
@@ -77,7 +78,7 @@ export function validateRefreshToken(
   jwt.verify(
     token,
     process.env.SECRET_REFRESH_TOKEN,
-    (err, user: CustomJwtPayload) => {
+    (err, _user: CustomJwtPayload) => {
       if (err) {
         return [false, null];
       }
