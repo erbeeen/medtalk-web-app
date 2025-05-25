@@ -1,7 +1,7 @@
-import authenticateJwt from "middleware/jwtAuth.js";
+import authenticateJwt from "../middleware/jwtAuth.js";
 import cors from "cors";
 import { Router } from "express";
-import ScheduleController from "controllers/schedule.controller.js";
+import ScheduleController from "../controllers/schedule.controller.js";
 
 const scheduleRouter = Router();
 const sc = new ScheduleController();
