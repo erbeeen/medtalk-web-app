@@ -1,4 +1,4 @@
-import { useState, useRef } from "react";
+import { useState, useRef, useEffect } from "react";
 
 import {
   type AccessorKeyColumnDef,
@@ -27,13 +27,19 @@ type TableProps = {
   rowSelection?: RowSelectionState
   globalFilter?: any;
   setGlobalFilter?: OnChangeFn<any>;
-  scrollToTop: () => Promise<void>;
+  scrollToTop: () => void;
   onRowSelectionChange?: (updater: Updater<RowSelectionState>) => void;
 };
 
-// FIX: scrolling to top screws up when adding new entries
+// FIX: scrolling to top screws up on previous page buttons when adding new entries
 // and possibly causing it are pages having only one entry.
 // either fix the bug or only make the table scrollable
+
+// FIX: scrolling to top screws up on next page buttons when deleteing entries
+// and possibly causing it are pages having only one entry.
+// either fix the bug or only make the table scrollable
+
+// TODO: make the table mobile responsive
 
 export default function Table({
   columns,
@@ -72,15 +78,21 @@ export default function Table({
     },
   });
 
+  useEffect(() => {
+    console.log("Table: content changed");
+    console.log("Resetting pagination");
+    table.resetPageIndex();
+  }, [content]);
+
   return (
-    <div id="table-ref" ref={tableRef} className="h-full w-full border border-dark/10 dark:border-light/10 rounded-2xl overflow-auto">
-      <table className="w-full text-left border-collapse border-spacing-0">
+    <div id="table-ref" ref={tableRef} className="h-full w-full border border-dark/10 dark:border-light/10 rounded-2xl overflow-x-auto">
+      <table className="w-full text-left border-collapse border-spacing-0 table-fixed">
         <thead>
           {table.getHeaderGroups().map((headerGroup) => (
-            <tr key={headerGroup.id} className="bg-gray-700/40 border-b border-dark/10 dark:border-light/10 rounded-2xl ">
+            <tr key={headerGroup.id} className="bg-gray-700/40 border-b border-dark/10 dark:border-light/10 rounded-2xl">
               {headerGroup.headers.map((header) => (
                 <th
-                  className="py-5 align-middle font-mona font-medium "
+                  className="py-5 align-middle font-medium "
                   key={header.id}
                   style={{
                     width: header.getSize(),
@@ -98,11 +110,11 @@ export default function Table({
             </tr>
           ))}
         </thead>
-        <tbody>
+        <tbody className="h-full flex-1 overflow-y-scroll">
           {table.getRowModel().rows.map((row) => (
-            <tr key={row.id} className="border-b border-dark/10 dark:border-light/10">
+            <tr key={row.id} className="border-b border-dark/10 dark:border-light/10 font-light align-middle">
               {row.getVisibleCells().map((cell) => (
-                <td className="py-4 font-mona font-light align-middle" key={cell.id} id={cell.id}>
+                <td className="py-3" key={cell.id} id={cell.id}>
                   {flexRender(cell.column.columnDef.cell, cell.getContext())}
                 </td>
               ))}
