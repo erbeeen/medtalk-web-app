@@ -1,6 +1,11 @@
 @import url('https://fonts.googleapis.com/css2?family=Mona+Sans:ital,wght@0,200..900;1,200..900&display=swap');
 @import "tailwindcss";
 
+/* NOTE:  new color scheme*/
+/* #050A30 */
+/* #A060FF */
+/* #00E4E3 */
+
 @theme {
   /* --color-dark-bg: #121212; NOTE: recommended dark theme bg in some org */
 
@@ -16,9 +21,9 @@
 
   /* NOTE: ----------- Dark Mode Colors ------------- */
   --color-dark-text: #eae9fc;
-  --color-dark: hsl(231, 32%, 9%); /* NOTE: dark bg */
-  --color-primary-dark: hsl(180, 100%, 45%);
-  --color-secondary-dark: hsl(264, 100%, 69%);
+  --color-dark: #050A30; /* NOTE: dark bg */
+  --color-primary-dark: #00E4E3;
+  --color-secondary-dark: #A060FF;
   --color-accent-dark: hsl(264, 100%, 69%);
   --color-edit-dark: #FFD700;
   --color-delete-dark: #FF0000;
@@ -27,7 +32,7 @@
 }
 
 :root {
-  color-scheme: light dark;
+  color-scheme: dark light;
   font-synthesis: none;
   text-rendering: optimizeLegibility;
   -webkit-font-smoothing: antialiased;
@@ -38,17 +43,6 @@ body {
   margin: 0;
   min-width: 320px;
   min-height: 100vh;
-}
-
-h1,
-h2,
-h3,
-h4,
-h5,
-h6 {
-  margin: 0;
-  padding: 0;
-  height: fit-content;
 }
 
 /* NOTE: study this media query */

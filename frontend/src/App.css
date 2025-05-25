@@ -12,8 +12,12 @@
     color: var(--color-light);
   }
 
+  .base-layout {
+    @apply px-0 pt-12 md:px-6 lg:px-12;
+  }
+
   .sidebar {
-    @apply w-56 pt-10 flex flex-col items-center font-light;
+    @apply md:w-40 lg:w-56 pt-10 hidden md:flex md:flex-col items-center font-light;
   }
 
   .sidebar-link {
@@ -24,7 +28,30 @@
     @apply w-4/12 flex flex-row justify-center items-center;
   }
 
-  .modal-input {
-    @apply px-3 py-1 bg-white text-black border border-white rounded-md;
+  .modal-input-container {
+    @apply w-full flex items-center gap-2;
   }
+
+  .modal-input {
+    @apply w-full px-3 py-1 border rounded-md dark:border-gray-600 outline-none;
+  }
+
+  .hide-scrollbar::-webkit-scrollbar {
+    display: none;
+  }
+
+  .hide-scrollbar {
+    -ms-overflow-style: none;
+    scrollbar-width: none;
+  }
+
+  .scrollbar::webkit-scrollbar {
+    display:flex;
+  }
+
+  .scrollbar {
+    -ms-overflow-style: auto;
+    scrollbar-width: auto;
+  }
+
 }
