@@ -1,84 +1,200 @@
 import type { AdminUserType } from "../types/user";
-import { FaEdit, FaTrashAlt } from "react-icons/fa";
+import { FaPlus, FaEdit, FaTrash } from "react-icons/fa";
 import Table from "../components/Table";
+import SearchBar from "../components/SearchBar";
 import { createColumnHelper } from "@tanstack/react-table";
 import { dummyAdmins } from "../dummyData";
+import { useState } from "react";
+import AdminAddModal from "../components/modals/AdminAddModal";
+import AdminDeleteModal from "../components/modals/AdminDeleteModal";
+import ScrollTableData from "../components/ScrollTableData";
+import AdminEditModal from "../components/modals/AdminEditModal";
 
-export default function AdminsRoute() {
+type AdminsRouteProps = {
+  scrollToTop: () => void;
+}
+
+// TODO: Priority in order
+// try to apply it to others (admins, medications etc)
+// animations:
+//  delete button appearing
+//  add, edit, delete modals appearing
+
+// FIX: 
+// checkbox selects data even outside the page
+
+export default function AdminsRoute({ scrollToTop }: AdminsRouteProps) {
+  const [admins, setAdmins] = useState(dummyAdmins);
+  const [rowSelection, setRowSelection] = useState({});
+  const [searchText, setSearchText] = useState("");
+  const [globalFilter, setGlobalFilter] = useState<any>([]);
+  const [isAddModalOpen, setIsAddModalOpen] = useState(false);
+  const [isDeleteAllModalOpen, setIsDeleteAllModalOpen] = useState(false);
+
   const adminColumnHelper = createColumnHelper<AdminUserType>();
   const adminColumns = [
     adminColumnHelper.accessor("status", {
-      header: () => <input type="checkbox" />,
-      cell: (_props) => (
-        <input type="checkbox" />
+      header: (props) => (
+        <div className="w-full flex justify-center items-center">
+          <input
+            type="checkbox"
+            checked={props.table.getIsAllRowsSelected()}
+            onChange={props.table.getToggleAllRowsSelectedHandler()} />
+        </div>
+      ),
+      cell: (props) => (
+        <div className="w-full flex justify-center items-center">
+          <input
+            type="checkbox"
+            checked={props.row.getIsSelected()}
+            onChange={props.row.getToggleSelectedHandler()} />
+        </div>
       ),
       size: 50,
+      minSize: 50,
     }),
-    adminColumnHelper.accessor("id", {
-      header: "id",
+    adminColumnHelper.accessor("_id", {
+      header: "_id",
+      cell: props => <ScrollTableData props={props} />,
       size: 100,
     }),
     adminColumnHelper.accessor("role", {
       header: "Role",
+      cell: props => <ScrollTableData props={props} />,
       size: 100,
+      minSize: 100,
+    }),
+    adminColumnHelper.accessor("email", {
+      header: "Email",
+      cell: props => <ScrollTableData props={props} />,
+      size: 200,
     }),
     adminColumnHelper.accessor("username", {
       header: "Username",
+      cell: props => <ScrollTableData props={props} />,
       size: 100,
     }),
     adminColumnHelper.accessor("firstName", {
       header: "First name",
+      cell: props => <ScrollTableData props={props} />,
       size: 100,
     }),
     adminColumnHelper.accessor("lastName", {
       header: "Last name",
+      cell: props => <ScrollTableData props={props} />,
       size: 100,
     }),
-    adminColumnHelper.accessor("email", {
-      header: "Email",
-      size: 200,
-    }),
     adminColumnHelper.accessor("actions", {
-      header: "Actions",
-      cell: (props) => (
-        <div>
-          <button
-            className="p-1.5 mx-1.5 dark:bg-primary-dark/50 rounded-md"
-            onClick={(_e) => handleEdit(props.row.id)}
-          >
-            <FaEdit size="1.2rem"/>
-          </button>
-          <button
-            className="p-1.5 mx-1.5 dark:bg-secondary-dark/50 rounded-md"
-            onClick={(_e) => handleDelete(props.row.id)}>
-            <FaTrashAlt size="1.2rem"/>
-          </button>
-        </div>
-      )
+      header: "",
+      size: 100,
+      minSize: 100,
+      cell: (props) => {
+        const [isEditModalOpen, setIsEditModalOpen] = useState(false);
+        const [isDeleteModalOpen, setIsDeleteModalOpen] = useState(false);
+        return (
+          <div className="text-center">
+            <button
+              type="button"
+              className="p-1.5 mx-1.5 border border-edit-dark/70 dark:hover:bg-edit-dark/70 
+              dark:text-edit-dark dark:hover:text-dark-text rounded-md cursor-pointer"
+              onClick={() => setIsEditModalOpen(true)}>
+              <FaEdit size="1.2rem" />
+            </button>
+            {isEditModalOpen && (
+              <AdminEditModal key={props.row.id}
+                onClose={() => {
+                  setIsEditModalOpen(false);
+                  setRowSelection({});
+                }}
+                data={props.row.original}
+                setAdmins={setAdmins} />
+            )}
+            <button
+              type="button"
+              className="p-1.5 mx-1.5 border dark:border-delete-dark/50 dark:hover:bg-delete-dark/50 
+              dark:text-delete-dark/50 dark:hover:text-dark-text rounded-md cursor-pointer"
+              onClick={() => setIsDeleteModalOpen(true)}>
+              <FaTrash size="1.2rem" />
+            </button>
+            {isDeleteModalOpen && (
+              <AdminDeleteModal
+                onClose={() => {
+                  setIsDeleteModalOpen(false);
+                  setRowSelection({});
+                }}
+                data={props.row.original}
+                setAdmins={setAdmins} />
+            )}
+          </div>
+        );
+      }
     }),
   ];
 
-  function handleEdit(_id: string) {
-    console.log("handle edit");
-    
-  }
-
-  function handleDelete (_id: string) {
-    console.log("handle delete");
-    
-  }
-
   return (
-    <div className="h-full px-12 pt-12 flex flex-col items-center gap-4">
-      {/* <div className="w-full rounded-md p-5 px-7 bg-secondary dark:bg-gray-700/40 text-dark-text"> */}
-      <div className="self-start pl-8 text-lg">
-        <h1>Admins</h1>
+    <div className="base-layout flex flex-col items-center gap-4">
+
+      <div className="self-start">
+        <h1 className="text-2xl font-bold">Admin Management</h1>
       </div>
-        <Table
-          columns={adminColumns}
-          content={dummyAdmins}
-        />
-      {/* </div> */}
+
+      <div className="h-10 w-full mb-2 self-start flex items-center gap-5">
+        <div className="w-10/12">
+          <SearchBar
+            onChange={(value: string) => setSearchText(value)}
+            searchFn={() => setGlobalFilter(searchText)}
+            clearFn={() => {
+              setSearchText("");
+              setGlobalFilter([]);
+            }}
+            value={searchText}
+          />
+        </div>
+
+        <div className="w-2/12 flex justify-end gap-3">
+          <div className="p-2 flex justify-center flex-nowrap items-center cursor-pointer
+            border dark:border-primary-dark/60 dark:hover:bg-primary-dark/80 
+            dark:text-primary-dark/60 dark:hover:text-dark-text rounded-md "
+            onClick={() => setIsAddModalOpen(true)}
+          >
+            <FaPlus size="1.3rem" />
+          </div>
+          {isAddModalOpen && (
+            <AdminAddModal
+              onClose={() => setIsAddModalOpen(false)}
+              setAdmins={setAdmins}
+            />
+          )}
+          <div>
+            {Object.keys(rowSelection).length != 0 && (
+              <button
+                type="button"
+                className="p-2 border rounded-md dark:border-delete-dark/50 
+                dark:hover:bg-delete-dark/50 dark:text-delete-dark/50 
+                dark:hover:text-dark-text cursor-pointer"
+                onClick={() => setIsDeleteAllModalOpen(true)}>
+                <FaTrash size="1.3rem" />
+              </button>
+            )}
+            {isDeleteAllModalOpen && (
+              <AdminDeleteModal
+                onClose={() => setIsDeleteAllModalOpen(false)}
+                data={rowSelection}
+                setAdmins={setAdmins} />
+            )}
+          </div>
+        </div>
+
+      </div>
+      <Table
+        columns={adminColumns}
+        content={admins}
+        rowSelection={rowSelection}
+        onRowSelectionChange={setRowSelection}
+        globalFilter={globalFilter}
+        setGlobalFilter={setGlobalFilter}
+        scrollToTop={scrollToTop}
+      />
     </div>
   )
 }
