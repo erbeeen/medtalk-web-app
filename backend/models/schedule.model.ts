@@ -1,7 +1,73 @@
 import mongoose from "mongoose";
-import { link } from "node:fs";
 
-// TODO: New data fields:
+// NOTE: old schema
+// export type ScheduleType = {
+//   userID: mongoose.Types.ObjectId | string;
+//   medicineName: string;
+//   amount: string;
+//   perWeekFrequency: string;
+//   perWeekOption?: string;
+//   daysPerWeek: Array<Number>;
+//   perDayFrequency: Number;
+//   perDayOption?: string;
+//   intakeTime: Array<Date>;
+//   intakeInstruction?: string;
+//   startDate: Date;
+//   endDate?: Date;
+// };
+
+// const scheduleSchema = new mongoose.Schema({
+//   userID: {
+//     type: mongoose.SchemaTypes.ObjectId,
+//     required: true,
+//   },
+//   medicineName: {
+//     type: String,
+//     required: true,
+//   },
+//   amount: {
+//     type: String,
+//     required: true,
+//   },
+//   perWeekFrequency: {
+//     type: String,
+//     required: true,
+//   },
+//   perWeekOption: {
+//     type: String,
+//     required: false
+//   },
+//   daysPerWeek: {
+//     type: [Number],
+//     required: true,
+//   },
+//   perDayFrequency: {
+//     type: Number,
+//     required: true,
+//   },
+//   perDayOption: {
+//     type: String,
+//     required: false,
+//   },
+//   intakeTime: {
+//     type: [Date],
+//     required: true,
+//   },
+//   intakeInstruction: {
+//     type: String,
+//     required: false,
+//   },
+//   startDate: {
+//     type: Date,
+//     required: true,
+//     default: Date.now,
+//   },
+//   endDate: {
+//     type: Date,
+//   },
+// });
+
+// TODO: new data fields:
 // UserID
 // Medication name
 // Measurement: g, mg, ml etc
@@ -15,19 +81,11 @@ import { link } from "node:fs";
 export type ScheduleType = {
   userID: mongoose.Types.ObjectId | string;
   medicineName: string;
-  dosageStrength: string;
-  perWeekFrequency: string;
-  perWeekOption?: string;
-  daysPerWeek: Array<Number>;
-  perDayFrequency: Number;
-  perDayOption?: string;
-  intakeTime: Array<Date>;
+  measurement: string;
   intakeInstruction?: string;
-  startDate: Date;
-  endDate?: Date;
+  medicationTaken: boolean;
+  date: Date;
 };
-
-export type ScheduleDocument = ScheduleType & mongoose.Document;
 
 const scheduleSchema = new mongoose.Schema({
   userID: {
@@ -38,44 +96,25 @@ const scheduleSchema = new mongoose.Schema({
     type: String,
     required: true,
   },
-  dosageStrength: {
+  measurement: {
     type: String,
-    required: true,
-  },
-  perWeekFrequency: {
-    type: String,
-    required: true,
-  },
-  perWeekOption: {
-    type: String,
-  },
-  daysPerWeek: {
-    type: [Number],
-    required: true,
-  },
-  perDayFrequency: {
-    type: Number,
-    required: true,
-  },
-  perDayOption: {
-    type: String,
-  },
-  intakeTime: {
-    type: [Date],
     required: true,
   },
   intakeInstruction: {
     type: String,
+    required: false,
   },
-  startDate: {
+  medicationTaken: {
+    type: Boolean,
+    required: true,
+  },
+  date: {
     type: Date,
     required: true,
-    default: Date.now,
-  },
-  endDate: {
-    type: Date,
   },
 });
+
+export type ScheduleDocument = ScheduleType & mongoose.Document;
 
 const Schedule = mongoose.model("user_schedules", scheduleSchema);
 

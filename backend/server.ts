@@ -5,31 +5,31 @@ import express, { static as static_ } from "express";
 import { fileURLToPath } from "url";
 import logger from "./middleware/logger.js";
 import path from "path";
-import medicineRouter from "./routes/medicine.route.js";
+import searchMedRouter from "./routes/search-medicine.route.js";
 import userRouter from "./routes/user.route.js";
-
+import scheduleRouter from "routes/schedule.routes.js";
 dotenv.config();
 
 const app = express();
-const __filename = fileURLToPath(import.meta.url);
-const __dirname = path.dirname(__filename);
+const __dirname = path.dirname(fileURLToPath(import.meta.url));
+const PORT = process.env.PORT;
 
 app.use(cors());
 app.use(express.json());
 app.use(logger);
-
-//multiplexer
-// API routes
-app.use("/api/medicine", medicineRouter);
 app.use("/api/users", userRouter);
+app.use("/api/medicine", searchMedRouter);
+app.use("/api/schedule", scheduleRouter);
 
-// Serve static files
-app.use(static_(path.join(__dirname, "../frontend/dist")));
+if (process.env.NODE_ENV === "production") {
+  app.use(static_(path.join(__dirname + "/static")));
 
-// Connect to database
-dbConnect();
+  app.get("*", (_req, res) => {
+    res.sendFile(path.resolve(__dirname, "static", "index.html"));
+  });
+}
 
-const PORT = process.env.PORT || 3000;
-app.listen(PORT, () => {
-  console.log(`Server is running on port ${PORT}`);
+app.listen(PORT, async () => {
+  await dbConnect();
+  console.log("Backend server running");
 });

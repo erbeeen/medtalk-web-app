@@ -12,17 +12,14 @@ export default class ScheduleController {
 
   addSchedule = async (req: Request, res: Response, next: NextFunction) => {
     // TODO: Test functionality
-    const schedule: ScheduleType = req.body.schedule;
+    const schedule: ScheduleType = req.body;
 
     if (
       !schedule.userID ||
       !schedule.medicineName ||
-      !schedule.dosageStrength ||
-      !schedule.perWeekFrequency ||
-      !schedule.daysPerWeek ||
-      !schedule.perDayFrequency ||
-      !schedule.intakeTime ||
-      !schedule.startDate
+      !schedule.measurement ||
+      !schedule.medicationTaken ||
+      !schedule.date
     ) {
       sendJsonResponse(res, 400, "provide all required fields.");
       return;
@@ -51,12 +48,12 @@ export default class ScheduleController {
     const scheduleID = String(req.query.id);
 
     if (!mongoose.Types.ObjectId.isValid(scheduleID)) {
-      sendJsonResponse(res, 400, "invalid user id.");
+      sendJsonResponse(res, 400, "invalid schedule id.");
       return;
     }
 
     try {
-      const result = Schedule.find({ _id: scheduleID });
+      const result = await Schedule.findById(scheduleID);
       sendJsonResponse(res, 200, result);
     } catch (err) {
       logError(err);
@@ -72,10 +69,21 @@ export default class ScheduleController {
     // NOTE: This implementation uses the id of a schedule
     // changing future doses is not yet available
     const scheduleID = String(req.query.id);
-    const scheduleDetails: ScheduleType = req.body.schedule;
+    const scheduleDetails: ScheduleType = req.body;
 
     if (!mongoose.Types.ObjectId.isValid(scheduleID)) {
       sendJsonResponse(res, 400, "invalid schedule id.");
+      return;
+    }
+
+    if (
+      !scheduleDetails.userID ||
+      !scheduleDetails.medicineName ||
+      !scheduleDetails.measurement ||
+      !scheduleDetails.medicationTaken ||
+      !scheduleDetails.date
+    ) {
+      sendJsonResponse(res, 400, "provide all required fields.");
       return;
     }
 
@@ -88,9 +96,7 @@ export default class ScheduleController {
       const result: ScheduleDocument = await Schedule.findByIdAndUpdate(
         scheduleID,
         scheduleDetails,
-        {
-          new: true,
-        },
+        { new: true },
       );
       sendJsonResponse(res, 201, result);
     } catch (err) {
@@ -114,7 +120,8 @@ export default class ScheduleController {
     }
 
     try {
-      const result: ScheduleDocument = await Schedule.findByIdAndDelete(scheduleID);
+      const result: ScheduleDocument =
+        await Schedule.findByIdAndDelete(scheduleID);
       sendJsonResponse(res, 200, result);
     } catch (err) {
       logError(err);
