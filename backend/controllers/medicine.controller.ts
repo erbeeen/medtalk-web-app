@@ -27,7 +27,7 @@ export default class MedicineController {
   // Get all medicines with optional filtering
   getMedicines = async (req: Request, res: Response): Promise<void> => {
     try {
-      const { brandName, genericName, source } = req.query;
+      const { genericName, source } = req.query;
       const query: any = {};
 
       // if (brandName) {
@@ -52,7 +52,7 @@ export default class MedicineController {
   // Get a single medicine by ID
   getMedicineById = async (req: Request, res: Response): Promise<void> => {
     try {
-      const medicine = await Medicine.findById(req.params.id);
+      const medicine = await Medicine.findById(req.query.id);
       if (!medicine) {
         sendJsonResponse(res, 404, "Medicine not found");
         return;
@@ -68,7 +68,7 @@ export default class MedicineController {
   updateMedicine = async (req: Request, res: Response): Promise<void> => {
     try {
       const updatedMedicine = await Medicine.findByIdAndUpdate(
-        req.params.id,
+        req.query.id,
         req.body,
         { new: true, runValidators: true }
       );
@@ -88,7 +88,7 @@ export default class MedicineController {
   // Delete a medicine
   deleteMedicine = async (req: Request, res: Response): Promise<void> => {
     try {
-      const deletedMedicine = await Medicine.findByIdAndDelete(req.params.id);
+      const deletedMedicine = await Medicine.findByIdAndDelete(req.query.id);
       
       if (!deletedMedicine) {
         sendJsonResponse(res, 404, "Medicine not found");
