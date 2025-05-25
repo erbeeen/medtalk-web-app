@@ -5,17 +5,18 @@ export type UserType = {
   firstName: string;
   lastName: string;
   email: string;
-  password: string;
+  password?: string;
   actions?: string;
 };
 
 export type AdminUserType = {
   status?: string;
   _id: string;
+  role: string;
   username: string;
   firstName: string;
   lastName: string;
   email: string;
-  role: string;
+  password?: string;
   actions?: string;
 };
