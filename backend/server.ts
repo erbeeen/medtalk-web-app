@@ -5,9 +5,9 @@ import express, { static as static_ } from "express";
 import { fileURLToPath } from "url";
 import logger from "./middleware/logger.js";
 import path from "path";
-import medicineRouter from "routes/medicine.route.js";
 import userRouter from "./routes/user.route.js";
-import scheduleRouter from "routes/schedule.routes.js";
+import medicineRouter from "./routes/medicine.route.js";
+import scheduleRouter from "./routes/schedule.routes.js";
 dotenv.config();
 
 const app = express();
