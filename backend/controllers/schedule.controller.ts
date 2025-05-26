@@ -23,18 +23,19 @@ export default class ScheduleController {
 
     if (!schedule.medicineName) console.log("wrong medicineName");
     if (!schedule.measurement) console.log("wrong measurement");
-    if (schedule.isTaken !== undefined) console.log("wrong isTaken or wrong if statement");
+    if (schedule.isTaken === undefined) console.log("wrong isTaken === undefined guard clause");
+    if (schedule.isTaken == undefined) console.log("wrong isTaken == undefined guard clause");
     
-    // if (
-    //   !schedule.userID ||
-    //   !schedule.medicineName ||
-    //   !schedule.measurement ||
-    //   schedule.isTaken !== undefined ||
-    //   !schedule.date
-    // ) {
-    //   sendJsonResponse(res, 400, "provide all required fields.");
-    //   return;
-    // }
+    if (
+      !schedule.userID ||
+      !schedule.medicineName ||
+      !schedule.measurement ||
+      schedule.isTaken === undefined ||
+      !schedule.date
+    ) {
+      sendJsonResponse(res, 400, "provide all required fields.");
+      return;
+    }
 
     if (!mongoose.Types.ObjectId.isValid(schedule.userID)) {
       sendJsonResponse(res, 400, "invalid userID");
@@ -81,6 +82,7 @@ export default class ScheduleController {
     next: NextFunction,
   ) => {
     const userID = String(req.query.id);
+    console.log("reached getSchedulesByUserID");
 
     if (!userID) {
       sendJsonResponse(res, 400, "no user id provided");
