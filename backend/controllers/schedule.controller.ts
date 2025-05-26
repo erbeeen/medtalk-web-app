@@ -16,6 +16,11 @@ export default class ScheduleController {
     console.log("reached add schedule endpoint");
     console.log("Request body: ", req.body);
 
+    if (!schedule.date) {
+      sendJsonResponse(res, 400, "wrong date data type");
+      return;
+    }
+
     if (
       !schedule.userID ||
       !schedule.medicineName ||
