@@ -83,7 +83,7 @@ export type ScheduleType = {
   medicineName: string;
   measurement: string;
   intakeInstruction?: string;
-  medicationTaken: boolean;
+  isTaken: boolean;
   date: Date;
 };
 
@@ -104,7 +104,7 @@ const scheduleSchema = new mongoose.Schema({
     type: String,
     required: false,
   },
-  medicationTaken: {
+  isTaken: {
     type: Boolean,
     required: true,
   },
