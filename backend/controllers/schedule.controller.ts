@@ -83,6 +83,7 @@ export default class ScheduleController {
   ) => {
     const userID = String(req.query.id);
     console.log("reached getSchedulesByUserID");
+    console.log(`user id value: ${userID}`);
 
     if (!userID) {
       sendJsonResponse(res, 400, "no user id provided");
@@ -95,7 +96,7 @@ export default class ScheduleController {
     }
 
     try {
-      const result = Schedule.find({ userID });
+      const result = Schedule.find({ userID: userID } );
       sendJsonResponse(res, 200, result);
     } catch (err) {
       logError(err);
