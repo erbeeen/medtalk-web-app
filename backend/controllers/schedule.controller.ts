@@ -99,6 +99,9 @@ export default class ScheduleController {
       const result = Schedule.find({ userID: userID } );
       sendJsonResponse(res, 200, result);
     } catch (err) {
+      console.log("reached get schedules by user id error");
+      console.log("short error version: ", err)
+      console.log("\n\n");
       logError(err);
       sendJsonResponse(res, 500);
       next(err);
