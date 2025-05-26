@@ -15,6 +15,7 @@ export default class ScheduleController {
     const schedule: ScheduleType = req.body;
     console.log("Request body: ", req.body);
 
+    if (!schedule.userID) console.log("wrong userID")
     if (!schedule.date) {
       // sendJsonResponse(res, 400, "wrong date data type");
       console.log("wrong data type");
