@@ -7,6 +7,7 @@ const scheduleRouter = Router();
 const sc = new ScheduleController();
 scheduleRouter.use(cors());
 
+scheduleRouter.get("/user", authenticateJwt, sc.getSchedulesByUserID);
 scheduleRouter.post("/", authenticateJwt, sc.addSchedule);
 scheduleRouter.get("/", authenticateJwt, sc.getSchedule);
 scheduleRouter.put("/", authenticateJwt, sc.updateSchedule);

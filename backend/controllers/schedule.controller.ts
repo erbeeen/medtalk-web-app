@@ -13,12 +13,14 @@ export default class ScheduleController {
   addSchedule = async (req: Request, res: Response, next: NextFunction) => {
     // TODO: Test functionality
     const schedule: ScheduleType = req.body;
+    console.log("Request body: ", req.body);
+    
 
     if (
       !schedule.userID ||
       !schedule.medicineName ||
       !schedule.measurement ||
-      !schedule.medicationTaken ||
+      !schedule.isTaken ||
       !schedule.date
     ) {
       sendJsonResponse(res, 400, "provide all required fields.");
@@ -64,12 +66,46 @@ export default class ScheduleController {
     }
   };
 
+  getSchedulesByUserID = async (
+    req: Request,
+    res: Response,
+    next: NextFunction,
+  ) => {
+    const userID = String(req.query.id);
+
+    if (!userID) {
+      sendJsonResponse(res, 400, "no user id provided");
+      return;
+    }
+
+    if (!mongoose.Types.ObjectId.isValid(userID)) {
+      sendJsonResponse(res, 400, "invalid user id");
+      return;
+    }
+
+    try {
+      const result = Schedule.find({ userID });
+      sendJsonResponse(res, 200, result);
+    } catch (err) {
+      logError(err);
+      sendJsonResponse(res, 500);
+      next(err);
+    } finally {
+      return;
+    }
+  };
+
   // TODO: Update Schedule Route
   updateSchedule = async (req: Request, res: Response, next: NextFunction) => {
     // NOTE: This implementation uses the id of a schedule
     // changing future doses is not yet available
     const scheduleID = String(req.query.id);
     const scheduleDetails: ScheduleType = req.body;
+
+    if (!scheduleID) {
+      sendJsonResponse(res, 400, "no schedule id provided");
+      return;
+    }
 
     if (!mongoose.Types.ObjectId.isValid(scheduleID)) {
       sendJsonResponse(res, 400, "invalid schedule id.");
@@ -80,7 +116,7 @@ export default class ScheduleController {
       !scheduleDetails.userID ||
       !scheduleDetails.medicineName ||
       !scheduleDetails.measurement ||
-      !scheduleDetails.medicationTaken ||
+      !scheduleDetails.isTaken ||
       !scheduleDetails.date
     ) {
       sendJsonResponse(res, 400, "provide all required fields.");
