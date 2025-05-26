@@ -13,18 +13,14 @@ export default class ScheduleController {
   addSchedule = async (req: Request, res: Response, next: NextFunction) => {
     // TODO: Test functionality
     const schedule: ScheduleType = req.body;
+    console.log("reached add schedule endpoint");
     console.log("Request body: ", req.body);
 
-    if (!schedule.date) {
-      sendJsonResponse(res, 400, "wrong date data type")
-      return;
-    }
-    
     if (
       !schedule.userID ||
       !schedule.medicineName ||
       !schedule.measurement ||
-      !schedule.isTaken ||
+      schedule.isTaken !== undefined ||
       !schedule.date
     ) {
       sendJsonResponse(res, 400, "provide all required fields.");
