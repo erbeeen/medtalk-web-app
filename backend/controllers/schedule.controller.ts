@@ -131,7 +131,7 @@ export default class ScheduleController {
       !scheduleDetails.userID ||
       !scheduleDetails.medicineName ||
       !scheduleDetails.measurement ||
-      !scheduleDetails.isTaken ||
+      scheduleDetails.isTaken === undefined ||
       !scheduleDetails.date
     ) {
       sendJsonResponse(res, 400, "provide all required fields.");
