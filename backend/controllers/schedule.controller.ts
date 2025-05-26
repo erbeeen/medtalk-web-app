@@ -13,24 +13,27 @@ export default class ScheduleController {
   addSchedule = async (req: Request, res: Response, next: NextFunction) => {
     // TODO: Test functionality
     const schedule: ScheduleType = req.body;
-    console.log("reached add schedule endpoint");
     console.log("Request body: ", req.body);
 
     if (!schedule.date) {
-      sendJsonResponse(res, 400, "wrong date data type");
-      return;
+      // sendJsonResponse(res, 400, "wrong date data type");
+      console.log("wrong data type");
     }
 
-    if (
-      !schedule.userID ||
-      !schedule.medicineName ||
-      !schedule.measurement ||
-      schedule.isTaken !== undefined ||
-      !schedule.date
-    ) {
-      sendJsonResponse(res, 400, "provide all required fields.");
-      return;
-    }
+    if (!schedule.medicineName) console.log("wrong medicineName");
+    if (!schedule.measurement) console.log("wrong measurement");
+    if (schedule.isTaken !== undefined) console.log("wrong isTaken or wrong if statement");
+    
+    // if (
+    //   !schedule.userID ||
+    //   !schedule.medicineName ||
+    //   !schedule.measurement ||
+    //   schedule.isTaken !== undefined ||
+    //   !schedule.date
+    // ) {
+    //   sendJsonResponse(res, 400, "provide all required fields.");
+    //   return;
+    // }
 
     if (!mongoose.Types.ObjectId.isValid(schedule.userID)) {
       sendJsonResponse(res, 400, "invalid userID");
