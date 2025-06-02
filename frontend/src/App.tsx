@@ -1,17 +1,19 @@
+import { useRef } from 'react';
+import { Routes, Route, useLocation } from 'react-router-dom';
 import AdminsRoute from './routes/Admins';
 import HomeRoute from './routes/Home';
 import MedicineRoute from './routes/Medicine';
 import NotFoundRoute from './routes/NotFound';
-import { Routes, Route } from 'react-router-dom';
 import ScheduleRoute from './routes/Schedules';
-import Sidebar from './components/Sidebar';
 import UsersRoute from './routes/Users';
-// import Login from './routes/Login';
+import LoginRoute from './routes/Login';
+import Sidebar from './components/Sidebar';
 import './App.css';
-import { useRef } from 'react';
 
 function App() {
   const mainContentRef = useRef<HTMLDivElement>(null);
+  const location = useLocation();
+  const showSidebar = location.pathname !== "/login";
 
   const scrollToTop = () => {
     if (mainContentRef.current) {
@@ -25,10 +27,11 @@ function App() {
 
   return (
     <>
-      <div id="main"
+      <div 
+        id="main"
         className="h-screen flex bg-light dark:bg-dark
         text-light-text dark:text-dark-text">
-        <Sidebar />
+        {showSidebar && <Sidebar />}
         <div
           ref={mainContentRef}
           id="content-area"
@@ -36,7 +39,8 @@ function App() {
           overflow-y-auto justify-start align-center gap-10 
           bg-light dark:bg-dark text-light-text dark:text-dark-text/95">
           <Routes>
-            <Route path="/" element={<HomeRoute />} />
+            <Route path="/" element={<HomeRoute /> }/>
+            <Route path="/login" element={<LoginRoute />} />
             <Route path="/users" element={<UsersRoute scrollToTop={scrollToTop} />} />
             <Route path="/admins" element={<AdminsRoute scrollToTop={scrollToTop} />} />
             <Route path="/medicine" element={<MedicineRoute scrollToTop={scrollToTop} />} />

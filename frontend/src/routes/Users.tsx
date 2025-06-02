@@ -1,6 +1,5 @@
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { createColumnHelper } from "@tanstack/react-table";
-import { dummyUsers } from "../dummyData";
 import { FaEdit, FaPlus, FaTrash } from "react-icons/fa";
 import type { UserType } from "../types/user";
 import Table from "../components/Table";
@@ -9,6 +8,8 @@ import ScrollTableData from "../components/ScrollTableData";
 import UserAddModal from "../components/modals/UserAddModal";
 import UserDeleteModal from "../components/modals/UserDeleteModal";
 import UserEditModal from "../components/modals/UserEditModal";
+import { useNavigate } from "react-router-dom";
+import automaticLogin from "../auth/auth";
 
 type UsersRouteProps = {
   scrollToTop: () => void;
@@ -18,18 +19,56 @@ type UsersRouteProps = {
 // try to apply it to others (admins, medications etc)
 // animations:
 //  delete button appearing
-//  add, edit, delete modals appearing
+//  add, edit, delete modals appearing 
 
 // FIX: 
 // checkbox selects data even outside the page
 
 export default function UsersRoute({ scrollToTop }: UsersRouteProps) {
-  const [users, setUsers] = useState(dummyUsers);
+  const [isLoading, setIsLoading] = useState(true);
+  const [users, setUsers] = useState<Array<UserType>>([]);
   const [rowSelection, setRowSelection] = useState({});
   const [searchText, setSearchText] = useState("");
   const [globalFilter, setGlobalFilter] = useState<any>([]);
   const [isAddModalOpen, setIsAddModalOpen] = useState(false);
   const [isDeleteAllModalOpen, setIsDeleteAllModalOpen] = useState(false);
+  const navigate = useNavigate();
+
+  useEffect(() => {
+    document.title = "Users | MedTalk";
+
+    const loadData = async () => {
+      try {
+        const response = await fetch("http://localhost:3000/api/users/", {
+          mode: "cors",
+          method: "GET",
+          credentials: "include"
+        })
+
+        const data = await response.json();
+        console.log(data.data);
+        setUsers(data.data);
+      } catch (err) {
+        console.error("loading medicine data failed: ", err);
+      }
+    }
+
+    setIsLoading(true);
+    const loginAndLoadData = async () => {
+      try {
+        await automaticLogin(navigate, "/users");
+        await loadData();
+      } catch (err) {
+        console.error("login failed: ", err);
+      } finally {
+        setIsLoading(false);
+      }
+    }
+
+
+    loginAndLoadData();
+    setIsLoading(false);
+  }, []);
 
   const userColumnHelper = createColumnHelper<UserType>();
   const userColumns = [
@@ -55,7 +94,7 @@ export default function UsersRoute({ scrollToTop }: UsersRouteProps) {
     }),
     userColumnHelper.accessor("_id", {
       header: "_id",
-      cell: props => <ScrollTableData props={props} />,
+      cell: props => <ScrollTableData props={props} value={String(props.getValue())} />,
       size: 100,
       minSize: 100,
     }),
@@ -80,17 +119,16 @@ export default function UsersRoute({ scrollToTop }: UsersRouteProps) {
       cell: props => <ScrollTableData props={props} />,
       size: 100,
     }),
-    userColumnHelper.accessor("password", {
-      header: "Password",
-      cell: props => <ScrollTableData props={props} />,
-      enableGlobalFilter: false,
-      size: 200,
-      minSize: 250,
-    }),
+    // userColumnHelper.accessor("password", {
+    //   header: "Password",
+    //   cell: props => <ScrollTableData props={props} />,
+    //   enableGlobalFilter: false,
+    //   size: 200,
+    //   minSize: 150,
+    // }),
     userColumnHelper.accessor("actions", {
       header: "",
-      size: 100,
-      minSize: 100,
+      size: 125,
       cell: (props) => {
         const [isEditModalOpen, setIsEditModalOpen] = useState(false);
         const [isDeleteModalOpen, setIsDeleteModalOpen] = useState(false);
@@ -189,15 +227,17 @@ export default function UsersRoute({ scrollToTop }: UsersRouteProps) {
         </div>
 
       </div>
-      <Table
-        columns={userColumns}
-        content={users}
-        rowSelection={rowSelection}
-        onRowSelectionChange={setRowSelection}
-        globalFilter={globalFilter}
-        setGlobalFilter={setGlobalFilter}
-        scrollToTop={scrollToTop}
-      />
+      {!isLoading &&
+        <Table
+          columns={userColumns}
+          content={users}
+          rowSelection={rowSelection}
+          onRowSelectionChange={setRowSelection}
+          globalFilter={globalFilter}
+          setGlobalFilter={setGlobalFilter}
+          scrollToTop={scrollToTop}
+        />
+      }
     </div>
   );
 }

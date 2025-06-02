@@ -1,14 +1,15 @@
+import { useState, useEffect } from "react";
 import type { AdminUserType } from "../types/user";
 import { FaPlus, FaEdit, FaTrash } from "react-icons/fa";
 import Table from "../components/Table";
 import SearchBar from "../components/SearchBar";
 import { createColumnHelper } from "@tanstack/react-table";
-import { dummyAdmins } from "../dummyData";
-import { useState } from "react";
 import AdminAddModal from "../components/modals/AdminAddModal";
 import AdminDeleteModal from "../components/modals/AdminDeleteModal";
 import ScrollTableData from "../components/ScrollTableData";
 import AdminEditModal from "../components/modals/AdminEditModal";
+import { useNavigate } from "react-router-dom";
+import automaticLogin from "../auth/auth";
 
 type AdminsRouteProps = {
   scrollToTop: () => void;
@@ -24,12 +25,49 @@ type AdminsRouteProps = {
 // checkbox selects data even outside the page
 
 export default function AdminsRoute({ scrollToTop }: AdminsRouteProps) {
-  const [admins, setAdmins] = useState(dummyAdmins);
+  const [isLoading, setIsLoading] = useState(true);
+  const [admins, setAdmins] = useState<Array<AdminUserType>>([]);
   const [rowSelection, setRowSelection] = useState({});
   const [searchText, setSearchText] = useState("");
   const [globalFilter, setGlobalFilter] = useState<any>([]);
   const [isAddModalOpen, setIsAddModalOpen] = useState(false);
   const [isDeleteAllModalOpen, setIsDeleteAllModalOpen] = useState(false);
+  const navigate = useNavigate();
+  useEffect(() => {
+    document.title = "Admins | MedTalk"
+
+    const loadData = async () => {
+      try {
+        const response = await fetch("http://localhost:3000/api/users/", {
+          mode: "cors",
+          method: "GET",
+          credentials: "include"
+        })
+
+        const data = await response.json();
+        console.log(data.data);
+        setAdmins(data.data);
+      } catch (err) {
+        console.error("loading medicine data failed: ", err);
+      }
+    }
+
+    setIsLoading(true);
+    const loginAndLoadData = async () => {
+      try {
+        await automaticLogin(navigate, "/admins");
+        await loadData();
+      } catch (err) {
+        console.error("login failed: ", err);
+      } finally {
+        setIsLoading(false);
+      }
+    }
+
+
+    loginAndLoadData();
+    setIsLoading(false);
+  }, []);
 
   const adminColumnHelper = createColumnHelper<AdminUserType>();
   const adminColumns = [
@@ -86,8 +124,7 @@ export default function AdminsRoute({ scrollToTop }: AdminsRouteProps) {
     }),
     adminColumnHelper.accessor("actions", {
       header: "",
-      size: 100,
-      minSize: 100,
+      size: 125,
       cell: (props) => {
         const [isEditModalOpen, setIsEditModalOpen] = useState(false);
         const [isDeleteModalOpen, setIsDeleteModalOpen] = useState(false);
@@ -186,15 +223,17 @@ export default function AdminsRoute({ scrollToTop }: AdminsRouteProps) {
         </div>
 
       </div>
-      <Table
-        columns={adminColumns}
-        content={admins}
-        rowSelection={rowSelection}
-        onRowSelectionChange={setRowSelection}
-        globalFilter={globalFilter}
-        setGlobalFilter={setGlobalFilter}
-        scrollToTop={scrollToTop}
-      />
+      {!isLoading &&
+        <Table
+          columns={adminColumns}
+          content={admins}
+          rowSelection={rowSelection}
+          onRowSelectionChange={setRowSelection}
+          globalFilter={globalFilter}
+          setGlobalFilter={setGlobalFilter}
+          scrollToTop={scrollToTop}
+        />
+      }
     </div>
   )
 }

@@ -18,22 +18,42 @@ export default function UserEditModal({ onClose, data, setUsers }: EditUserModal
   const [firstName, setFirstName] = useState(data.firstName);
   const [lastName, setLastName] = useState(data.lastName);
 
-  const handleSubmit = () => {
+  const handleSubmit = async () => {
     const updatedData: UserType = {
-      _id: data._id,
       email: email,
       username: username,
       firstName: firstName,
       lastName: lastName,
     };
 
-    setUsers(prevData =>
-      prevData.map((user) =>
-        user._id === updatedData._id ? { ...user, ...updatedData } : user
-      )
-    );
+    try {
+      console.log("starting update request");
+      const response = await fetch(`http://localhost:3000/api/users/update/?id=${data._id}`, {
+        mode: "cors",
+        method: "PUT",
+        headers: {
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify(updatedData),
+        credentials: "include",
+      });
 
-    onClose();
+      console.log("parsing data into json");
+      const updatedUser = await response.json();
+      console.log("data value:", updatedUser);
+
+      if (updatedUser.success) {
+        setUsers(prevData =>
+          prevData.map((user) =>
+            user._id === updatedUser.data._id ? { ...user, ...updatedData } : user
+          )
+        );
+        onClose();
+      }
+    } catch (err) {
+      console.error("update user error: ", err);
+    }
+
   }
 
   return (
@@ -46,7 +66,7 @@ export default function UserEditModal({ onClose, data, setUsers }: EditUserModal
       >
         <div className="w-full mt-3 mb-5 flex justify-between items-center">
           <h1 className="text-xl font-bold">Edit User</h1>
-          <CloseButton onClose={onClose}/>
+          <CloseButton onClose={onClose} />
         </div>
 
         <div className="modal-input-container">

@@ -16,15 +16,45 @@ export default function UserAddModal({ onClose, setUsers }: NewUserModalProps) {
   const [password, setPassword] = useState("");
   const [confirmPassword, setConfirmPassword] = useState("");
 
-  const handleSubmit = () => {
+  const handleSubmit = async () => {
     const newUser: UserType = {
-      _id: "69420",
       email: email,
       username: username,
       firstName: firstName,
       lastName: lastName,
       password: password,
     };
+
+
+    try {
+      console.log("starting create user request");
+      const body = JSON.stringify(newUser)
+      const response = await fetch(`http://localhost:3000/api/users/register/`, {
+        mode: "cors",
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+        },
+        body: body,
+        credentials: "include",
+      });
+
+      console.log("parsing data into json");
+      const result = await response.json();
+      console.log("data value:", result);
+      console.log("result.data._id value", result.data._id);
+      
+
+      if (result.success) {
+        setUsers(prev =>
+          [result.data, ...prev]
+        );
+        
+        onClose();
+      }
+    } catch (err) {
+      console.error("update user error: ", err);
+    }
 
     setUsers(previous => [newUser, ...previous]);
     onClose();
@@ -126,9 +156,10 @@ export default function UserAddModal({ onClose, setUsers }: NewUserModalProps) {
 
           <div
             className="py-2 px-5 font-medium text-sm border rounded-4xl dark:border-primary-dark/50 dark:hover:bg-primary-dark/70"
-            onClick={onClose}
+            onClick={handleSubmit}
           >
-            <button type="button" className="cursor-pointer" onClick={handleSubmit}>Submit</button>
+            Submit
+            {/* <button type="button" className="cursor-pointer" onClick={handleSubmit}>Submit</button> */}
           </div>
         </div>
 

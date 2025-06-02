@@ -21,29 +21,46 @@ export default function UserDeleteModal({ onClose, data, setUsers }: DeleteUserM
   }
 
 
-  const isMapType = (data: any): data is Record<string, boolean> => {
-    return (
-      typeof data === "object" &&
-      data !== null &&
-      Object.values(data).every(value => typeof value === "boolean")
-    );
-  }
+  // const isMapType = (data: any): data is Record<string, boolean> => {
+  //   return (
+  //     typeof data === "object" &&
+  //     data !== null &&
+  //     Object.values(data).every(value => typeof value === "boolean")
+  //   );
+  // }
 
-  const handleDelete = () => {
-    if (isUserType(data)) {
-      setUsers(previous =>
-        previous.filter(user =>
-          user._id !== data._id
-        )
-      );
-    } else if (isMapType(data)) {
-      for (const key of Object.keys(data)) {
+  const handleDelete = async () => {
+    try {
+      console.log("starting delete request");
+      const response = await fetch(`http://localhost:3000/api/users/delete/?id=${data._id}`, {
+        mode: "cors",
+        method: "DELETE",
+        credentials: "include",
+      });
+
+      const deletedUser = await response.json();
+      console.log("data value:", deletedUser);
+
+      if (deletedUser.success) {
+        // if (isUserType(data)) {
         setUsers(previous =>
           previous.filter(user =>
-            user._id !== key
+            user._id !== deletedUser.data._id
           )
         );
+        // } else if (isMapType(data)) {
+        //   for (const key of Object.keys(data)) {
+        //     setUsers(previous =>
+        //       previous.filter(user =>
+        //         user._id !== key
+        //       )
+        //     );
+        //   }
+        // }
+        onClose();
       }
+    } catch (err) {
+      console.error("delete user error: ", err);
     }
 
     onClose();

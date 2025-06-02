@@ -2,11 +2,11 @@ import type { CellContext } from "@tanstack/react-table";
 import { useState } from "react";
 
 type ScrollTableProps = {
-  props: CellContext<any, string | undefined>;
+  props: CellContext<any, any>;
+  value?: any;
 }
 
-export default function ScrollTableData({ props }: ScrollTableProps) {
-  console.log("ScrollTableData data: ", props.getValue());
+export default function ScrollTableData({ props, value }: ScrollTableProps) {
   const [isHovered, setIsHovered] = useState(false);
   return (
     <div
@@ -14,7 +14,7 @@ export default function ScrollTableData({ props }: ScrollTableProps) {
       onMouseEnter={() => setIsHovered(true)}
       onMouseLeave={() => setIsHovered(false)}
     >
-      {props.getValue()}
+      {value !== undefined ? value : props.getValue()}
     </div>
   )
 }

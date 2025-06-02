@@ -79,8 +79,6 @@ export default function Table({
   });
 
   useEffect(() => {
-    console.log("Table: content changed");
-    console.log("Resetting pagination");
     table.resetPageIndex();
   }, [content]);
 
@@ -92,7 +90,7 @@ export default function Table({
             <tr key={headerGroup.id} className="bg-gray-700/40 border-b border-dark/10 dark:border-light/10 rounded-2xl">
               {headerGroup.headers.map((header) => (
                 <th
-                  className="py-5 align-middle font-medium "
+                  className="py-5 px-4 align-middle font-medium "
                   key={header.id}
                   style={{
                     width: header.getSize(),
@@ -114,7 +112,7 @@ export default function Table({
           {table.getRowModel().rows.map((row) => (
             <tr key={row.id} className="border-b border-dark/10 dark:border-light/10 font-light align-middle">
               {row.getVisibleCells().map((cell) => (
-                <td className="py-3" key={cell.id} id={cell.id}>
+                <td className="py-3 px-4" key={cell.id} id={cell.id}>
                   {flexRender(cell.column.columnDef.cell, cell.getContext())}
                 </td>
               ))}
