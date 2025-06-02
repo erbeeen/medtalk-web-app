@@ -6,8 +6,8 @@
 import { NextFunction, Request, Response } from "express";
 import Medicine, { MedicineType } from "../models/medicine.model.js";
 import sendJsonResponse from "../utils/httpResponder.js";
-import { logError } from "middleware/logger.js";
-import SearchedMedicine from "models/searched-medicines.model.js";
+import { logError } from "../middleware/logger.js";
+import SearchedMedicine from "../models/searched-medicines.model.js";
 
 export default class MedicineController {
   constructor() {}
