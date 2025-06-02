@@ -30,7 +30,7 @@ export default function ScheduleRoute({ scrollToTop }: ScheduleRouteProps) {
 
     const loadData = async () => {
       try {
-        const response = await fetch("http://localhost:3000/api/schedule/all", {
+        const response = await fetch("/api/schedule/all", {
           mode: "cors",
           method: "GET",
           credentials: "include"

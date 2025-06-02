@@ -9,7 +9,7 @@ export default async function automaticLogin(
 ) {
   try {
     console.log("calling automatic login");
-    const response = await fetch("http://localhost:3000/api/users/login", {
+    const response = await fetch("/api/users/login", {
       mode: "cors",
       method: "POST",
       headers: {
@@ -31,22 +31,19 @@ export default async function automaticLogin(
       }
     }
     console.log("got to after checking 200");
-    
+
     if (response.status == 400 || response.status == 403) {
       console.log("fetch to login failed with response 200");
       console.log("Trying to refresh token");
 
-      const refreshTokenResponse = await fetch(
-        "http://localhost:3000/api/users/token",
-        {
-          mode: "cors",
-          method: "POST",
-          headers: {
-            "Content-Type": "application/json",
-          },
-          credentials: "include",
+      const refreshTokenResponse = await fetch("/api/users/token", {
+        mode: "cors",
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
         },
-      );
+        credentials: "include",
+      });
       const refreshStatus = refreshTokenResponse.status;
       console.log("fetch refresh token request status is ", refreshStatus);
       if (

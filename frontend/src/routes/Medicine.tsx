@@ -29,7 +29,7 @@ export default function MedicineRoute({ scrollToTop }: MedicineRouteProps) {
 
     const loadData = async () => {
       try {
-        const response = await fetch("http://localhost:3000/api/medicine/all", {
+        const response = await fetch("/api/medicine/all", {
           mode: "cors",
           method: "GET",
           credentials: "include"

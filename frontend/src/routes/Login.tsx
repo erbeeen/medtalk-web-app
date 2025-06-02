@@ -22,7 +22,7 @@ export default function LoginRoute() {
     }
     try {
       const body = JSON.stringify(credentials);
-      const response = await fetch("http://localhost:3000/api/users/login",
+      const response = await fetch("/api/users/login",
         {
           mode: "cors",
           method: "POST",

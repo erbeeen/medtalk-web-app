@@ -41,7 +41,7 @@ export default function Sidebar() {
         className="sidebar-link mt-auto mb-5 hover:bg-800 dark:hover:bg-primary-dark/50 cursor-pointer"
         onClick={async () => {
           try {
-            const response = await fetch("http://localhost:3000/api/users/logout", {
+            const response = await fetch("/api/users/logout", {
               mode: "cors",
               method: "POST",
               credentials: "include",

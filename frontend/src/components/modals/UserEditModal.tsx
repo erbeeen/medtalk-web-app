@@ -28,7 +28,7 @@ export default function UserEditModal({ onClose, data, setUsers }: EditUserModal
 
     try {
       console.log("starting update request");
-      const response = await fetch(`http://localhost:3000/api/users/update/?id=${data._id}`, {
+      const response = await fetch(`/api/users/update/?id=${data._id}`, {
         mode: "cors",
         method: "PUT",
         headers: {

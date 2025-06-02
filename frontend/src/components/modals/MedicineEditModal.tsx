@@ -37,7 +37,7 @@ export default function MedicineEditModal({ onClose, data, setMedicines }: EditU
     try {
       console.log("starting new medicine request");
       const body = JSON.stringify(newMedicine)
-      const response = await fetch(`http://localhost:3000/api/users/register/`, {
+      const response = await fetch(`/api/users/register/`, {
         mode: "cors",
         method: "POST",
         headers: {

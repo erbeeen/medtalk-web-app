@@ -30,7 +30,7 @@ export default function ScheduleAddModal({ onClose, setSchedules }: NewUserModal
     try {
       console.log("starting create user request");
       const body = JSON.stringify(newUser)
-      const response = await fetch(`http://localhost:3000/api/users/register/`, {
+      const response = await fetch(`/api/users/register/`, {
         mode: "cors",
         method: "POST",
         headers: {

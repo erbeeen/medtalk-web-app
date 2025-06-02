@@ -32,7 +32,7 @@ export default function ScheduleDeleteModal({ onClose, data, setSchedules }: Del
   const handleDelete = async () => {
     try {
       console.log("starting delete request");
-      const response = await fetch(`http://localhost:3000/api/users/delete/?id=${data._id}`, {
+      const response = await fetch(`/api/users/delete/?id=${data._id}`, {
         mode: "cors",
         method: "DELETE",
         credentials: "include",

@@ -39,7 +39,7 @@ export default function UsersRoute({ scrollToTop }: UsersRouteProps) {
 
     const loadData = async () => {
       try {
-        const response = await fetch("http://localhost:3000/api/users/", {
+        const response = await fetch("/api/users/", {
           mode: "cors",
           method: "GET",
           credentials: "include"
