@@ -1,7 +1,7 @@
 import { Router } from "express";
 import cors from "cors";
 import MedicineController from "../controllers/medicine.controller.js";
-import authenticateJwt from "middleware/jwtAuth.js";
+import authenticateJwt from "../middleware/jwtAuth.js";
 import cookieParser from "cookie-parser";
 
 const medicineRouter: Router = Router();
