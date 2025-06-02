@@ -18,7 +18,7 @@ export default function ScheduleEditModal({ onClose, data, setSchedules }: EditU
   const [measurement, setMeasurement] = useState(data.measurement);
   const [intakeInstruction, setIntakeInstruction] = useState(data.intakeInstruction);
   const [isTaken, setIsTaken] = useState(data.isTaken);
-  const [date, setDate] = useState(data.date);
+  const [date, setDate] = useState("");
 
   const handleSubmit = async () => {
     const newUser: ScheduleType = {
