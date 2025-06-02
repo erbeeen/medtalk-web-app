@@ -6,6 +6,6 @@ export type ScheduleType = {
   measurement: string;
   intakeInstruction: string;
   isTaken: string;
-  date: Date;
+  date: Date | string;
   actions?: string
 };

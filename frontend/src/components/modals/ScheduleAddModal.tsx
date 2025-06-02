@@ -14,7 +14,7 @@ export default function ScheduleAddModal({ onClose, setSchedules }: NewUserModal
   const [measurement, setMeasurement] = useState("");
   const [intakeInstruction, setIntakeInstruction] = useState("");
   const [isTaken, setIsTaken] = useState("");
-  const [date, setDate] = useState(new Date());
+  const [date, setDate] = useState("");
 
   const handleSubmit = async () => {
     const newUser: ScheduleType = {
@@ -134,7 +134,7 @@ export default function ScheduleAddModal({ onClose, setSchedules }: NewUserModal
         <div className="modal-input-container">
           <label htmlFor="confirm-password" className="w-8/12">Confirm Password</label>
           <input
-            type="password"
+            type="text"
             id="confirm-password"
             name="confirm-password"
             className="modal-input"
