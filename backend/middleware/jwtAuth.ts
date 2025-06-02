@@ -13,7 +13,12 @@ export default function authenticateJwt(
   next: NextFunction,
 ) {
   const authHeader = req.headers["authorization"];
-  const token = authHeader && authHeader.split(" ")[1];
+  let token = authHeader && authHeader.split(" ")[1];
+
+  if (token === undefined) {
+    token = req.cookies.accessToken;
+  }
+
   if (token === undefined) {
     if (
       req.originalUrl == "/api/users/login" ||
@@ -28,8 +33,15 @@ export default function authenticateJwt(
   } else {
     jwt.verify(token, process.env.SECRET_ACCESS_TOKEN, (err, user) => {
       if (err) {
-        res.sendStatus(403);
-        return;
+        if (
+          req.originalUrl == "/api/users/login" || 
+          req.originalUrl == "/api/users/token"
+        ) {
+          next();
+        } else {
+          res.sendStatus(403);
+          return;
+        }
       } else {
         req.user = user;
         next();
