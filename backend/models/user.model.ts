@@ -1,7 +1,7 @@
 import mongoose from "mongoose";
 
 export type UserType = {
-  id?: string;
+  _id?: mongoose.Types.ObjectId | string;
   role: string;
   email: string;
   username: string;
@@ -17,16 +17,6 @@ const userSchema = new mongoose.Schema({
     type: String,
     required: true,
   },
-  firstName: {
-    type: String,
-    required: true,
-    trim: true,
-  },
-  lastName: {
-    type: String,
-    required: true,
-    trim: true,
-  },
   email: {
     type: String,
     required: true,
@@ -38,12 +28,23 @@ const userSchema = new mongoose.Schema({
     required: true,
     trim: true,
   },
+  firstName: {
+    type: String,
+    required: true,
+    trim: true,
+  },
+  lastName: {
+    type: String,
+    required: true,
+    trim: true,
+  },
   password: {
     type: String,
     required: true,
     minlength: 8,
   },
 });
+userSchema.set("timestamps", true);
 
 const User = mongoose.model("users", userSchema);
 

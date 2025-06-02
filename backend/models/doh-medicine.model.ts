@@ -23,6 +23,7 @@ const dohMedicineSchema = new mongoose.Schema({
   },
   Route: String,
   "Technical Specification": String,
+  "ATC CODE": String,
 });
 
 const DOHMedicine = mongoose.model(

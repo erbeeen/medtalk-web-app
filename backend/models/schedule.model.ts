@@ -113,6 +113,7 @@ const scheduleSchema = new mongoose.Schema({
     required: true,
   },
 });
+scheduleSchema.set("timestamps", true);
 
 export type ScheduleDocument = ScheduleType & mongoose.Document;
 
