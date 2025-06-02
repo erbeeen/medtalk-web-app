@@ -7,6 +7,9 @@ import ScrollTableData from "../components/ScrollTableData";
 import { FaEdit, FaPlus, FaTrash } from "react-icons/fa";
 import SearchBar from "../components/SearchBar";
 import Table from "../components/Table";
+import MedicineAddModal from "../components/modals/MedicineAddModal";
+import MedicineEditModal from "../components/modals/MedicineEditModal";
+import MedicineDeleteModal from "../components/modals/MedicineDeleteModal";
 
 type MedicineRouteProps = {
   scrollToTop: () => void;
@@ -153,13 +156,13 @@ export default function MedicineRoute({ scrollToTop }: MedicineRouteProps) {
               <FaEdit size="1.2rem" />
             </button>
             {isEditModalOpen && (
-              <UserEditModal key={props.row.id}
+              <MedicineEditModal key={props.row.id}
                 onClose={() => {
                   setIsEditModalOpen(false);
                   setRowSelection({});
                 }}
                 data={props.row.original}
-                setUsers={setUsers} />
+                setMedicines={setMedicines} />
             )}
             <button
               type="button"
@@ -169,13 +172,13 @@ export default function MedicineRoute({ scrollToTop }: MedicineRouteProps) {
               <FaTrash size="1.2rem" />
             </button>
             {isDeleteModalOpen && (
-              <UserDeleteModal
+              <MedicineDeleteModal
                 onClose={() => {
                   setIsDeleteModalOpen(false);
                   setRowSelection({});
                 }}
                 data={props.row.original}
-                setUsers={setUsers} />
+                setMedicines={setMedicines} />
             )}
           </div>
         );
@@ -212,9 +215,9 @@ export default function MedicineRoute({ scrollToTop }: MedicineRouteProps) {
             <FaPlus size="1.3rem" />
           </div>
           {isAddModalOpen && (
-            <UserAddModal
+            <MedicineAddModal
               onClose={() => setIsAddModalOpen(false)}
-              setUsers={setUsers}
+              setMedicines={setMedicines}
             />
           )}
           <div>
@@ -229,10 +232,10 @@ export default function MedicineRoute({ scrollToTop }: MedicineRouteProps) {
               </button>
             )}
             {isDeleteAllModalOpen && (
-              <UserDeleteModal
+              <MedicineDeleteModal
                 onClose={() => setIsDeleteAllModalOpen(false)}
                 data={rowSelection}
-                setUsers={setUsers} />
+                setMedicines={setMedicines} />
             )}
           </div>
         </div>

@@ -1,28 +1,33 @@
-import type { Dispatch, SetStateAction } from "react";
-import type { UserType } from "../../types/user";
-import { useState } from "react";
-import CloseButton from "../CloseButton";
+import { useState, type Dispatch, type SetStateAction } from "react";
+import CloseButton from ".././CloseButton";
+import type { ScheduleType } from "../../types/schedule";
 
-type NewUserModalProps = {
+type EditUserModalProps = {
   onClose: () => void;
-  setUsers: Dispatch<SetStateAction<Array<UserType>>>;
+  data: ScheduleType;
+  setSchedules: Dispatch<SetStateAction<Array<ScheduleType>>>;
 }
 
-export default function UserAddModal({ onClose, setUsers }: NewUserModalProps) {
-  const [username, setUsername] = useState("");
-  const [email, setEmail] = useState("");
-  const [firstName, setFirstName] = useState("");
-  const [lastName, setLastName] = useState("");
-  const [password, setPassword] = useState("");
-  const [confirmPassword, setConfirmPassword] = useState("");
+// TODO: 
+// add animations
+// add api request to edit record on database
+
+export default function ScheduleEditModal({ onClose, data, setSchedules }: EditUserModalProps) {
+  const [userID, setUserID] = useState(data.userID);
+  const [medicineName, setMedicineName] = useState(data.medicineName);
+  const [measurement, setMeasurement] = useState(data.measurement);
+  const [intakeInstruction, setIntakeInstruction] = useState(data.intakeInstruction);
+  const [isTaken, setIsTaken] = useState(data.isTaken);
+  const [date, setDate] = useState(data.date);
 
   const handleSubmit = async () => {
-    const newUser: UserType = {
-      email: email,
-      username: username,
-      firstName: firstName,
-      lastName: lastName,
-      password: password,
+    const newUser: ScheduleType = {
+      userID: userID,
+      medicineName: medicineName,
+      measurement: measurement,
+      intakeInstruction: intakeInstruction,
+      isTaken: isTaken,
+      date: date,
     };
 
 
@@ -45,7 +50,7 @@ export default function UserAddModal({ onClose, setUsers }: NewUserModalProps) {
       console.log("result.data._id value", result.data._id);
 
       if (result.success) {
-        setUsers(prev =>
+        setSchedules(prev =>
           [result.data, ...prev]
         );
 
@@ -77,8 +82,8 @@ export default function UserAddModal({ onClose, setUsers }: NewUserModalProps) {
             name="username"
             type="text"
             className="modal-input"
-            value={username}
-            onChange={(e) => setUsername(e.target.value)}
+            value={userID}
+            onChange={(e) => setUserID(e.target.value)}
           />
         </div>
 
@@ -89,8 +94,8 @@ export default function UserAddModal({ onClose, setUsers }: NewUserModalProps) {
             id="email"
             name="email"
             className="modal-input"
-            value={email}
-            onChange={(e) => setEmail(e.target.value)}
+            value={medicineName}
+            onChange={(e) => setMedicineName(e.target.value)}
           />
         </div>
 
@@ -101,8 +106,8 @@ export default function UserAddModal({ onClose, setUsers }: NewUserModalProps) {
             id="first-name"
             name="first-name"
             className="modal-input"
-            value={firstName}
-            onChange={(e) => setFirstName(e.target.value)}
+            value={measurement}
+            onChange={(e) => setMeasurement(e.target.value)}
           />
         </div>
 
@@ -113,8 +118,8 @@ export default function UserAddModal({ onClose, setUsers }: NewUserModalProps) {
             id="last-name"
             name="last-name"
             className="modal-input"
-            value={lastName}
-            onChange={(e) => setLastName(e.target.value)}
+            value={intakeInstruction}
+            onChange={(e) => setIntakeInstruction(e.target.value)}
           />
         </div>
 
@@ -125,8 +130,8 @@ export default function UserAddModal({ onClose, setUsers }: NewUserModalProps) {
             id="password"
             name="password"
             className="modal-input"
-            value={password}
-            onChange={(e) => setPassword(e.target.value)}
+            value={isTaken}
+            onChange={(e) => setIsTaken(e.target.value)}
           />
         </div>
 
@@ -137,8 +142,8 @@ export default function UserAddModal({ onClose, setUsers }: NewUserModalProps) {
             id="confirm-password"
             name="confirm-password"
             className="modal-input"
-            value={confirmPassword}
-            onChange={(e) => setConfirmPassword(e.target.value)}
+            value={date}
+            onChange={(e) => setDate(e.target.value)}
           />
         </div>
 

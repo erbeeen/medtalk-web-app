@@ -1,6 +1,6 @@
 export type MedicineType = {
   status?: string;
-  _id: string;
+  _id?: string;
   "Level 1": string;
   "Level 2": string;
   "Level 3": string;

@@ -1,6 +1,6 @@
 export type ScheduleType = {
   status?: string;
-  _id: string;
+  _id?: string;
   userID: string;
   medicineName: string;
   measurement: string;

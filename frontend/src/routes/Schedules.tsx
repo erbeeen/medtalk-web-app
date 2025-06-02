@@ -7,6 +7,9 @@ import ScrollTableData from "../components/ScrollTableData";
 import { FaEdit, FaPlus, FaTrash } from "react-icons/fa";
 import SearchBar from "../components/SearchBar";
 import Table from "../components/Table";
+import ScheduleAddModal from "../components/modals/ScheduleAddModal";
+import ScheduleEditModal from "../components/modals/ScheduleEditModal";
+import ScheduleDeleteModal from "../components/modals/ScheduleDeleteModal";
 
 type ScheduleRouteProps = {
   scrollToTop: () => void;
@@ -132,13 +135,14 @@ export default function ScheduleRoute({ scrollToTop }: ScheduleRouteProps) {
               <FaEdit size="1.2rem" />
             </button>
             {isEditModalOpen && (
-              <AdminEditModal key={props.row.id}
+              <ScheduleEditModal 
+                key={props.row.id}
                 onClose={() => {
                   setIsEditModalOpen(false);
                   setRowSelection({});
                 }}
                 data={props.row.original}
-                setAdmins={setAdmins} />
+                setSchedules={setSchedules} />
             )}
             <button
               type="button"
@@ -148,13 +152,13 @@ export default function ScheduleRoute({ scrollToTop }: ScheduleRouteProps) {
               <FaTrash size="1.2rem" />
             </button>
             {isDeleteModalOpen && (
-              <AdminDeleteModal
+              <ScheduleDeleteModal
                 onClose={() => {
                   setIsDeleteModalOpen(false);
                   setRowSelection({});
                 }}
                 data={props.row.original}
-                setAdmins={setAdmins} />
+                setSchedules={setSchedules} />
             )}
           </div>
         );
@@ -191,9 +195,9 @@ export default function ScheduleRoute({ scrollToTop }: ScheduleRouteProps) {
             <FaPlus size="1.3rem" />
           </div>
           {isAddModalOpen && (
-            <UserAddModal
+            <ScheduleAddModal
               onClose={() => setIsAddModalOpen(false)}
-              setUsers={setUsers}
+              setSchedules={setSchedules}
             />
           )}
           <div>
@@ -208,10 +212,11 @@ export default function ScheduleRoute({ scrollToTop }: ScheduleRouteProps) {
               </button>
             )}
             {isDeleteAllModalOpen && (
-              <UserDeleteModal
+              <ScheduleDeleteModal
                 onClose={() => setIsDeleteAllModalOpen(false)}
                 data={rowSelection}
-                setUsers={setUsers} />
+                setSchedules={setSchedules} 
+              />
             )}
           </div>
         </div>
