@@ -1,17 +1,17 @@
 //admin
 
-
 //TODO
-//port GPT in the backend 
+//port GPT in the backend
 
-import { Request, Response } from "express";
+import { NextFunction, Request, Response } from "express";
 import Medicine, { MedicineType } from "../models/medicine.model.js";
 import sendJsonResponse from "../utils/httpResponder.js";
+import { logError } from "middleware/logger.js";
+import SearchedMedicine from "models/searched-medicines.model.js";
 
 export default class MedicineController {
   constructor() {}
 
-  // Create a new medicine
   createMedicine = async (req: Request, res: Response): Promise<void> => {
     try {
       const medicineData: MedicineType = req.body;
@@ -24,8 +24,22 @@ export default class MedicineController {
     }
   };
 
+  getAllMedicines = async (_req: Request, res: Response) => {
+    try {
+      const medicines = await Medicine.find();
+      sendJsonResponse(res, 200, medicines);
+    } catch (err) {
+      sendJsonResponse(res, 500, "cannot get all medicine");
+    } finally {
+      return;
+    }
+  };
+
   // Get all medicines with optional filtering
-  getMedicines = async (req: Request, res: Response): Promise<void> => {
+  getMedicinesWithFilter = async (
+    req: Request,
+    res: Response,
+  ): Promise<void> => {
     try {
       const { genericName, source } = req.query;
       const query: any = {};
@@ -48,8 +62,6 @@ export default class MedicineController {
     }
   };
 
-  //keep; gawa ng get_medicine gamit yung genericName
-  // Get a single medicine by ID
   getMedicineById = async (req: Request, res: Response): Promise<void> => {
     try {
       const medicine = await Medicine.findById(req.query.id);
@@ -64,20 +76,45 @@ export default class MedicineController {
     }
   };
 
-  // Update a medicine
+  getMedicineByName = async (
+    req: Request,
+    res: Response,
+    next: NextFunction,
+  ): Promise<void> => {
+    const genericName = req.body.genericName;
+
+    if (genericName === undefined) {
+      sendJsonResponse(res, 400, "provide generic name");
+      return;
+    }
+
+    try {
+      const medicine = await Medicine.findOne({ Molecule: genericName });
+      const saveSearch = new SearchedMedicine({
+        medicine: genericName,
+      });
+      saveSearch.save();
+      sendJsonResponse(res, 200, medicine);
+    } catch (err) {
+      logError(err);
+      sendJsonResponse(res, 500);
+      next(err);
+    }
+  };
+
   updateMedicine = async (req: Request, res: Response): Promise<void> => {
     try {
       const updatedMedicine = await Medicine.findByIdAndUpdate(
         req.query.id,
         req.body,
-        { new: true, runValidators: true }
+        { new: true, runValidators: true },
       );
-      
+
       if (!updatedMedicine) {
         sendJsonResponse(res, 404, "Medicine not found");
         return;
       }
-      
+
       sendJsonResponse(res, 200, updatedMedicine);
     } catch (err) {
       console.error("updateMedicine error:", err);
@@ -85,16 +122,15 @@ export default class MedicineController {
     }
   };
 
-  // Delete a medicine
   deleteMedicine = async (req: Request, res: Response): Promise<void> => {
     try {
       const deletedMedicine = await Medicine.findByIdAndDelete(req.query.id);
-      
+
       if (!deletedMedicine) {
         sendJsonResponse(res, 404, "Medicine not found");
         return;
       }
-      
+
       sendJsonResponse(res, 200, { message: "Medicine deleted successfully" });
     } catch (err) {
       console.error("deleteMedicine error:", err);
@@ -105,7 +141,8 @@ export default class MedicineController {
   // Search medicines with advanced filtering
   searchMedicines = async (req: Request, res: Response): Promise<void> => {
     try {
-      const { brandName, genericName, source, manufacturer, classification } = req.query;
+      const { brandName, genericName, source, manufacturer, classification } =
+        req.query;
       const query: any = {};
 
       if (brandName) {

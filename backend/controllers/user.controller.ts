@@ -29,12 +29,20 @@ const USER_ROLE = "user";
 export default class UserController {
   constructor() {}
 
-  registerUser = async (req: Request, res: Response, next: NextFunction) => {
+  // WARN: Possible problem for register and login route:
+  // Multiple refresh tokens from the same user are generated.
+  // I don't know if it's just a problem with development because
+  // there's no defined logging process yet on mobile,
+  // so developers often log in everytime, and the previous tokens
+  // are just left hanging on the database. I have no functions yet to
+  // delete those. I don't know if this will be a problem later on in
+  // production
 
-    if (req.user !== undefined) {
-      sendJsonResponse(res, 200);
-      return;
-    }
+  registerUser = async (req: Request, res: Response, next: NextFunction) => {
+    // if (req.user !== undefined) {
+    //   sendJsonResponse(res, 200);
+    //   return;
+    // }
 
     const user: UserType = req.body;
     const saltRounds = 10;
@@ -81,11 +89,11 @@ export default class UserController {
           return;
         }
         const newUser: UserDocument = new User({
-          role: "user",
-          firstName: user.firstName,
-          lastName: user.lastName,
+          role: USER_ROLE,
           email: user.email,
           username: user.username,
+          firstName: user.firstName,
+          lastName: user.lastName,
           password: hashed,
         });
 
@@ -125,7 +133,7 @@ export default class UserController {
           const newToken: RefreshTokenDocument = new RefreshToken({
             token: refreshToken,
           });
-          await newToken.save();
+          newToken.save();
 
           res.cookie("accessToken", accessToken, {
             httpOnly: true,
@@ -137,7 +145,7 @@ export default class UserController {
             secure: true,
             sameSite: "lax",
           });
-          sendJsonResponse(res, 201, "user created");
+          sendJsonResponse(res, 201, userResult);
           return;
         } catch (err) {
           console.error(`${this.registerUser.name} newUser.save error`);
@@ -154,6 +162,8 @@ export default class UserController {
     // TODO: Check the generate access token, I added user role to parameters
     // but this function doesn't check if the user logging in is a user, admin,
     // or a super admin
+
+    // TODO: when an expired access token goes through here, it doesn't check it yet
     if (req.user !== undefined) {
       sendJsonResponse(res, 200);
       return;
@@ -230,14 +240,15 @@ export default class UserController {
             token: refreshToken,
           });
           await newToken.save();
+          const isProduction = process.env.NODE_ENV === "production";
           res.cookie("accessToken", accessToken, {
             httpOnly: true,
-            secure: true,
+            secure: isProduction,
             sameSite: "lax",
           });
           res.cookie("refreshToken", refreshToken, {
             httpOnly: true,
-            secure: true,
+            secure: isProduction,
             sameSite: "lax",
           });
           sendJsonResponse(res, 200);
@@ -260,19 +271,23 @@ export default class UserController {
     res: Response,
     next: NextFunction,
   ) => {
-    const refreshToken = req.body.token;
+    let refreshToken = req.cookies.refreshToken;
+    if (refreshToken === undefined) {
+      refreshToken = req.body.token;
+    }
+
     if (refreshToken === undefined) {
       res.sendStatus(401);
       return;
     }
     try {
-      const tokenFromDb = await RefreshToken.findOne({ refreshToken });
+      const tokenFromDb = await RefreshToken.findOne({ token: refreshToken });
       if (tokenFromDb === null) {
         res.sendStatus(403);
         return;
       }
       const [accessToken, isTokenValid, accessTokenErr] =
-        refreshAccessToken(refreshToken);
+        await refreshAccessToken(refreshToken);
       if (accessTokenErr !== null) {
         console.error(
           `${this.refreshAccessToken.name} access token error: ${accessTokenErr}\n${accessTokenErr.stack}`,
@@ -286,9 +301,10 @@ export default class UserController {
         sendJsonResponse(res, 403);
         return;
       }
+      const isProduction = process.env.NODE_ENV === "production";
       res.cookie("accessToken", accessToken, {
         httpOnly: true,
-        secure: true,
+        secure: isProduction,
         sameSite: "lax",
       });
       sendJsonResponse(res, 201, "new token created.");
@@ -306,14 +322,18 @@ export default class UserController {
 
   logoutUser = async (req: Request, res: Response, next: NextFunction) => {
     // TODO: Test the functionality
-    const refreshToken: string = req.body.token;
+    let refreshToken: string = req.body.token;
+
+    if (refreshToken === undefined) {
+      refreshToken = req.cookies.refreshToken
+    }
 
     if (refreshToken === undefined) {
       sendJsonResponse(res, 400, "provide refreshToken");
       return;
     }
 
-    const [isTokenValid, tokenValidErr] = validateRefreshToken(refreshToken);
+    const [isTokenValid, tokenValidErr] = await validateRefreshToken(refreshToken);
     if (tokenValidErr !== null) {
       logError(tokenValidErr);
       sendJsonResponse(res, 500);
@@ -327,7 +347,7 @@ export default class UserController {
     }
 
     try {
-      await RefreshToken.findOneAndDelete({refreshToken});
+      await RefreshToken.findOneAndDelete({ refreshToken });
       sendJsonResponse(res, 200, "token removed");
     } catch (err) {
       logError(err);
@@ -352,7 +372,7 @@ export default class UserController {
           sendJsonResponse(res, 404, `no user with id ${id}`);
         } else {
           sendJsonResponse(res, 200, {
-            id: user._id,
+            _id: user._id,
             role: user.role,
             email: user.email,
             username: user.username,
@@ -374,7 +394,7 @@ export default class UserController {
       let users: Array<UserType> = [];
       userDocuments.map((user) =>
         users.push({
-          id: String(user._id),
+          _id: String(user._id),
           role: user.role,
           email: user.email,
           username: user.username,
@@ -399,6 +419,8 @@ export default class UserController {
     // is from the same user, from an admin/super admin.
 
     const id: string = String(req.query.id);
+
+    // TODO: Data validation
     const editedUserDetails: UserType = req.body;
 
     if (id === "undefined") {
@@ -432,7 +454,7 @@ export default class UserController {
         },
       );
       sendJsonResponse(res, 201, {
-        id: String(updatedUser._id),
+        _id: String(updatedUser._id),
         role: updatedUser.role,
         email: updatedUser.email,
         username: updatedUser.username,
@@ -482,8 +504,9 @@ export default class UserController {
     }
 
     try {
-      await User.findByIdAndDelete(id);
-      sendJsonResponse(res, 204, "user deleted");
+      const result = await User.findByIdAndDelete(id);
+      console.log("resutl value", result);
+      sendJsonResponse(res, 200, result);
     } catch (err) {
       console.error(`${this.deleteUser.name} User.findByIdAndDelete error`);
       logError(err);

@@ -13,19 +13,7 @@ export default class ScheduleController {
   addSchedule = async (req: Request, res: Response, next: NextFunction) => {
     // TODO: Test functionality
     const schedule: ScheduleType = req.body;
-    console.log("Request body: ", req.body);
 
-    if (!schedule.userID) console.log("wrong userID")
-    if (!schedule.date) {
-      // sendJsonResponse(res, 400, "wrong date data type");
-      console.log("wrong data type");
-    }
-
-    if (!schedule.medicineName) console.log("wrong medicineName");
-    if (!schedule.measurement) console.log("wrong measurement");
-    if (schedule.isTaken === undefined) console.log("wrong isTaken === undefined guard clause");
-    if (schedule.isTaken == undefined) console.log("wrong isTaken == undefined guard clause");
-    
     if (
       !schedule.userID ||
       !schedule.medicineName ||
@@ -55,6 +43,15 @@ export default class ScheduleController {
     }
   };
 
+  getAllSchedule = async (req: Request, res: Response, next: NextFunction) => {
+    try {
+      const result = await Schedule.find();
+      sendJsonResponse(res, 200, result);
+    } catch (err) {
+      sendJsonResponse(res, 500);
+    }
+  }
+
   getSchedule = async (req: Request, res: Response, next: NextFunction) => {
     // TODO: Test Functionality
     const scheduleID = String(req.query.id);
@@ -82,9 +79,6 @@ export default class ScheduleController {
     next: NextFunction,
   ) => {
     const userID = String(req.query.id);
-    console.log("reached getSchedulesByUserID");
-    console.log(`user id value: ${userID}`);
-
     if (!userID) {
       sendJsonResponse(res, 400, "no user id provided");
       return;
@@ -99,9 +93,6 @@ export default class ScheduleController {
       const result = await Schedule.find({ userID: userID } );
       sendJsonResponse(res, 200, result);
     } catch (err) {
-      console.log("reached get schedules by user id error");
-      console.log("short error version: ", err)
-      console.log("\n\n");
       logError(err);
       sendJsonResponse(res, 500);
       next(err);
