@@ -325,7 +325,7 @@ export default class UserController {
     let refreshToken: string = req.body.token;
 
     if (refreshToken === undefined) {
-      refreshToken = req.cookies.refreshToken
+      refreshToken = req.cookies.refreshToken;
     }
 
     if (refreshToken === undefined) {
@@ -333,7 +333,8 @@ export default class UserController {
       return;
     }
 
-    const [isTokenValid, tokenValidErr] = await validateRefreshToken(refreshToken);
+    const [isTokenValid, tokenValidErr] =
+      await validateRefreshToken(refreshToken);
     if (tokenValidErr !== null) {
       logError(tokenValidErr);
       sendJsonResponse(res, 500);
@@ -390,7 +391,9 @@ export default class UserController {
       }
     }
     try {
-      const userDocuments: Array<UserDocument> = await User.find({});
+      const userDocuments: Array<UserDocument> = await User.find({
+        role: { $in: ["user"] },
+      });
       let users: Array<UserType> = [];
       userDocuments.map((user) =>
         users.push({
@@ -410,6 +413,19 @@ export default class UserController {
       next(err);
     } finally {
       return;
+    }
+  };
+
+  getAdminUsers = async (req: Request, res: Response, next: NextFunction) => {
+    try {
+      const admins = await User.find({
+        role: { $in: ["admin", "super admin"] },
+      });
+      sendJsonResponse(res, 200, admins);
+    } catch (err) {
+      logError(err);
+      sendJsonResponse(res, 500);
+      next(err);
     }
   };
 
@@ -505,7 +521,6 @@ export default class UserController {
 
     try {
       const result = await User.findByIdAndDelete(id);
-      console.log("resutl value", result);
       sendJsonResponse(res, 200, result);
     } catch (err) {
       console.error(`${this.deleteUser.name} User.findByIdAndDelete error`);
@@ -514,6 +529,26 @@ export default class UserController {
       next(err);
     } finally {
       return;
+    }
+  };
+
+  deleteUsers = async (req: Request, res: Response, next: NextFunction) => {
+    const idList = req.body;
+
+    if (!idList || !Array.isArray(idList) || idList.length === 0) {
+      sendJsonResponse(res, 400, "No IDs provided");
+      return;
+    }
+
+    try {
+      const objectIds = idList.map((id) => new mongoose.Types.ObjectId(id));
+      const result = await User.deleteMany({ _id: { $in: objectIds } });
+      sendJsonResponse(res, 200, result);
+    } catch (err) {
+      console.error(`${this.deleteUsers.name} error`);
+      logError(err);
+      sendJsonResponse(res, 500);
+      next(err);
     }
   };
 }
