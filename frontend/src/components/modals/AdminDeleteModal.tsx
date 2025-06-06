@@ -1,6 +1,6 @@
 import type { Dispatch, SetStateAction } from "react";
 import type { AdminUserType } from "../../types/user";
-import CloseButton from "../CloseButton";
+import CloseButton from "../buttons/CloseButton";
 
 type DeleteUserModalProps = {
   onClose: () => void;

@@ -1,5 +1,5 @@
 import { useState, type Dispatch, type SetStateAction } from "react";
-import CloseButton from ".././CloseButton";
+import CloseButton from "../buttons/CloseButton";
 import type { MedicineType } from "../../types/medicine";
 
 type EditUserModalProps = {

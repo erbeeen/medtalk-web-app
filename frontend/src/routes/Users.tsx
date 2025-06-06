@@ -161,7 +161,7 @@ export default function UsersRoute({ scrollToTop }: UsersRouteProps) {
               <UserDeleteModal
                 onClose={() => {
                   setIsDeleteModalOpen(false);
-                  setRowSelection({});
+                  setIsDeleteAllModalOpen(false);
                 }}
                 data={props.row.original}
                 setUsers={setUsers} />
@@ -219,7 +219,10 @@ export default function UsersRoute({ scrollToTop }: UsersRouteProps) {
             )}
             {isDeleteAllModalOpen && (
               <UserDeleteModal
-                onClose={() => setIsDeleteAllModalOpen(false)}
+                onClose={() => {
+                  setIsDeleteAllModalOpen(false);
+                  setRowSelection({});
+                }}
                 data={rowSelection}
                 setUsers={setUsers} />
             )}

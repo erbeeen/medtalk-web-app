@@ -1,7 +1,9 @@
-import type { Dispatch, SetStateAction } from "react";
+import type { Dispatch, FormEvent, SetStateAction } from "react";
 import type { UserType } from "../../types/user";
 import { useState } from "react";
-import CloseButton from "../CloseButton";
+import CloseButton from "../buttons/CloseButton";
+import CancelButton from "../buttons/CancelButton";
+import SubmitButton from "../buttons/SubmitButton";
 
 type NewUserModalProps = {
   onClose: () => void;
@@ -15,8 +17,47 @@ export default function UserAddModal({ onClose, setUsers }: NewUserModalProps) {
   const [lastName, setLastName] = useState("");
   const [password, setPassword] = useState("");
   const [confirmPassword, setConfirmPassword] = useState("");
+  const [isLoading, setIsLoading] = useState(false);
+  const [errMessage, setErrMessage] = useState("");
+  const passwordRegex: RegExp = 
+    /^(?=.*[a-z])(?=.*[A-Z])(?=.*\d)(?=.*[!@#$%^&*()_+={}[\]:;"'<>,.?/\\|`~-])[A-Za-z\d!@#$%^&*()_+={}[\]:;"'<>,.?/\\|`~-]{8,}$/;
+  const emailRegex: RegExp = /^[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,}$/;
 
-  const handleSubmit = async () => {
+  const handleSubmit = async (e: FormEvent<HTMLFormElement>) => {
+    setIsLoading(true);
+    setErrMessage("");
+    e.preventDefault();
+    if (
+      !username ||
+      !email ||
+      !firstName ||
+      !lastName ||
+      !password ||
+      !confirmPassword
+    ) {
+      setErrMessage("Provide all fields.");
+      setIsLoading(false);
+      return;
+    }
+
+    if (!emailRegex.test(email)) {
+      setErrMessage("Invalid email address.");
+      setIsLoading(false);
+      return;
+    }
+
+    if (password !== confirmPassword) {
+      setErrMessage("Password does not match.");
+      setIsLoading(false);
+      return;
+    }
+
+    if (!passwordRegex.test(password)) {
+      setErrMessage("Password must be at least 8 characters with a mix of characters, numbers, and symbols.");
+      setIsLoading(false);
+      return;
+    }
+
     const newUser: UserType = {
       email: email,
       username: username,
@@ -25,11 +66,9 @@ export default function UserAddModal({ onClose, setUsers }: NewUserModalProps) {
       password: password,
     };
 
-
     try {
-      console.log("starting create user request");
       const body = JSON.stringify(newUser)
-      const response = await fetch(`/api/users/register/`, {
+      const response = await fetch(`http://localhost:3000/api/users/register/`, {
         mode: "cors",
         method: "POST",
         headers: {
@@ -39,20 +78,22 @@ export default function UserAddModal({ onClose, setUsers }: NewUserModalProps) {
         credentials: "include",
       });
 
-      console.log("parsing data into json");
       const result = await response.json();
-      console.log("data value:", result);
-      console.log("result.data._id value", result.data._id);
 
-      if (result.success) {
-        setUsers(prev =>
-          [result.data, ...prev]
-        );
-
-        onClose();
+      if (!result.success) {
+        setErrMessage(`${result.data}.`);
+        setIsLoading(false);
+        return;
       }
+
+      setUsers(prev =>
+        [result.data, ...prev]
+      );
+      onClose();
     } catch (err) {
       console.error("update user error: ", err);
+      setErrMessage("Server error. Try again later.")
+      setIsLoading(false);
     }
   }
 
@@ -70,94 +111,95 @@ export default function UserAddModal({ onClose, setUsers }: NewUserModalProps) {
           <CloseButton onClose={onClose} />
         </div>
 
-        <div className="modal-input-container">
-          <label htmlFor="username" className="w-8/12">Username</label>
-          <input
-            id="username"
-            name="username"
-            type="text"
-            className="modal-input"
-            value={username}
-            onChange={(e) => setUsername(e.target.value)}
-          />
-        </div>
-
-        <div className="modal-input-container">
-          <label htmlFor="email" className="w-8/12">Email</label>
-          <input
-            type="text"
-            id="email"
-            name="email"
-            className="modal-input"
-            value={email}
-            onChange={(e) => setEmail(e.target.value)}
-          />
-        </div>
-
-        <div className="modal-input-container">
-          <label htmlFor="first-name" className="w-8/12">First Name</label>
-          <input
-            type="text"
-            id="first-name"
-            name="first-name"
-            className="modal-input"
-            value={firstName}
-            onChange={(e) => setFirstName(e.target.value)}
-          />
-        </div>
-
-        <div className="modal-input-container">
-          <label htmlFor="last-name" className="w-8/12">Last Name</label>
-          <input
-            type="text"
-            id="last-name"
-            name="last-name"
-            className="modal-input"
-            value={lastName}
-            onChange={(e) => setLastName(e.target.value)}
-          />
-        </div>
-
-        <div className="modal-input-container">
-          <label htmlFor="password" className="w-8/12">Password</label>
-          <input
-            type="password"
-            id="password"
-            name="password"
-            className="modal-input"
-            value={password}
-            onChange={(e) => setPassword(e.target.value)}
-          />
-        </div>
-
-        <div className="modal-input-container">
-          <label htmlFor="confirm-password" className="w-8/12">Confirm Password</label>
-          <input
-            type="password"
-            id="confirm-password"
-            name="confirm-password"
-            className="modal-input"
-            value={confirmPassword}
-            onChange={(e) => setConfirmPassword(e.target.value)}
-          />
-        </div>
-
-        <div className="w-full mt-5 flex justify-between items-center cursor-pointer">
-          <div
-            className="py-2 px-5 font-medium text-sm border rounded-4xl dark:border-secondary-dark/70 dark:hover:bg-secondary-dark/70"
-            onClick={onClose}
-          >
-            <button type="button" className="cursor-pointer" onClick={onClose}>Cancel</button>
+        <form onSubmit={handleSubmit}>
+          <div className="modal-input-container">
+            <label htmlFor="username" className="w-8/12">Username</label>
+            <input
+              id="username"
+              name="username"
+              type="text"
+              className="modal-input"
+              value={username}
+              onChange={(e) => setUsername(e.target.value)}
+              required
+            />
           </div>
 
-          <div
-            className="py-2 px-5 font-medium text-sm border rounded-4xl dark:border-primary-dark/50 dark:hover:bg-primary-dark/70"
-            onClick={handleSubmit}
-          >
-            Submit
-            {/* <button type="button" className="cursor-pointer" onClick={handleSubmit}>Submit</button> */}
+          <div className="modal-input-container">
+            <label htmlFor="email" className="w-8/12">Email</label>
+            <input
+              type="text"
+              id="email"
+              name="email"
+              className="modal-input"
+              value={email}
+              onChange={(e) => setEmail(e.target.value)}
+              required
+            />
           </div>
-        </div>
+
+          <div className="modal-input-container">
+            <label htmlFor="first-name" className="w-8/12">First Name</label>
+            <input
+              type="text"
+              id="first-name"
+              name="first-name"
+              className="modal-input"
+              value={firstName}
+              onChange={(e) => setFirstName(e.target.value)}
+              required
+            />
+          </div>
+
+          <div className="modal-input-container">
+            <label htmlFor="last-name" className="w-8/12">Last Name</label>
+            <input
+              type="text"
+              id="last-name"
+              name="last-name"
+              className="modal-input"
+              value={lastName}
+              onChange={(e) => setLastName(e.target.value)}
+              required
+            />
+          </div>
+
+          <div className="modal-input-container">
+            <label htmlFor="password" className="w-8/12">Password</label>
+            <input
+              type="password"
+              id="password"
+              name="password"
+              className="modal-input"
+              value={password}
+              onChange={(e) => setPassword(e.target.value)}
+              required
+            />
+          </div>
+
+          <div className="modal-input-container">
+            <label htmlFor="confirm-password" className="w-8/12">Confirm Password</label>
+            <input
+              type="password"
+              id="confirm-password"
+              name="confirm-password"
+              className="modal-input"
+              value={confirmPassword}
+              onChange={(e) => setConfirmPassword(e.target.value)}
+              required
+            />
+          </div>
+
+          <div className="max-w-8/12 ml-auto text-center dark:text-delete-dark/70">
+            {errMessage}
+          </div>
+
+          <div className="w-full mt-5 flex justify-between items-center">
+            <CancelButton onClick={onClose} />
+            <SubmitButton isLoading={isLoading}>Submit</SubmitButton>
+          </div>
+        </form>
+
 
       </div>
     </div>

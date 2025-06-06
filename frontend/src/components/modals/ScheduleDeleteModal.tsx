@@ -1,6 +1,6 @@
 import type { Dispatch, SetStateAction } from "react";
 import type { ScheduleType } from "../../types/schedule";
-import CloseButton from "../CloseButton";
+import CloseButton from "../buttons/CloseButton";
 
 type DeleteUserModalProps = {
   onClose: () => void;

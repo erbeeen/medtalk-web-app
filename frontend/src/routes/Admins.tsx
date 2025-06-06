@@ -38,7 +38,7 @@ export default function AdminsRoute({ scrollToTop }: AdminsRouteProps) {
 
     const loadData = async () => {
       try {
-        const response = await fetch("/api/users/", {
+        const response = await fetch("/api/users/admins", {
           mode: "cors",
           method: "GET",
           credentials: "include"

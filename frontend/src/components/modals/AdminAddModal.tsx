@@ -1,7 +1,7 @@
 import type { Dispatch, SetStateAction } from "react";
 import type { AdminUserType } from "../../types/user";
 import { useState } from "react";
-import CloseButton from "../CloseButton";
+import CloseButton from "../buttons/CloseButton";
 
 type NewUserModalProps = {
   onClose: () => void;
@@ -19,7 +19,6 @@ export default function AdminAddModal({ onClose, setAdmins }: NewUserModalProps)
 
   const handleSubmit = () => {
     const newAdmin: AdminUserType = {
-      _id: "69420",
       role: role,
       username: username,
       email: email,

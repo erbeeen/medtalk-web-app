@@ -1,6 +1,8 @@
-import { useState, type Dispatch, type SetStateAction } from "react";
+import { useState, type Dispatch, type FormEvent, type SetStateAction } from "react";
 import type { UserType } from "../../types/user"
-import CloseButton from ".././CloseButton";
+import CloseButton from "../buttons/CloseButton";
+import CancelButton from "../buttons/CancelButton";
+import SubmitButton from "../buttons/SubmitButton";
 
 type EditUserModalProps = {
   onClose: () => void;
@@ -10,15 +12,37 @@ type EditUserModalProps = {
 
 // TODO: 
 // add animations
-// add api request to edit record on database
 
 export default function UserEditModal({ onClose, data, setUsers }: EditUserModalProps) {
   const [username, setUsername] = useState(data.username);
   const [email, setEmail] = useState(data.email);
   const [firstName, setFirstName] = useState(data.firstName);
   const [lastName, setLastName] = useState(data.lastName);
+  const [isLoading, setIsLoading] = useState(false);
+  const [errMessage, setErrMessage] = useState("");
+  const emailRegex: RegExp = /^[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,}$/;
 
-  const handleSubmit = async () => {
+  const handleSubmit = async (e: FormEvent<HTMLFormElement>) => {
+    setIsLoading(true);
+    setErrMessage("");
+    e.preventDefault();
+
+    if (
+      !username ||
+      !email ||
+      !firstName ||
+      !lastName
+    ) {
+      setErrMessage("Provide all fields.");
+      setIsLoading(false);
+    }
+
+    if (!emailRegex.test(email)) {
+      setErrMessage("Invalid email address.");
+      setIsLoading(false);
+      return;
+    }
+
     const updatedData: UserType = {
       email: email,
       username: username,
@@ -27,7 +51,6 @@ export default function UserEditModal({ onClose, data, setUsers }: EditUserModal
     };
 
     try {
-      console.log("starting update request");
       const response = await fetch(`/api/users/update/?id=${data._id}`, {
         mode: "cors",
         method: "PUT",
@@ -37,23 +60,25 @@ export default function UserEditModal({ onClose, data, setUsers }: EditUserModal
         body: JSON.stringify(updatedData),
         credentials: "include",
       });
+      const result = await response.json();
 
-      console.log("parsing data into json");
-      const updatedUser = await response.json();
-      console.log("data value:", updatedUser);
-
-      if (updatedUser.success) {
-        setUsers(prevData =>
-          prevData.map((user) =>
-            user._id === updatedUser.data._id ? { ...user, ...updatedData } : user
-          )
-        );
-        onClose();
+      if (!result.success) {
+        setErrMessage(`${result.data}.`);
+        setIsLoading(false);
+        return;
       }
+
+      setUsers(prevData =>
+        prevData.map((user) =>
+          user._id === result.data._id ? { ...user, ...updatedData } : user
+        )
+      );
+      onClose();
     } catch (err) {
       console.error("update user error: ", err);
+      setErrMessage("Server error. Try again later.")
+      setIsLoading(false);
     }
-
   }
 
   return (
@@ -69,73 +94,72 @@ export default function UserEditModal({ onClose, data, setUsers }: EditUserModal
           <CloseButton onClose={onClose} />
         </div>
 
-        <div className="modal-input-container">
-          <label htmlFor="username" className="w-6/12">Username</label>
-          <input
-            id="username"
-            name="username"
-            type="text"
-            className="modal-input"
-            placeholder="username"
-            value={username}
-            onChange={(e) => setUsername(e.target.value)}
-          />
-        </div>
-
-        <div className="modal-input-container">
-          <label htmlFor="email" className="w-6/12">Email</label>
-          <input
-            type="text"
-            id="email"
-            name="email"
-            className="modal-input"
-            placeholder="email"
-            value={email}
-            onChange={(e) => setEmail(e.target.value)}
-          />
-        </div>
-
-        <div className="modal-input-container">
-          <label htmlFor="first-name" className="w-6/12">First Name</label>
-          <input
-            type="text"
-            id="first-name"
-            name="first-name"
-            className="modal-input"
-            placeholder="first name"
-            value={firstName}
-            onChange={(e) => setFirstName(e.target.value)}
-          />
-        </div>
-
-        <div className="modal-input-container">
-          <label htmlFor="last-name" className="w-6/12">Last Name</label>
-          <input
-            type="text"
-            id="last-name"
-            name="last-name"
-            className="modal-input"
-            placeholder="last name"
-            value={lastName}
-            onChange={(e) => setLastName(e.target.value)}
-          />
-        </div>
-
-        <div className="w-full mt-5 flex justify-between items-center cursor-pointer">
-          <div
-            className="py-2 px-5 font-medium text-sm border rounded-4xl dark:border-secondary-dark/70 dark:hover:bg-secondary-dark/70"
-            onClick={onClose}
-          >
-            <button type="button" className="cursor-pointer" onClick={onClose}>Cancel</button>
+        <form onSubmit={handleSubmit}>
+          <div className="modal-input-container">
+            <label htmlFor="username" className="w-6/12">Username</label>
+            <input
+              id="username"
+              name="username"
+              type="text"
+              className="modal-input"
+              placeholder="username"
+              value={username}
+              onChange={(e) => setUsername(e.target.value)}
+              required
+            />
           </div>
 
-          <div
-            className="py-2 px-5 font-medium text-sm border rounded-4xl dark:border-primary-dark/50 dark:hover:bg-primary-dark/70"
-            onClick={onClose}
-          >
-            <button type="button" className="cursor-pointer" onClick={handleSubmit}>Submit</button>
+          <div className="modal-input-container">
+            <label htmlFor="email" className="w-6/12">Email</label>
+            <input
+              type="text"
+              id="email"
+              name="email"
+              className="modal-input"
+              placeholder="email"
+              value={email}
+              onChange={(e) => setEmail(e.target.value)}
+              required
+            />
           </div>
-        </div>
+
+          <div className="modal-input-container">
+            <label htmlFor="first-name" className="w-6/12">First Name</label>
+            <input
+              type="text"
+              id="first-name"
+              name="first-name"
+              className="modal-input"
+              placeholder="first name"
+              value={firstName}
+              onChange={(e) => setFirstName(e.target.value)}
+              required
+            />
+          </div>
+
+          <div className="modal-input-container">
+            <label htmlFor="last-name" className="w-6/12">Last Name</label>
+            <input
+              type="text"
+              id="last-name"
+              name="last-name"
+              className="modal-input"
+              placeholder="last name"
+              value={lastName}
+              onChange={(e) => setLastName(e.target.value)}
+              required
+            />
+          </div>
+
+          <div className="max-w-8/12 ml-auto text-center dark:text-delete-dark/70">
+            {errMessage}
+          </div>
+
+          <div className="w-full mt-5 flex justify-between items-center cursor-pointer">
+            <CancelButton onClick={onClose} />
+            <SubmitButton isLoading={isLoading}>Submit</SubmitButton>
+          </div>
+        </form>
       </div>
     </div>
   )

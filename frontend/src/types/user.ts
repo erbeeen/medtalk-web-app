@@ -11,7 +11,7 @@ export type UserType = {
 
 export type AdminUserType = {
   status?: string;
-  _id: string;
+  _id?: string;
   role: string;
   username: string;
   firstName: string;
