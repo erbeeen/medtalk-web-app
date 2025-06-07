@@ -25,7 +25,7 @@ type UsersRouteProps = {
 // checkbox selects data even outside the page
 
 export default function UsersRoute({ scrollToTop }: UsersRouteProps) {
-  const [isLoading, setIsLoading] = useState(true);
+  const [isLoading, setIsLoading] = useState(false);
   const [users, setUsers] = useState<Array<UserType>>([]);
   const [rowSelection, setRowSelection] = useState({});
   const [searchText, setSearchText] = useState("");
@@ -36,6 +36,7 @@ export default function UsersRoute({ scrollToTop }: UsersRouteProps) {
 
   useEffect(() => {
     document.title = "Users | MedTalk";
+    setIsLoading(true);
 
     const loadData = async () => {
       try {
@@ -53,7 +54,6 @@ export default function UsersRoute({ scrollToTop }: UsersRouteProps) {
       }
     }
 
-    setIsLoading(true);
     const loginAndLoadData = async () => {
       try {
         await automaticLogin(navigate, "/users");
