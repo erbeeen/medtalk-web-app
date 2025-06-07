@@ -159,10 +159,10 @@ export default class UserController {
   };
 
   loginUser = async (req: Request, res: Response, next: NextFunction) => {
-    if (
-      (req.user !== undefined && req.body === undefined) ||
-      Object.keys(req.body).length === 0
-    ) {
+    const isBodyEmpty =
+      req.body === undefined || Object.keys(req.body).length === 0;
+
+    if (req.user !== undefined && isBodyEmpty) {
       sendJsonResponse(res, 200);
       return;
     }
@@ -556,7 +556,7 @@ export default class UserController {
     const id = String(req.query.id);
     console.log("from updateAdmin");
     console.log("id value: ", id);
-    
+
     const editedAdminDetails: UserType = req.body;
 
     if (!id) {
@@ -592,7 +592,7 @@ export default class UserController {
       return;
     }
 
-    // FIX: This triggers when username/email 
+    // FIX: This triggers when username/email
     // are not changed
     //
     // const [usernameExists, emailExists, userExistsErr] = await doesUserExist(
