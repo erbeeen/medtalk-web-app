@@ -14,6 +14,9 @@ userRouter.use(cors({
   allowedHeaders: ["Content-Type", "Authorization"],
 }));
 
+userRouter.post("/admin/register", authenticateJwt, uc.registerAdmin);
+userRouter.post("/admin", authenticateJwt, uc.createUser);
+userRouter.put("/admin", authenticateJwt, uc.updateAdmin);
 userRouter.delete("/delete/batch", authenticateJwt, uc.deleteUsers);
 userRouter.post("/register", authenticateJwt, uc.registerUser);
 userRouter.post("/login", authenticateJwt, uc.loginUser);

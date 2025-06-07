@@ -1,9 +1,19 @@
-import jwt from "jsonwebtoken";
+import jwt, { JwtPayload } from "jsonwebtoken";
 import { Request, Response, NextFunction } from "express";
 
 declare module "express" {
   interface Request {
-    user?: string | jwt.JwtPayload;
+    user?: jwt.JwtPayload;
+  }
+}
+
+declare module "jsonwebtoken" {
+  interface JwtPayload {
+    id?: string;
+    username?: string;
+    role?: string;
+    iat?: number;
+    exp?: number;
   }
 }
 
@@ -31,7 +41,7 @@ export default function authenticateJwt(
       return;
     }
   } else {
-    jwt.verify(token, process.env.SECRET_ACCESS_TOKEN, (err, user) => {
+    jwt.verify(token, process.env.SECRET_ACCESS_TOKEN, (err, user: JwtPayload) => {
       if (err) {
         if (
           req.originalUrl == "/api/users/login" || 

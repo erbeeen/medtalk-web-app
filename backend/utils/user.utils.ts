@@ -1,4 +1,3 @@
-import jwt from "jsonwebtoken";
 import User, { UserDocument } from "../models/user.model.js";
 
 export async function doesUserExist(

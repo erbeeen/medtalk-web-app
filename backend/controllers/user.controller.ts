@@ -159,12 +159,10 @@ export default class UserController {
   };
 
   loginUser = async (req: Request, res: Response, next: NextFunction) => {
-    // TODO: Check the generate access token, I added user role to parameters
-    // but this function doesn't check if the user logging in is a user, admin,
-    // or a super admin
-
-    // TODO: when an expired access token goes through here, it doesn't check it yet
-    if (req.user !== undefined) {
+    if (
+      (req.user !== undefined && req.body === undefined) ||
+      Object.keys(req.body).length === 0
+    ) {
       sendJsonResponse(res, 200);
       return;
     }
@@ -207,8 +205,8 @@ export default class UserController {
 
         const [accessToken, accessTokenErr] = generateAccessToken(
           String(user._id),
-          user.email,
-          USER_ROLE,
+          user.username,
+          user.role,
         );
         if (accessTokenErr !== null) {
           console.error(
@@ -222,8 +220,8 @@ export default class UserController {
 
         const [refreshToken, refreshTokenErr] = generateRefreshToken(
           String(user._id),
-          user.email,
-          USER_ROLE,
+          user.username,
+          user.role,
         );
         if (refreshTokenErr !== null) {
           console.error(
@@ -367,7 +365,7 @@ export default class UserController {
       }
 
       try {
-        let user: UserDocument = await User.findById(id);
+        const user: UserDocument = await User.findById(id);
 
         if (user === null) {
           sendJsonResponse(res, 404, `no user with id ${id}`);
@@ -417,6 +415,11 @@ export default class UserController {
   };
 
   getAdminUsers = async (req: Request, res: Response, next: NextFunction) => {
+    if (req.user.role !== "super admin") {
+      res.sendStatus(403);
+      return;
+    }
+
     try {
       const admins = await User.find({
         role: { $in: ["admin", "super admin"] },
@@ -429,23 +432,335 @@ export default class UserController {
     }
   };
 
-  updateUser = async (req: Request, res: Response, next: NextFunction) => {
-    // TODO: what to do when the password is changed
-    // TODO: proceed with the update only when the request
-    // is from the same user, from an admin/super admin.
+  registerAdmin = async (req: Request, res: Response, next: NextFunction) => {
+    if (req.user.role !== "super admin") {
+      res.sendStatus(403);
+      return;
+    }
 
-    const id: string = String(req.query.id);
+    const saltRounds = 10;
+    const admin: UserType = req.body;
 
-    // TODO: Data validation
-    const editedUserDetails: UserType = req.body;
+    if (
+      !admin.role ||
+      !admin.username ||
+      !admin.email ||
+      !admin.firstName ||
+      !admin.lastName ||
+      !admin.password
+    ) {
+      sendJsonResponse(res, 400, "provide all fields");
+      return;
+    }
 
-    if (id === "undefined") {
+    const [usernameExists, emailExists, userExistsErr] = await doesUserExist(
+      admin.username,
+      admin.email,
+    );
+    if (userExistsErr !== null) {
+      next(userExistsErr);
+      sendJsonResponse(res, 500);
+      return;
+    }
+
+    if (usernameExists) {
+      sendJsonResponse(res, 409, "username is already taken");
+      return;
+    }
+
+    if (emailExists) {
+      sendJsonResponse(res, 409, "email is already taken");
+      return;
+    }
+
+    bcrypt.hash(
+      admin.password,
+      saltRounds,
+      async (error: Error, hashed: string) => {
+        if (error) {
+          console.error(`${this.registerAdmin.name} bcrypt.hash error`);
+          logError(error);
+          sendJsonResponse(res, 500);
+          next(error);
+          return;
+        }
+        const newAdmin: UserDocument = new User({
+          role: admin.role,
+          email: admin.email,
+          username: admin.username,
+          firstName: admin.firstName,
+          lastName: admin.lastName,
+          password: hashed,
+        });
+
+        try {
+          const result = await newAdmin.save();
+          sendJsonResponse(res, 201, result);
+          return;
+        } catch (err) {
+          console.error(`${this.registerAdmin.name} newAdmin.save error`);
+          logError(err);
+          sendJsonResponse(res, 500);
+          next(err);
+          return;
+        }
+      },
+    );
+  };
+
+  getAdmin = async (req: Request, res: Response, next: NextFunction) => {
+    if (req.user.role !== "super admin") {
+      res.sendStatus(403);
+      return;
+    }
+
+    const id = String(req.query.id);
+
+    if (!id) {
+      sendJsonResponse(res, 400, "no id provided");
+      return;
+    }
+
+    if (!mongoose.Types.ObjectId.isValid(id)) {
+      sendJsonResponse(res, 400, "invalid id");
+      return;
+    }
+
+    try {
+      const admin: UserDocument = await User.findById(id);
+      if (admin === null) {
+        sendJsonResponse(res, 404, `no user with id ${id}`);
+      } else {
+        sendJsonResponse(res, 200, {
+          _id: admin._id,
+          role: admin.role,
+          email: admin.email,
+          username: admin.username,
+          firstName: admin.firstName,
+          lastName: admin.lastName,
+        });
+      }
+    } catch (err) {
+      console.error(`${this.getAdmin.name} User.findByID error:`);
+      logError(err);
+      sendJsonResponse(res, 500);
+      next(err);
+    }
+  };
+
+  updateAdmin = async (req: Request, res: Response, next: NextFunction) => {
+    if (req.user.role !== "super admin") {
+      res.sendStatus(403);
+      return;
+    }
+    const id = String(req.query.id);
+    console.log("from updateAdmin");
+    console.log("id value: ", id);
+    
+    const editedAdminDetails: UserType = req.body;
+
+    if (!id) {
       sendJsonResponse(res, 400, "no id included");
       return;
     }
 
     if (!mongoose.Types.ObjectId.isValid(id)) {
       sendJsonResponse(res, 400, "invalid id");
+      return;
+    }
+
+    const [userIdExists, userIdErr] = await doesUserIdExist(id);
+    if (userIdErr !== null) {
+      console.error(`${this.updateUser.name} doesUserIdExist error`);
+      logError(userIdErr);
+      sendJsonResponse(res, 500);
+      next(userIdErr);
+      return;
+    } else if (!userIdExists) {
+      sendJsonResponse(res, 404, `no user with id ${id}`);
+      return;
+    }
+
+    if (
+      !editedAdminDetails.role ||
+      !editedAdminDetails.username ||
+      !editedAdminDetails.email ||
+      !editedAdminDetails.firstName ||
+      !editedAdminDetails.lastName
+    ) {
+      sendJsonResponse(res, 400, "provide all fields");
+      return;
+    }
+
+    // FIX: This triggers when username/email 
+    // are not changed
+    //
+    // const [usernameExists, emailExists, userExistsErr] = await doesUserExist(
+    //   editedAdminDetails.username,
+    //   editedAdminDetails.email,
+    // );
+    // if (userExistsErr !== null) {
+    //   next(userExistsErr);
+    //   sendJsonResponse(res, 500);
+    //   return;
+    // }
+    //
+    // if (usernameExists) {
+    //   sendJsonResponse(res, 409, "username is already taken");
+    //   return;
+    // }
+    //
+    // if (emailExists) {
+    //   sendJsonResponse(res, 409, "email is already taken");
+    //   return;
+    // }
+
+    try {
+      const updatedAdmin: UserDocument = await User.findByIdAndUpdate(
+        id,
+        editedAdminDetails,
+        {
+          new: true,
+        },
+      );
+      sendJsonResponse(res, 201, {
+        _id: updatedAdmin._id,
+        role: updatedAdmin.role,
+        email: updatedAdmin.email,
+        username: updatedAdmin.username,
+        firstName: updatedAdmin.firstName,
+        lastName: updatedAdmin.lastName,
+      });
+    } catch (err) {
+      console.error(`${this.updateAdmin.name} User.findByIdandUpdate error`);
+      logError(err);
+      sendJsonResponse(res, 500);
+      next(err);
+    }
+  };
+
+  // NOTE: For creating a user in web app
+  createUser = async (req: Request, res: Response, next: NextFunction) => {
+    if (req.user.role !== "super admin" && req.user.role !== "admin") {
+      res.sendStatus(403);
+      return;
+    }
+
+    const user: UserType = req.body;
+    const saltRounds = 10;
+    if (
+      !user.email ||
+      !user.username ||
+      !user.firstName ||
+      !user.lastName ||
+      !user.password
+    ) {
+      sendJsonResponse(res, 400, "provide all fields");
+      return;
+    }
+
+    const [usernameExists, emailExists, userExistsErr] = await doesUserExist(
+      user.username,
+      user.email,
+    );
+    if (userExistsErr !== null) {
+      next(userExistsErr);
+      sendJsonResponse(res, 500);
+      return;
+    }
+
+    if (usernameExists) {
+      sendJsonResponse(res, 409, "username is already taken");
+      return;
+    }
+
+    if (emailExists) {
+      sendJsonResponse(res, 409, "email is already taken");
+      return;
+    }
+
+    bcrypt.hash(
+      user.password,
+      saltRounds,
+      async (error: Error, hashed: string) => {
+        if (error) {
+          console.error(`${this.createUser.name} bcrypt.hash error`);
+          logError(error);
+          sendJsonResponse(res, 500);
+          next(error);
+          return;
+        }
+        const newUser: UserDocument = new User({
+          role: USER_ROLE,
+          email: user.email,
+          username: user.username,
+          firstName: user.firstName,
+          lastName: user.lastName,
+          password: hashed,
+        });
+
+        try {
+          const userResult = await newUser.save();
+
+          sendJsonResponse(res, 201, userResult);
+          return;
+        } catch (err) {
+          console.error(`${this.createUser.name} newUser.save error`);
+          logError(err);
+          sendJsonResponse(res, 500);
+          next(err);
+          return;
+        }
+      },
+    );
+  };
+
+  updateUser = async (req: Request, res: Response, next: NextFunction) => {
+    // TODO: what to do when the password is changed
+    // TODO: proceed with the update only when the request
+    // is from the same user, from an admin/super admin.
+
+    const id = String(req.query.id);
+    const editedUserDetails: UserType = req.body;
+
+    if (!id) {
+      sendJsonResponse(res, 400, "no id included");
+      return;
+    }
+
+    if (!mongoose.Types.ObjectId.isValid(id)) {
+      sendJsonResponse(res, 400, "invalid id");
+      return;
+    }
+
+    if (
+      !editedUserDetails.email ||
+      !editedUserDetails.username ||
+      !editedUserDetails.firstName ||
+      !editedUserDetails.lastName ||
+      !editedUserDetails.password
+    ) {
+      sendJsonResponse(res, 400, "provide all fields");
+      return;
+    }
+
+    const [usernameExists, emailExists, userExistsErr] = await doesUserExist(
+      editedUserDetails.username,
+      editedUserDetails.email,
+    );
+    if (userExistsErr !== null) {
+      next(userExistsErr);
+      sendJsonResponse(res, 500);
+      return;
+    }
+
+    if (usernameExists) {
+      sendJsonResponse(res, 409, "username is already taken");
+      return;
+    }
+
+    if (emailExists) {
+      sendJsonResponse(res, 409, "email is already taken");
       return;
     }
 
@@ -493,7 +808,7 @@ export default class UserController {
 
     const id: string = String(req.query.id);
 
-    if (id === "undefined") {
+    if (!id) {
       sendJsonResponse(res, 400, "no id included");
       return;
     }
