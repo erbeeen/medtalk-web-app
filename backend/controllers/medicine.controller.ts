@@ -81,7 +81,7 @@ export default class MedicineController {
     res: Response,
     next: NextFunction,
   ): Promise<void> => {
-    const genericName = req.body.genericName;
+    const genericName = req.query.genericName;
 
     if (genericName === undefined) {
       sendJsonResponse(res, 400, "provide generic name");
