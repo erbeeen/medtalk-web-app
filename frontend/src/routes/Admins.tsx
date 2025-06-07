@@ -215,7 +215,10 @@ export default function AdminsRoute({ scrollToTop }: AdminsRouteProps) {
             )}
             {isDeleteAllModalOpen && (
               <AdminDeleteModal
-                onClose={() => setIsDeleteAllModalOpen(false)}
+                onClose={() => {
+                  setIsDeleteAllModalOpen(false);
+                  setRowSelection({});
+                }}
                 data={rowSelection}
                 setAdmins={setAdmins} />
             )}

@@ -115,13 +115,12 @@ export default function UserDeleteModal({ onClose, data, setUsers }: DeleteUserM
         onClick={(e) => e.stopPropagation()}
       >
 
-        <div className="w-full  mb-5 flex justify-between items-center">
+        <div className="w-full mb-5 flex justify-between items-center">
           <h1 className="text-xl font-bold">Delete</h1>
           <CloseButton onClose={onClose} />
         </div>
 
         <form onSubmit={handleDelete}>
-
           <h1 className="self-center">{isUserType(data) ? "Confirm deletion?" : "Delete selected?"}</h1>
 
           <div className="max-w-8/12 ml-auto text-center dark:text-delete-dark/70">

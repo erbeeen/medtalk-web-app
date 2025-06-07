@@ -68,7 +68,7 @@ export default function UserAddModal({ onClose, setUsers }: NewUserModalProps) {
 
     try {
       const body = JSON.stringify(newUser)
-      const response = await fetch(`http://localhost:3000/api/users/register/`, {
+      const response = await fetch(`/api/users/admin/`, {
         mode: "cors",
         method: "POST",
         headers: {
@@ -87,7 +87,7 @@ export default function UserAddModal({ onClose, setUsers }: NewUserModalProps) {
       }
 
       setUsers(prev =>
-        [result.data, ...prev]
+        [...prev, result.data]
       );
       onClose();
     } catch (err) {

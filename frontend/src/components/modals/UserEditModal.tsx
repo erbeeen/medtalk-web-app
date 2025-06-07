@@ -10,9 +10,6 @@ type EditUserModalProps = {
   setUsers: Dispatch<SetStateAction<Array<UserType>>>;
 }
 
-// TODO: 
-// add animations
-
 export default function UserEditModal({ onClose, data, setUsers }: EditUserModalProps) {
   const [username, setUsername] = useState(data.username);
   const [email, setEmail] = useState(data.email);
@@ -51,13 +48,14 @@ export default function UserEditModal({ onClose, data, setUsers }: EditUserModal
     };
 
     try {
+      const body = JSON.stringify(updatedData);
       const response = await fetch(`/api/users/update/?id=${data._id}`, {
         mode: "cors",
         method: "PUT",
         headers: {
           "Content-Type": "application/json",
         },
-        body: JSON.stringify(updatedData),
+        body: body,
         credentials: "include",
       });
       const result = await response.json();

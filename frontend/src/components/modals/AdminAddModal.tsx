@@ -1,7 +1,9 @@
-import type { Dispatch, SetStateAction } from "react";
+import type { Dispatch, SetStateAction, FormEvent } from "react";
 import type { AdminUserType } from "../../types/user";
 import { useState } from "react";
 import CloseButton from "../buttons/CloseButton";
+import CancelButton from "../buttons/CancelButton";
+import SubmitButton from "../buttons/SubmitButton";
 
 type NewUserModalProps = {
   onClose: () => void;
@@ -16,8 +18,48 @@ export default function AdminAddModal({ onClose, setAdmins }: NewUserModalProps)
   const [lastName, setLastName] = useState("");
   const [password, setPassword] = useState("");
   const [confirmPassword, setConfirmPassword] = useState("");
+  const [isLoading, setIsLoading] = useState(false);
+  const [errMessage, setErrMessage] = useState("");
+  const passwordRegex: RegExp =
+    /^(?=.*[a-z])(?=.*[A-Z])(?=.*\d)(?=.*[!@#$%^&*()_+={}[\]:;"'<>,.?/\\|`~-])[A-Za-z\d!@#$%^&*()_+={}[\]:;"'<>,.?/\\|`~-]{8,}$/;
+  const emailRegex: RegExp = /^[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,}$/;
 
-  const handleSubmit = () => {
+  const handleSubmit = async (e: FormEvent<HTMLFormElement>) => {
+    setIsLoading(true);
+    setErrMessage("");
+    e.preventDefault();
+    if (
+      !role ||
+      !username ||
+      !email ||
+      !firstName ||
+      !lastName ||
+      !password ||
+      !confirmPassword
+    ) {
+      setErrMessage("Provide all fields.");
+      setIsLoading(false);
+      return;
+    }
+
+    if (!emailRegex.test(email)) {
+      setErrMessage("Invalid email address.");
+      setIsLoading(false);
+      return;
+    }
+
+    if (password !== confirmPassword) {
+      setErrMessage("Password does not match.");
+      setIsLoading(false);
+      return;
+    }
+
+    if (!passwordRegex.test(password)) {
+      setErrMessage("Password must be at least 8 characters with a mix of characters, numbers, and symbols.");
+      setIsLoading(false);
+      return;
+    }
+
     const newAdmin: AdminUserType = {
       role: role,
       username: username,
@@ -27,8 +69,35 @@ export default function AdminAddModal({ onClose, setAdmins }: NewUserModalProps)
       password: password,
     };
 
-    setAdmins(previous => [newAdmin, ...previous]);
-    onClose();
+    try {
+      const body = JSON.stringify(newAdmin);
+      const response = await fetch("/api/users/admin/register/", {
+        mode: "cors",
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+        },
+        body: body,
+        credentials: "include",
+      });
+
+      const result = await response.json();
+
+      if (!result.success) {
+        setErrMessage(`${result.data}.`);
+        setIsLoading(false);
+        return;
+      }
+
+      setAdmins(prev =>
+        [...prev, result.data]
+      );
+      onClose();
+    } catch (err) {
+      console.error("create admin error: ", err);
+      setErrMessage("Server error. Try again later.")
+      setIsLoading(false);
+    }
   }
 
   return (
@@ -45,107 +114,107 @@ export default function AdminAddModal({ onClose, setAdmins }: NewUserModalProps)
           <CloseButton onClose={onClose} />
         </div>
 
-        <div className="modal-input-container">
-          <label htmlFor="role" className="w-8/12">Role</label>
-          <select 
-            name="role" 
-            id="role" 
-            className="modal-input"
-            value={role}
-            onChange={(e) => setRole(e.target.value)}
-          >
-            <option value="admin" className="text-black">Admin</option>
-            <option value="super admin" className="text-black">Super Admin</option>
-          </select>
-        </div>
-
-        <div className="modal-input-container">
-          <label htmlFor="username" className="w-8/12">Username</label>
-          <input
-            id="username"
-            name="username"
-            type="text"
-            className="modal-input"
-            value={username}
-            onChange={(e) => setUsername(e.target.value)}
-          />
-        </div>
-
-        <div className="modal-input-container">
-          <label htmlFor="email" className="w-8/12">Email</label>
-          <input
-            type="text"
-            id="email"
-            name="email"
-            className="modal-input"
-            value={email}
-            onChange={(e) => setEmail(e.target.value)}
-          />
-        </div>
-
-        <div className="modal-input-container">
-          <label htmlFor="first-name" className="w-8/12">First Name</label>
-          <input
-            type="text"
-            id="first-name"
-            name="first-name"
-            className="modal-input"
-            value={firstName}
-            onChange={(e) => setFirstName(e.target.value)}
-          />
-        </div>
-
-        <div className="modal-input-container">
-          <label htmlFor="last-name" className="w-8/12">Last Name</label>
-          <input
-            type="text"
-            id="last-name"
-            name="last-name"
-            className="modal-input"
-            value={lastName}
-            onChange={(e) => setLastName(e.target.value)}
-          />
-        </div>
-
-        <div className="modal-input-container">
-          <label htmlFor="password" className="w-8/12">Password</label>
-          <input
-            type="password"
-            id="password"
-            name="password"
-            className="modal-input"
-            value={password}
-            onChange={(e) => setPassword(e.target.value)}
-          />
-        </div>
-
-        <div className="modal-input-container">
-          <label htmlFor="confirm-password" className="w-8/12">Confirm Password</label>
-          <input
-            type="password"
-            id="confirm-password"
-            name="confirm-password"
-            className="modal-input"
-            value={confirmPassword}
-            onChange={(e) => setConfirmPassword(e.target.value)}
-          />
-        </div>
-
-        <div className="w-full mt-5 flex justify-between items-center cursor-pointer">
-          <div
-            className="py-2 px-5 font-medium text-sm border rounded-4xl dark:border-secondary-dark/70 dark:hover:bg-secondary-dark/70"
-            onClick={onClose}
-          >
-            <button type="button" className="cursor-pointer" onClick={onClose}>Cancel</button>
+        <form onSubmit={handleSubmit}>
+          <div className="modal-input-container">
+            <label htmlFor="role" className="w-8/12">Role</label>
+            <select
+              name="role"
+              id="role"
+              className="modal-input"
+              value={role}
+              onChange={(e) => {
+                setRole(e.target.value)
+                console.log("role new value: ", e.target.value);
+                
+              }}
+            >
+              <option value="" className="text-black">Select an option</option>
+              <option value="admin" className="text-black">Admin</option>
+              <option value="super admin" className="text-black">Super Admin</option>
+            </select>
           </div>
 
-          <div
-            className="py-2 px-5 font-medium text-sm border rounded-4xl dark:border-primary-dark/50 dark:hover:bg-primary-dark/70"
-            onClick={onClose}
-          >
-            <button type="button" className="cursor-pointer" onClick={handleSubmit}>Submit</button>
+          <div className="modal-input-container">
+            <label htmlFor="username" className="w-8/12">Username</label>
+            <input
+              id="username"
+              name="username"
+              type="text"
+              className="modal-input"
+              value={username}
+              onChange={(e) => setUsername(e.target.value)}
+            />
           </div>
-        </div>
+
+          <div className="modal-input-container">
+            <label htmlFor="email" className="w-8/12">Email</label>
+            <input
+              type="text"
+              id="email"
+              name="email"
+              className="modal-input"
+              value={email}
+              onChange={(e) => setEmail(e.target.value)}
+            />
+          </div>
+
+          <div className="modal-input-container">
+            <label htmlFor="first-name" className="w-8/12">First Name</label>
+            <input
+              type="text"
+              id="first-name"
+              name="first-name"
+              className="modal-input"
+              value={firstName}
+              onChange={(e) => setFirstName(e.target.value)}
+            />
+          </div>
+
+          <div className="modal-input-container">
+            <label htmlFor="last-name" className="w-8/12">Last Name</label>
+            <input
+              type="text"
+              id="last-name"
+              name="last-name"
+              className="modal-input"
+              value={lastName}
+              onChange={(e) => setLastName(e.target.value)}
+            />
+          </div>
+
+          <div className="modal-input-container">
+            <label htmlFor="password" className="w-8/12">Password</label>
+            <input
+              type="password"
+              id="password"
+              name="password"
+              className="modal-input"
+              value={password}
+              onChange={(e) => setPassword(e.target.value)}
+            />
+          </div>
+
+          <div className="modal-input-container">
+            <label htmlFor="confirm-password" className="w-8/12">Confirm Password</label>
+            <input
+              type="password"
+              id="confirm-password"
+              name="confirm-password"
+              className="modal-input"
+              value={confirmPassword}
+              onChange={(e) => setConfirmPassword(e.target.value)}
+            />
+          </div>
+
+          <div className="max-w-8/12 ml-auto text-center dark:text-delete-dark/70">
+            {errMessage}
+          </div>
+
+          <div className="w-full mt-5 flex justify-between items-center cursor-pointer">
+            <CancelButton onClick={onClose} />
+            <SubmitButton isLoading={isLoading}>Submit</SubmitButton>
+          </div>
+        </form>
 
       </div>
     </div>
