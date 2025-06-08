@@ -148,7 +148,7 @@ export default function Dashboard() {
         </div>
       </div>
 
-      <div className="chart-container min-h-[300] w-full min-w-[350px] dark:bg-dark rounded-lg flex flex-col items-center justify-center">
+      <div className="chart-container min-h-[300] w-full min-w-[700px] dark:bg-dark rounded-lg flex flex-col items-center justify-center">
         <div className="w-full flex justify-between">
           <h1 className="chart-label">Top Monthly Search</h1>
           <div className="flex justify-center items-center text-xs border border-gray-700 rounded-lg">
