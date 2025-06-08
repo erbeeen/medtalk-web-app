@@ -18,6 +18,7 @@ import RefreshToken, {
 } from "../models/refresh-token.model.js";
 import sendJsonResponse from "../utils/httpResponder.js";
 import User, { UserType, UserDocument } from "../models/user.model.js";
+import { isToken } from "typescript";
 
 type LoginCredentials = {
   email: string;
@@ -253,7 +254,7 @@ export default class UserController {
           return;
         } catch (err) {
           console.error(
-            `${this.registerUser.name} save refresh token error: ${err}\n${err.stack}`,
+            `${this.loginUser.name} save refresh token error: ${err}\n${err.stack}`,
           );
           logError(err);
           sendJsonResponse(res, 500);
@@ -347,6 +348,19 @@ export default class UserController {
 
     try {
       await RefreshToken.findOneAndDelete({ refreshToken });
+      const isProduction = process.env.NODE_ENV === "production";
+      res.cookie("accessToken", "", {
+        httpOnly: true,
+        secure: isProduction,
+        sameSite: "lax",
+        maxAge: 0,
+      });
+      res.cookie("refreshToken", "", {
+        httpOnly: true,
+        secure: isProduction,
+        sameSite: "lax",
+        maxAge: 0,
+      });
       sendJsonResponse(res, 200, "token removed");
     } catch (err) {
       logError(err);
@@ -508,7 +522,119 @@ export default class UserController {
     );
   };
 
+  loginAdmin = async (req: Request, res: Response, next: NextFunction) => {
+    if (req.user !== undefined) {
+      const isTokenFromUser =
+        req.user.role !== "super admin" && req.user.role !== "admin";
+      const isBodyEmpty =
+        req.body === undefined || Object.keys(req.body).length === 0;
+
+      if (req.user !== undefined && !isTokenFromUser && isBodyEmpty) {
+        sendJsonResponse(res, 200);
+        return;
+      }
+    }
+
+    const credentials: LoginCredentials = req.body;
+
+    if (!credentials.email || !credentials.password) {
+      sendJsonResponse(res, 400, "provide all fields");
+      return;
+    }
+
+    const [user, fetchUserErr] = await fetchUserByEmail(credentials.email);
+
+    if (fetchUserErr) {
+      sendJsonResponse(res, 500);
+      next(fetchUserErr);
+      return;
+    }
+
+    const isNotAdmin = user.role !== "super admin" && user.role !== "admin";
+    if (user === null || isNotAdmin) {
+      sendJsonResponse(res, 401, "invalid email or password");
+      return;
+    }
+
+    bcrypt.compare(
+      credentials.password,
+      user.password,
+      async (err: Error, result: boolean) => {
+        if (err) {
+          console.error(`${this.loginUser.name} bcrypt.compare error: ${err}`);
+          logError(err);
+          sendJsonResponse(res, 500);
+          next(err);
+          return;
+        }
+        if (!result) {
+          sendJsonResponse(res, 401, "invalid email or password");
+          return;
+        }
+
+        const [accessToken, accessTokenErr] = generateAccessToken(
+          String(user._id),
+          user.username,
+          user.role,
+        );
+        if (accessTokenErr !== null) {
+          console.error(
+            `${this.loginUser.name} Generate Access Token error: ${accessTokenErr}\n${accessTokenErr.stack}`,
+          );
+          logError(accessTokenErr);
+          sendJsonResponse(res, 500);
+          next(accessTokenErr);
+          return;
+        }
+
+        const [refreshToken, refreshTokenErr] = generateRefreshToken(
+          String(user._id),
+          user.username,
+          user.role,
+        );
+        if (refreshTokenErr !== null) {
+          console.error(
+            `${this.loginAdmin.name} Generate Refresh Token Error: ${refreshTokenErr}\n${refreshTokenErr.stack}`,
+          );
+          logError(refreshTokenErr);
+          sendJsonResponse(res, 500);
+          next(refreshTokenErr);
+          return;
+        }
+
+        try {
+          const newToken = new RefreshToken({
+            token: refreshToken,
+          });
+          await newToken.save();
+          const isProduction = process.env.NODE_ENV === "production";
+          res.cookie("accessToken", accessToken, {
+            httpOnly: true,
+            secure: isProduction,
+            sameSite: "lax",
+          });
+          res.cookie("refreshToken", refreshToken, {
+            httpOnly: true,
+            secure: isProduction,
+            sameSite: "lax",
+          });
+          sendJsonResponse(res, 200);
+          return;
+        } catch (err) {
+          console.error(
+            `${this.loginAdmin.name} save refresh token error: ${err}\n${err.stack}`,
+          );
+          logError(err);
+          sendJsonResponse(res, 500);
+          next(err);
+          return;
+        }
+      },
+    );
+  };
+
   getAdmin = async (req: Request, res: Response, next: NextFunction) => {
+    // TODO: No route yet
     if (req.user.role !== "super admin") {
       res.sendStatus(403);
       return;

@@ -124,8 +124,6 @@ export default function AdminAddModal({ onClose, setAdmins }: NewUserModalProps)
               value={role}
               onChange={(e) => {
                 setRole(e.target.value)
-                console.log("role new value: ", e.target.value);
-                
               }}
             >
               <option value="" className="text-black">Select an option</option>

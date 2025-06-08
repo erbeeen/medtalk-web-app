@@ -17,11 +17,12 @@ medicineRouter.use(cors({
 
 // CRUD routes
 medicineRouter.get("/all", authenticateJwt, medicineController.getAllMedicines);
-medicineRouter.get("/search", medicineController.searchMedicines);
-medicineRouter.get("/get", medicineController.getMedicineById);
-medicineRouter.put("/update", medicineController.updateMedicine);
-medicineRouter.delete("/delete", medicineController.deleteMedicine);
-medicineRouter.post("/", medicineController.createMedicine);
-medicineRouter.get("/", medicineController.getMedicineByName);
+medicineRouter.get("/search", authenticateJwt, medicineController.searchMedicines);
+medicineRouter.get("/get", authenticateJwt, medicineController.getMedicineById);
+medicineRouter.put("/update", authenticateJwt, medicineController.updateMedicine);
+medicineRouter.delete("/delete/batch", authenticateJwt, medicineController.deleteMedicines);
+medicineRouter.delete("/delete", authenticateJwt, medicineController.deleteMedicine);
+medicineRouter.post("/", authenticateJwt, medicineController.createMedicine);
+medicineRouter.get("/", authenticateJwt, medicineController.getMedicineByName);
 
 export default medicineRouter; 

@@ -154,6 +154,11 @@ export default class ScheduleController {
   deleteSchedule = async (req: Request, res: Response, next: NextFunction) => {
     // NOTE: This implementation uses the id of a schedule
     // deleting future schedules is not yet available
+
+    if (req.query.id === undefined) {
+      sendJsonResponse(res, 400, "No ID provided");
+    }
+
     const scheduleID = String(req.query.id);
 
     if (!mongoose.Types.ObjectId.isValid(scheduleID)) {
@@ -171,6 +176,26 @@ export default class ScheduleController {
       next(err);
     } finally {
       return;
+    }
+  };
+
+  deleteSchedules = async (req: Request, res: Response, next: NextFunction) => {
+    const idList = req.body;
+
+    if (!idList || !Array.isArray(idList) || idList.length === 0) {
+      sendJsonResponse(res, 400, "No IDs provided");
+      return;
+    }
+
+    try {
+      const objectIds = idList.map((id) => new mongoose.Types.ObjectId(id));
+      const result = await Schedule.deleteMany({ _id: { $in: objectIds } });
+      sendJsonResponse(res, 200, result);
+    } catch (err) {
+      console.error(`${this.deleteSchedules.name} error`);
+      logError(err);
+      sendJsonResponse(res, 500);
+      next(err);
     }
   };
 }

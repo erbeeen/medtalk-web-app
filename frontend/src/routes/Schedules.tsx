@@ -7,7 +7,7 @@ import ScrollTableData from "../components/ScrollTableData";
 import { FaEdit, FaPlus, FaTrash } from "react-icons/fa";
 import SearchBar from "../components/SearchBar";
 import Table from "../components/Table";
-import ScheduleAddModal from "../components/modals/ScheduleAddModal";
+// import ScheduleAddModal from "../components/modals/ScheduleAddModal";
 import ScheduleEditModal from "../components/modals/ScheduleEditModal";
 import ScheduleDeleteModal from "../components/modals/ScheduleDeleteModal";
 
@@ -56,9 +56,7 @@ export default function ScheduleRoute({ scrollToTop }: ScheduleRouteProps) {
       }
     }
 
-
     loginAndLoadData();
-    setIsLoading(false);
   }, []);
 
   const scheduleColumnHelper = createColumnHelper<ScheduleType>();
@@ -187,19 +185,19 @@ export default function ScheduleRoute({ scrollToTop }: ScheduleRouteProps) {
         </div>
 
         <div className="w-2/12 flex justify-end gap-3">
-          <div className="p-2 flex justify-center flex-nowrap items-center cursor-pointer
-            border dark:border-primary-dark/60 dark:hover:bg-primary-dark/80 
-            dark:text-primary-dark/60 dark:hover:text-dark-text rounded-md "
-            onClick={() => setIsAddModalOpen(true)}
-          >
-            <FaPlus size="1.3rem" />
-          </div>
-          {isAddModalOpen && (
-            <ScheduleAddModal
-              onClose={() => setIsAddModalOpen(false)}
-              setSchedules={setSchedules}
-            />
-          )}
+          {/* <div className="p-2 flex justify-center flex-nowrap items-center cursor-pointer */}
+          {/*   border dark:border-primary-dark/60 dark:hover:bg-primary-dark/80  */}
+          {/*   dark:text-primary-dark/60 dark:hover:text-dark-text rounded-md " */}
+          {/*   onClick={() => setIsAddModalOpen(true)} */}
+          {/* > */}
+          {/*   <FaPlus size="1.3rem" /> */}
+          {/* </div> */}
+          {/* {isAddModalOpen && ( */}
+          {/*   <ScheduleAddModal */}
+          {/*     onClose={() => setIsAddModalOpen(false)} */}
+          {/*     setSchedules={setSchedules} */}
+          {/*   /> */}
+          {/* )} */}
           <div>
             {Object.keys(rowSelection).length != 0 && (
               <button

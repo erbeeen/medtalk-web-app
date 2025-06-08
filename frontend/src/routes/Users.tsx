@@ -67,7 +67,7 @@ export default function UsersRoute({ scrollToTop }: UsersRouteProps) {
 
 
     loginAndLoadData();
-    setIsLoading(false);
+    // setIsLoading(false);
   }, []);
 
   const userColumnHelper = createColumnHelper<UserType>();

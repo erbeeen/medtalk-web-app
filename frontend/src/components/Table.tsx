@@ -83,45 +83,46 @@ export default function Table({
   }, [content]);
 
   return (
-    <div id="table-ref" ref={tableRef} className="h-full w-full border border-dark/10 dark:border-light/10 rounded-2xl overflow-x-auto">
-      <table className="w-full text-left border-collapse border-spacing-0 table-fixed">
-        <thead>
-          {table.getHeaderGroups().map((headerGroup) => (
-            <tr key={headerGroup.id} className="bg-gray-700/40 border-b border-dark/10 dark:border-light/10 rounded-2xl">
-              {headerGroup.headers.map((header) => (
-                <th
-                  className="py-5 px-4 align-middle font-medium "
-                  key={header.id}
-                  style={{
-                    width: header.getSize(),
-                    minWidth: header.column.columnDef.minSize,
-                    maxWidth: header.column.columnDef.maxSize
-                  }}>
-                  {header.isPlaceholder
-                    ? null
-                    : flexRender(
-                      header.column.columnDef.header,
-                      header.getContext()
-                    )}
-                </th>
-              ))}
-            </tr>
-          ))}
-        </thead>
-        <tbody className="h-full flex-1 overflow-y-scroll">
-          {table.getRowModel().rows.map((row) => (
-            <tr key={row.id} className="border-b border-dark/10 dark:border-light/10 font-light align-middle">
-              {row.getVisibleCells().map((cell) => (
-                <td className="py-3 px-4" key={cell.id} id={cell.id}>
-                  {flexRender(cell.column.columnDef.cell, cell.getContext())}
-                </td>
-              ))}
-            </tr>
-          ))}
-        </tbody>
-      </table>
-
-      <div className={`w-full p-3 flex justify-center items-center gap-2 ${table.getPageCount() <= 0 ? "hidden py-5" : ""}`}>
+    <>
+      <div id="table-ref" ref={tableRef} className="h-full w-full border border-dark/10 dark:border-light/10 rounded-2xl overflow-x-scroll">
+        <table className="w-full text-left border-collapse border-spacing-0 table-fixed">
+          <thead>
+            {table.getHeaderGroups().map((headerGroup) => (
+              <tr key={headerGroup.id} className="bg-gray-700/40 border-b border-dark/10 dark:border-light/10 rounded-2xl">
+                {headerGroup.headers.map((header) => (
+                  <th
+                    className="py-5 px-4 align-middle font-medium "
+                    key={header.id}
+                    style={{
+                      width: header.getSize(),
+                      minWidth: header.column.columnDef.minSize,
+                      maxWidth: header.column.columnDef.maxSize
+                    }}>
+                    {header.isPlaceholder
+                      ? null
+                      : flexRender(
+                        header.column.columnDef.header,
+                        header.getContext()
+                      )}
+                  </th>
+                ))}
+              </tr>
+            ))}
+          </thead>
+          <tbody className="h-full flex-1 overflow-y-scroll">
+            {table.getRowModel().rows.map((row) => (
+              <tr key={row.id} className="border-b border-dark/10 dark:border-light/10 font-light align-middle">
+                {row.getVisibleCells().map((cell) => (
+                  <td className="py-3 px-4" key={cell.id} id={cell.id}>
+                    {flexRender(cell.column.columnDef.cell, cell.getContext())}
+                  </td>
+                ))}
+              </tr>
+            ))}
+          </tbody>
+        </table>
+      </div>
+      <div className={`w-full p-3 flex justify-center items-center gap-2 overflow-x-clip ${table.getPageCount() <= 0 ? "hidden py-5" : ""}`}>
 
         <div className={
           `p-1.5 flex justify-center items-center border rounded-sm 
@@ -187,6 +188,6 @@ export default function Table({
           </button>
         </div>
       </div>
-    </div>
+    </>
   );
 }

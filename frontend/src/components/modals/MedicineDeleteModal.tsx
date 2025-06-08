@@ -1,6 +1,8 @@
-import type { Dispatch, SetStateAction } from "react";
+import { useState, type Dispatch, type FormEvent, type SetStateAction } from "react";
 import CloseButton from "../buttons/CloseButton";
 import type { MedicineType } from "../../types/medicine";
+import CancelButton from "../buttons/CancelButton";
+import DeleteButton from "../buttons/DeleteButton";
 
 type DeleteUserModalProps = {
   onClose: () => void;
@@ -9,14 +11,17 @@ type DeleteUserModalProps = {
 }
 
 export default function MedicineDeleteModal({ onClose, data, setMedicines }: DeleteUserModalProps) {
+  const [errMessage, setErrMessage] = useState("");
+  const [isLoading, setIsLoading] = useState(false);
 
-  const isUserType = (data: any): data is MedicineType => {
+  const isMedicineType = (data: any): data is MedicineType => {
     return (
       data !== null &&
       typeof data === "object" &&
       typeof data._id === "string" &&
-      typeof data.username === "string" &&
-      typeof data.email === "string"
+      typeof data["Level 1"] === "string" &&
+      typeof data["Level 2"] === "string" &&
+      typeof data.Molecule === "string"
     );
   }
 
@@ -29,41 +34,80 @@ export default function MedicineDeleteModal({ onClose, data, setMedicines }: Del
   //   );
   // }
 
-  const handleDelete = async () => {
-    try {
-      console.log("starting delete request");
-      const response = await fetch(`/api/users/delete/?id=${data._id}`, {
-        mode: "cors",
-        method: "DELETE",
-        credentials: "include",
-      });
+  const handleDelete = async (e: FormEvent<HTMLFormElement>) => {
+    setIsLoading(true);
+    setErrMessage("");
+    e.preventDefault();
+    if (isMedicineType(data)) {
+      try {
+        const response = await fetch(`/api/medicine/delete/?id=${data._id}`, {
+          mode: "cors",
+          method: "DELETE",
+          credentials: "include",
+        });
 
-      const deletedUser = await response.json();
-      console.log("data value:", deletedUser);
+        const result = await response.json();
 
-      if (deletedUser.success) {
-        // if (isUserType(data)) {
+        if (!result.success) {
+          setErrMessage(`${result.data}.`);
+          setIsLoading(false);
+          return;
+        }
+
         setMedicines(previous =>
-          previous.filter(user =>
-            user._id !== deletedUser.data._id
+          previous.filter(medicine =>
+            medicine._id !== result.data._id
           )
         );
-        // } else if (isMapType(data)) {
-        //   for (const key of Object.keys(data)) {
-        //     setUsers(previous =>
-        //       previous.filter(user =>
-        //         user._id !== key
-        //       )
-        //     );
-        //   }
-        // }
         onClose();
+      } catch (err) {
+        console.error("delete medicine error: ", err);
+        setErrMessage("Server error. Try again later.");
+        setIsLoading(false);
       }
-    } catch (err) {
-      console.error("delete user error: ", err);
-    }
+    } else {
+      console.log("starting batch medicine delete request");
+      const idList: Array<String> = [];
+      for (const key of Object.keys(data)) {
+        idList.push(key);
+      }
 
-    onClose();
+      console.log("idList value: ", idList);
+      
+      try {
+        const body = JSON.stringify(idList);
+        const response = await fetch("/api/medicine/delete/batch", {
+          mode: "cors",
+          method: "DELETE",
+          headers: {
+            "Content-Type": "application/json",
+          },
+          body: body,
+          credentials: "include",
+        });
+
+        const result = await response.json();
+
+        if (!result.success) {
+          setErrMessage(`${result.data}.`);
+          setIsLoading(false);
+          return;
+        }
+
+        setMedicines(previousMedicines => {
+          const deletedIdsSet = new Set(idList);
+          return previousMedicines.filter((medicine) => {
+            if (medicine._id === undefined) return true;
+            return !deletedIdsSet.has(medicine._id);
+          });
+        })
+        onClose();
+      } catch (err) {
+        console.error("delete medicines error: ", err);
+        setErrMessage("Server error. Try again later.");
+        setIsLoading(false);
+      }
+    }
   }
 
   return (
@@ -78,22 +122,20 @@ export default function MedicineDeleteModal({ onClose, data, setMedicines }: Del
           <h1 className="text-xl font-bold">Delete</h1>
           <CloseButton onClose={onClose} />
         </div>
-        <h1 className="self-center">{isUserType(data) ? "Confirm deletion?" : "Delete selected?"}</h1>
-        <div className="w-full mt-5 flex justify-between items-center cursor-pointer">
-          <div
-            className="py-2 px-5 font-medium text-sm border rounded-4xl dark:border-secondary-dark/70 dark:hover:bg-secondary-dark/70 cursor-pointer"
-            onClick={onClose}
-          >
-            Cancel
+
+        <form onSubmit={handleDelete}>
+          <h1 className="self-center">{isMedicineType(data) ? "Confirm deletion?" : "Delete selected?"}</h1>
+
+          <div className="max-w-8/12 ml-auto text-center dark:text-delete-dark/70">
+            {errMessage}
           </div>
 
-          <div
-            className="py-2 px-5 font-medium text-sm border rounded-4xl dark:border-delete-dark/50 dark:hover:bg-delete-dark/70"
-            onClick={handleDelete}
-          >
-            Delete
+          <div className="w-full mt-5 flex justify-between items-center cursor-pointer">
+            <CancelButton onClick={onClose} />
+            <DeleteButton isLoading={isLoading}>Delete</DeleteButton>
           </div>
-        </div>
+        </form>
+
       </div>
     </div>
   )

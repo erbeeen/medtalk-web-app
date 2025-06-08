@@ -32,6 +32,7 @@ export default function UserEditModal({ onClose, data, setUsers }: EditUserModal
     ) {
       setErrMessage("Provide all fields.");
       setIsLoading(false);
+      return;
     }
 
     if (!emailRegex.test(email)) {

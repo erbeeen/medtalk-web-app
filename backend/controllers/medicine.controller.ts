@@ -1,30 +1,47 @@
-//admin
-
-//TODO
-//port GPT in the backend
-
 import { NextFunction, Request, Response } from "express";
 import Medicine, { MedicineType } from "../models/medicine.model.js";
 import sendJsonResponse from "../utils/httpResponder.js";
 import { logError } from "../middleware/logger.js";
 import SearchedMedicine from "../models/searched-medicines.model.js";
+import mongoose from "mongoose";
 
 export default class MedicineController {
   constructor() {}
 
   createMedicine = async (req: Request, res: Response): Promise<void> => {
+    if (req.user.role !== "super admin" && req.user.role !== "admin") {
+      res.sendStatus(403);
+      return;
+    }
+
     try {
       const medicineData: MedicineType = req.body;
+      if (
+          !medicineData["Level 1"] ||
+          !medicineData["Level 2"] ||
+          !medicineData["Level 3"] ||
+          !medicineData.Molecule ||
+          !medicineData["Technical Specifications"] ||
+          !medicineData["ATC Code"]
+      ) {
+        sendJsonResponse(res, 400, "Provide required fields");
+        return;
+      }
       const newMedicine = new Medicine(medicineData);
       const savedMedicine = await newMedicine.save();
       sendJsonResponse(res, 201, savedMedicine);
     } catch (err) {
       console.error("createMedicine error:", err);
-      sendJsonResponse(res, 500, "Error creating medicine");
+      sendJsonResponse(res, 500);
     }
   };
 
-  getAllMedicines = async (_req: Request, res: Response) => {
+  getAllMedicines = async (req: Request, res: Response) => {
+    if (req.user.role !== "super admin" && req.user.role !== "admin") {
+      res.sendStatus(403);
+      return;
+    }
+
     try {
       const medicines = await Medicine.find();
       sendJsonResponse(res, 200, medicines);
@@ -40,6 +57,11 @@ export default class MedicineController {
     req: Request,
     res: Response,
   ): Promise<void> => {
+    if (req.user.role !== "super admin" && req.user.role !== "admin") {
+      res.sendStatus(403);
+      return;
+    }
+
     try {
       const { genericName, source } = req.query;
       const query: any = {};
@@ -103,6 +125,11 @@ export default class MedicineController {
   };
 
   updateMedicine = async (req: Request, res: Response): Promise<void> => {
+    if (req.user.role !== "super admin" && req.user.role !== "admin") {
+      res.sendStatus(403);
+      return;
+    }
+
     try {
       const updatedMedicine = await Medicine.findByIdAndUpdate(
         req.query.id,
@@ -122,7 +149,17 @@ export default class MedicineController {
     }
   };
 
-  deleteMedicine = async (req: Request, res: Response): Promise<void> => {
+  deleteMedicine = async (req: Request, res: Response, next: NextFunction): Promise<void> => {
+    if (req.user.role !== "super admin" && req.user.role !== "admin") {
+      res.sendStatus(403);
+      return;
+    }
+
+    if (req.query.id === undefined) {
+      sendJsonResponse(res, 400, "No id provided");
+      return;
+    }
+
     try {
       const deletedMedicine = await Medicine.findByIdAndDelete(req.query.id);
 
@@ -131,12 +168,34 @@ export default class MedicineController {
         return;
       }
 
-      sendJsonResponse(res, 200, { message: "Medicine deleted successfully" });
+      sendJsonResponse(res, 200, deletedMedicine);
+      return;
     } catch (err) {
-      console.error("deleteMedicine error:", err);
-      sendJsonResponse(res, 500, "Error deleting medicine");
+      logError(err);
+      sendJsonResponse(res, 500);
+      next(err);
     }
   };
+
+  deleteMedicines = async (req: Request, res: Response, next: NextFunction) => {
+    const idList = req.body;
+
+    if (!idList || !Array.isArray(idList) || idList.length === 0) {
+      sendJsonResponse(res, 400, "No IDs provided");
+      return;
+    }
+
+    try {
+      const objectIds = idList.map((id) => new mongoose.Types.ObjectId(id));
+      const result = await Medicine.deleteMany({ _id: { $in: objectIds } });
+      sendJsonResponse(res, 200, result);
+    } catch (err) {
+      console.error(`${this.deleteMedicines.name} error`);
+      logError(err);
+      sendJsonResponse(res, 500);
+      next(err);
+    }
+  }
 
   // Search medicines with advanced filtering
   searchMedicines = async (req: Request, res: Response): Promise<void> => {

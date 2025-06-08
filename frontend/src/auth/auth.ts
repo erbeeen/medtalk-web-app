@@ -8,8 +8,11 @@ export default async function automaticLogin(
   navigateOptions?: NavigateOptions,
 ) {
   try {
+    if (window.location.pathname === "/login") {
+      return;
+    }
     console.log("calling automatic login");
-    const response = await fetch("/api/users/login", {
+    const response = await fetch("/api/users/admin/login", {
       mode: "cors",
       method: "POST",
       headers: {
@@ -30,9 +33,13 @@ export default async function automaticLogin(
         return;
       }
     }
-    console.log("got to after checking 200");
 
-    if (response.status == 400 || response.status == 403) {
+    if (
+      response.status == 400 ||
+      response.status == 401 ||
+      response.status == 403 ||
+      response.status == 500
+    ) {
       console.log("fetch to login failed with response 200");
       console.log("Trying to refresh token");
 

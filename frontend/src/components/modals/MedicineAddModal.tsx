@@ -1,7 +1,9 @@
-import type { Dispatch, SetStateAction } from "react";
+import type { Dispatch, FormEvent, SetStateAction } from "react";
 import { useState } from "react";
 import CloseButton from "../buttons/CloseButton";
 import type { MedicineType } from "../../types/medicine";
+import SubmitButton from "../buttons/SubmitButton";
+import CancelButton from "../buttons/CancelButton";
 
 type NewUserModalProps = {
   onClose: () => void;
@@ -17,8 +19,28 @@ export default function MedicineAddModal({ onClose, setMedicines }: NewUserModal
   const [route, setRoute] = useState("");
   const [technicalSpec, setTechnicalSpec] = useState("");
   const [atcCode, setAtcCode] = useState("");
+  const [isLoading, setIsLoading] = useState(false);
+  const [errMessage, setErrMessage] = useState("");
 
-  const handleSubmit = async () => {
+  const handleSubmit = async (e: FormEvent<HTMLFormElement>) => {
+    setIsLoading(true);
+    setErrMessage("");
+    e.preventDefault();
+
+    if (
+      !level1 ||
+      !level2 ||
+      !level3 ||
+      !molecule ||
+      !route ||
+      !technicalSpec ||
+      !atcCode
+    ) {
+      setErrMessage("*Provide all fields.")
+      setIsLoading(false);
+      return;
+    }
+
     const newMedicine: MedicineType = {
       "Level 1": level1,
       "Level 2": level2,
@@ -31,9 +53,9 @@ export default function MedicineAddModal({ onClose, setMedicines }: NewUserModal
     };
 
     try {
-      console.log("starting new medicine request");
+      console.log("starting create medicine request");
       const body = JSON.stringify(newMedicine)
-      const response = await fetch(`/api/users/register/`, {
+      const response = await fetch(`/api/medicine/`, {
         mode: "cors",
         method: "POST",
         headers: {
@@ -43,19 +65,18 @@ export default function MedicineAddModal({ onClose, setMedicines }: NewUserModal
         credentials: "include",
       });
 
-      console.log("parsing data into json");
       const result = await response.json();
-      console.log("data value:", result);
-      console.log("result.data._id value", result.data._id);
 
-
-      if (result.success) {
-        setMedicines(prev =>
-          [result.data, ...prev]
-        );
-
-        onClose();
+      if (!result.success) {
+        setErrMessage(`${result.data}.`);
+        setIsLoading(false);
+        return;
       }
+
+      setMedicines(prev =>
+        [...prev, result.data]
+      );
+      onClose();
     } catch (err) {
       console.error("update user error: ", err);
     }
@@ -76,119 +97,119 @@ export default function MedicineAddModal({ onClose, setMedicines }: NewUserModal
           <CloseButton onClose={onClose} />
         </div>
 
-        <div className="modal-input-container">
-          <label htmlFor="level-1" className="w-8/12">Level 1</label>
-          <input
-            id="level-1"
-            name="level-1"
-            type="text"
-            className="modal-input"
-            value={level1}
-            onChange={(e) => setLevel1(e.target.value)}
-          />
-        </div>
-
-        <div className="modal-input-container">
-          <label htmlFor="level-2" className="w-8/12">Level 2</label>
-          <input
-            type="text"
-            id="level-2"
-            name="level-2"
-            className="modal-input"
-            value={level2}
-            onChange={(e) => setLevel2(e.target.value)}
-          />
-        </div>
-
-        <div className="modal-input-container">
-          <label htmlFor="first-name" className="w-8/12">Level 3</label>
-          <input
-            type="text"
-            id="level-3"
-            name="level-3"
-            className="modal-input"
-            value={level3}
-            onChange={(e) => setLevel3(e.target.value)}
-          />
-        </div>
-
-        <div className="modal-input-container">
-          <label htmlFor="last-name" className="w-8/12">Level 4</label>
-          <input
-            type="text"
-            id="level-4"
-            name="level-4"
-            className="modal-input"
-            value={level4}
-            onChange={(e) => setLevel4(e.target.value)}
-          />
-        </div>
-
-        <div className="modal-input-container">
-          <label htmlFor="password" className="w-8/12">Molecule</label>
-          <input
-            type="text"
-            id="molecule"
-            name="molecule"
-            className="modal-input"
-            value={molecule}
-            onChange={(e) => setMolecule(e.target.value)}
-          />
-        </div>
-
-        <div className="modal-input-container">
-          <label htmlFor="route" className="w-8/12">Route</label>
-          <input
-            type="text"
-            id="route"
-            name="route"
-            className="modal-input"
-            value={route}
-            onChange={(e) => setRoute(e.target.value)}
-          />
-        </div>
-
-        <div className="modal-input-container">
-          <label htmlFor="technical-specification" className="w-8/12">Technical Specification</label>
-          <input
-            type="text"
-            id="technical-specification"
-            name="technical-specification"
-            className="modal-input"
-            value={technicalSpec}
-            onChange={(e) => setTechnicalSpec(e.target.value)}
-          />
-        </div>
-
-        <div className="modal-input-container">
-          <label htmlFor="atc-code" className="w-8/12">ATC Code</label>
-          <input
-            type="text"
-            id="atc-code"
-            name="atc-code"
-            className="modal-input"
-            value={atcCode}
-            onChange={(e) => setAtcCode(e.target.value)}
-          />
-        </div>
-
-        <div className="w-full mt-5 flex justify-between items-center cursor-pointer">
-          <div
-            className="py-2 px-5 font-medium text-sm border rounded-4xl dark:border-secondary-dark/70 dark:hover:bg-secondary-dark/70"
-            onClick={onClose}
-          >
-            <button type="button" className="cursor-pointer" onClick={onClose}>Cancel</button>
+        <form onSubmit={handleSubmit}>
+          <div className="modal-input-container">
+            <label htmlFor="level-1" className="w-8/12">Level 1</label>
+            <input
+              id="level-1"
+              name="level-1"
+              type="text"
+              className="modal-input"
+              value={level1}
+              onChange={(e) => setLevel1(e.target.value)}
+              required
+            />
           </div>
 
-          <div
-            className="py-2 px-5 font-medium text-sm border rounded-4xl dark:border-primary-dark/50 dark:hover:bg-primary-dark/70"
-            onClick={handleSubmit}
-          >
-            Submit
-            {/* <button type="button" className="cursor-pointer" onClick={handleSubmit}>Submit</button> */}
+          <div className="modal-input-container">
+            <label htmlFor="level-2" className="w-8/12">Level 2</label>
+            <input
+              type="text"
+              id="level-2"
+              name="level-2"
+              className="modal-input"
+              value={level2}
+              onChange={(e) => setLevel2(e.target.value)}
+              required
+            />
           </div>
-        </div>
 
+          <div className="modal-input-container">
+            <label htmlFor="first-name" className="w-8/12">Level 3</label>
+            <input
+              type="text"
+              id="level-3"
+              name="level-3"
+              className="modal-input"
+              value={level3}
+              onChange={(e) => setLevel3(e.target.value)}
+              required
+            />
+          </div>
+
+          <div className="modal-input-container">
+            <label htmlFor="last-name" className="w-8/12">Level 4</label>
+            <input
+              type="text"
+              id="level-4"
+              name="level-4"
+              className="modal-input"
+              value={level4}
+              onChange={(e) => setLevel4(e.target.value)}
+            />
+          </div>
+
+          <div className="modal-input-container">
+            <label htmlFor="password" className="w-8/12">Molecule</label>
+            <input
+              type="text"
+              id="molecule"
+              name="molecule"
+              className="modal-input"
+              value={molecule}
+              onChange={(e) => setMolecule(e.target.value)}
+              required
+            />
+          </div>
+
+          <div className="modal-input-container">
+            <label htmlFor="route" className="w-8/12">Route</label>
+            <input
+              type="text"
+              id="route"
+              name="route"
+              className="modal-input"
+              value={route}
+              onChange={(e) => setRoute(e.target.value)}
+              required
+            />
+          </div>
+
+          <div className="modal-input-container">
+            <label htmlFor="technical-specification" className="w-8/12">Technical Specification</label>
+            <input
+              type="text"
+              id="technical-specification"
+              name="technical-specification"
+              className="modal-input"
+              value={technicalSpec}
+              onChange={(e) => setTechnicalSpec(e.target.value)}
+              required
+            />
+          </div>
+
+          <div className="modal-input-container">
+            <label htmlFor="atc-code" className="w-8/12">ATC Code</label>
+            <input
+              type="text"
+              id="atc-code"
+              name="atc-code"
+              className="modal-input"
+              value={atcCode}
+              onChange={(e) => setAtcCode(e.target.value)}
+              required
+            />
+          </div>
+
+          <div className="max-w-8/12 ml-auto text-center dark:text-delete-dark/70">
+            {errMessage}
+          </div>
+
+          <div className="w-full mt-5 flex justify-between items-center cursor-pointer">
+            <CancelButton onClick={onClose} />
+            <SubmitButton isLoading={isLoading}>Submit</SubmitButton>
+          </div>
+        </form>
       </div>
     </div>
   )

@@ -32,6 +32,7 @@ export default function authenticateJwt(
   if (token === undefined) {
     if (
       req.originalUrl == "/api/users/login" ||
+      req.originalUrl == "/api/users/admin/login" ||
       req.originalUrl == "/api/users/register" ||
       req.originalUrl == "/api/users/token"
     ) {

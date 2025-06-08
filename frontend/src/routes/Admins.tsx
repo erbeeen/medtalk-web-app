@@ -66,7 +66,6 @@ export default function AdminsRoute({ scrollToTop }: AdminsRouteProps) {
 
 
     loginAndLoadData();
-    setIsLoading(false);
   }, []);
 
   const adminColumnHelper = createColumnHelper<AdminUserType>();

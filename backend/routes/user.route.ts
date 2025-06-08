@@ -15,6 +15,8 @@ userRouter.use(cors({
 }));
 
 userRouter.post("/admin/register", authenticateJwt, uc.registerAdmin);
+userRouter.post("/admin/login", authenticateJwt, uc.loginAdmin);
+userRouter.get("/admins", authenticateJwt, uc.getAdminUsers);
 userRouter.post("/admin", authenticateJwt, uc.createUser);
 userRouter.put("/admin", authenticateJwt, uc.updateAdmin);
 userRouter.delete("/delete/batch", authenticateJwt, uc.deleteUsers);
@@ -25,7 +27,6 @@ userRouter.post("/token", authenticateJwt, uc.refreshAccessToken);
 userRouter.post("/logout", uc.logoutUser);
 userRouter.put("/update", authenticateJwt, uc.updateUser);
 userRouter.delete("/delete", authenticateJwt, uc.deleteUser);
-userRouter.get("/admins", authenticateJwt, uc.getAdminUsers);
 userRouter.get("/", authenticateJwt, uc.getUsers);
 
 export default userRouter;

@@ -1,13 +1,15 @@
 import mongoose from "mongoose";
 
 export type MedicineType = {
+  "_id"?: string | mongoose.Types.ObjectId;
   "Level 1"?: string;
   "Level 2"?: string;
   "Level 3"?: string;
   "Level 4"?: string;
   Molecule: string;
   Route?: string;
-  "Technical Specification"?: string;
+  "Technical Specifications"?: string;
+  "ATC Code"?: string;
 };
 
 export type MedicineDocument = MedicineType & mongoose.Document;
@@ -22,9 +24,10 @@ const medicineSchema = new mongoose.Schema({
     required: true,
   },
   Route: String,
-  "Technical Specification": String,
-  "ATC CODE": String,
+  "Technical Specifications": String,
+  "ATC Code": String,
 });
+medicineSchema.set("timestamps", true);
 
 const Medicine = mongoose.model(
   "doh_medicine_database",

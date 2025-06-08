@@ -26,6 +26,7 @@ export default function MedicineRoute({ scrollToTop }: MedicineRouteProps) {
   const navigate = useNavigate();
   useEffect(() => {
     document.title = "Medicines | MedTalk";
+    setIsLoading(true);
 
     const loadData = async () => {
       try {
@@ -42,7 +43,6 @@ export default function MedicineRoute({ scrollToTop }: MedicineRouteProps) {
       }
     }
 
-    setIsLoading(true);
     const loginAndLoadData = async () => {
       try {
         await automaticLogin(navigate, "/medicine");
@@ -54,9 +54,7 @@ export default function MedicineRoute({ scrollToTop }: MedicineRouteProps) {
       }
     }
 
-
     loginAndLoadData();
-    setIsLoading(false);
 
   }, []);
 
@@ -233,7 +231,10 @@ export default function MedicineRoute({ scrollToTop }: MedicineRouteProps) {
             )}
             {isDeleteAllModalOpen && (
               <MedicineDeleteModal
-                onClose={() => setIsDeleteAllModalOpen(false)}
+                onClose={() => {
+                  setIsDeleteAllModalOpen(false);
+                  setRowSelection({});
+                }}
                 data={rowSelection}
                 setMedicines={setMedicines} />
             )}

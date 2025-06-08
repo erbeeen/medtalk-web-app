@@ -17,7 +17,7 @@ export default function ScheduleAddModal({ onClose, setSchedules }: NewUserModal
   const [date, setDate] = useState("");
 
   const handleSubmit = async () => {
-    const newUser: ScheduleType = {
+    const newSchedule: ScheduleType = {
       userID: userID,
       medicineName: medicineName,
       measurement: measurement,
@@ -29,7 +29,7 @@ export default function ScheduleAddModal({ onClose, setSchedules }: NewUserModal
 
     try {
       console.log("starting create user request");
-      const body = JSON.stringify(newUser)
+      const body = JSON.stringify(newSchedule)
       const response = await fetch(`/api/users/register/`, {
         mode: "cors",
         method: "POST",
@@ -47,7 +47,7 @@ export default function ScheduleAddModal({ onClose, setSchedules }: NewUserModal
 
       if (result.success) {
         setSchedules(prev =>
-          [result.data, ...prev]
+          [...prev, result.data]
         );
 
         onClose();
@@ -71,94 +71,100 @@ export default function ScheduleAddModal({ onClose, setSchedules }: NewUserModal
           <CloseButton onClose={onClose} />
         </div>
 
-        <div className="modal-input-container">
-          <label htmlFor="username" className="w-8/12">Username</label>
-          <input
-            id="username"
-            name="username"
-            type="text"
-            className="modal-input"
-            value={userID}
-            onChange={(e) => setUserID(e.target.value)}
-          />
-        </div>
-
-        <div className="modal-input-container">
-          <label htmlFor="email" className="w-8/12">Email</label>
-          <input
-            type="text"
-            id="email"
-            name="email"
-            className="modal-input"
-            value={medicineName}
-            onChange={(e) => setMedicineName(e.target.value)}
-          />
-        </div>
-
-        <div className="modal-input-container">
-          <label htmlFor="first-name" className="w-8/12">First Name</label>
-          <input
-            type="text"
-            id="first-name"
-            name="first-name"
-            className="modal-input"
-            value={measurement}
-            onChange={(e) => setMeasurement(e.target.value)}
-          />
-        </div>
-
-        <div className="modal-input-container">
-          <label htmlFor="last-name" className="w-8/12">Last Name</label>
-          <input
-            type="text"
-            id="last-name"
-            name="last-name"
-            className="modal-input"
-            value={intakeInstruction}
-            onChange={(e) => setIntakeInstruction(e.target.value)}
-          />
-        </div>
-
-        <div className="modal-input-container">
-          <label htmlFor="password" className="w-8/12">Password</label>
-          <input
-            type="password"
-            id="password"
-            name="password"
-            className="modal-input"
-            value={isTaken}
-            onChange={(e) => setIsTaken(e.target.value)}
-          />
-        </div>
-
-        <div className="modal-input-container">
-          <label htmlFor="confirm-password" className="w-8/12">Confirm Password</label>
-          <input
-            type="text"
-            id="confirm-password"
-            name="confirm-password"
-            className="modal-input"
-            value={date}
-            onChange={(e) => setDate(e.target.value)}
-          />
-        </div>
-
-        <div className="w-full mt-5 flex justify-between items-center cursor-pointer">
-          <div
-            className="py-2 px-5 font-medium text-sm border rounded-4xl dark:border-secondary-dark/70 dark:hover:bg-secondary-dark/70"
-            onClick={onClose}
-          >
-            <button type="button" className="cursor-pointer" onClick={onClose}>Cancel</button>
+        <form onSubmit={handleSubmit}>
+          <div className="modal-input-container">
+            <label htmlFor="user-id" className="w-8/12">User ID</label>
+            <input
+              type="text"
+              id="user-id"
+              name="user-id"
+              className="modal-input"
+              value={userID}
+              onChange={(e) => setUserID(e.target.value)}
+            />
           </div>
 
-          <div
-            className="py-2 px-5 font-medium text-sm border rounded-4xl dark:border-primary-dark/50 dark:hover:bg-primary-dark/70"
-            onClick={handleSubmit}
-          >
-            Submit
-            {/* <button type="button" className="cursor-pointer" onClick={handleSubmit}>Submit</button> */}
+          <div className="modal-input-container">
+            <label htmlFor="medicine-name" className="w-8/12">Medicine Name</label>
+            <input
+              type="text"
+              id="medicine-name"
+              name="medicine-name"
+              className="modal-input"
+              value={medicineName}
+              onChange={(e) => setMedicineName(e.target.value)}
+            />
           </div>
-        </div>
+
+          <div className="modal-input-container">
+            <label htmlFor="measurement" className="w-8/12">Measurement</label>
+            <input
+              type="text"
+              id="measurement"
+              name="measurement"
+              className="modal-input"
+              value={measurement}
+              onChange={(e) => setMeasurement(e.target.value)}
+            />
+          </div>
+
+          <div className="modal-input-container">
+            <label htmlFor="intake-instruction" className="w-8/12">Intake Instruction</label>
+            <input
+              type="text"
+              id="intake-instruction"
+              name="intake-instruction"
+              className="modal-input"
+              value={intakeInstruction}
+              onChange={(e) => setIntakeInstruction(e.target.value)}
+            />
+          </div>
+
+          <div className="modal-input-container">
+            <label htmlFor="is-taken" className="w-8/12">Already Taken</label>
+            <input
+              type="checkbox"
+              id="is-taken"
+              name="is-taken"
+              className="modal-input"
+              value={isTaken}
+              onChange={(e) => {
+                console.log("e.target.value: ", e.target.value);
+                setIsTaken(e.target.value);
+              }}
+            />
+          </div>
+
+          <div className="modal-input-container">
+            <label htmlFor="confirm-password" className="w-8/12">Confirm Password</label>
+            <input
+              type="date"
+              id="confirm-password"
+              name="confirm-password"
+              className="modal-input"
+              value={date}
+              onChange={(e) => setDate(e.target.value)}
+            />
+          </div>
+
+          <div className="w-full mt-5 flex justify-between items-center cursor-pointer">
+            <div
+              className="py-2 px-5 font-medium text-sm border rounded-4xl dark:border-secondary-dark/70 dark:hover:bg-secondary-dark/70"
+              onClick={onClose}
+            >
+              <button type="button" className="cursor-pointer" onClick={onClose}>Cancel</button>
+            </div>
+
+            <div
+              className="py-2 px-5 font-medium text-sm border rounded-4xl dark:border-primary-dark/50 dark:hover:bg-primary-dark/70"
+              onClick={handleSubmit}
+            >
+              Submit
+              {/* <button type="button" className="cursor-pointer" onClick={handleSubmit}>Submit</button> */}
+            </div>
+          </div>
+        </form>
+
 
       </div>
     </div>

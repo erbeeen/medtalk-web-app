@@ -7,7 +7,7 @@ export default function HomeRoute() {
   const [isLoading, setIsLoading] = useState(false);
   const navigate = useNavigate();
   useEffect(() => {
-    document.title = "Dashboard | MedTalk"
+    document.title = "Dashboard | MedTalk";
     setIsLoading(true);
 
     const loginAndLoadData = async () => {
@@ -23,7 +23,7 @@ export default function HomeRoute() {
 
     loginAndLoadData();
     setIsLoading(false);
-  })
+  }, []);
 
   return (
     <>
