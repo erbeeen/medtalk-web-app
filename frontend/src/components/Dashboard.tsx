@@ -53,14 +53,13 @@ export default function Dashboard() {
         <div className="chart-container min-h-[300] w-5/12 min-w-[350px] dark:bg-dark rounded-lg flex flex-col items-center justify-center">
           <div className="w-full flex justify-between">
             <h1 className="chart-label">Top Daily Search</h1>
-            <div className="border border-gray-700 rounded-lg">
+            <div className="flex justify-center items-center text-xs border border-gray-700 rounded-lg">
               <input
                 type="date"
                 id="day-date"
                 name="day-date"
-                className="w-full px-5 py-2 outline-none m-0"
+                className="w-full px-3 py-1 outline-none m-0"
                 value={"2025-02-01"}
-                onChange={(e) => console.log("e.target.value: ", e.target.value)}
               />
             </div>
           </div>
@@ -103,14 +102,13 @@ export default function Dashboard() {
         <div className="chart-container min-h-[300] w-7/12 min-w-[350px] dark:bg-dark rounded-lg flex flex-col items-center justify-center">
           <div className="w-full flex justify-between">
             <h1 className="chart-label">Top Weekly Search</h1>
-            <div className="border border-gray-700 rounded-lg">
+            <div className="flex justify-center items-center text-xs border border-gray-700 rounded-lg">
               <input
                 type="week"
                 id="week-date"
                 name="week-date"
                 className="w-full px-5 py-2 outline-none m-0"
                 value={"2025-W06"}
-                onChange={(e) => console.log("e.target.value: ", e.target.value)}
               />
             </div>
           </div>
@@ -153,14 +151,13 @@ export default function Dashboard() {
       <div className="chart-container min-h-[300] w-full min-w-[350px] dark:bg-dark rounded-lg flex flex-col items-center justify-center">
         <div className="w-full flex justify-between">
           <h1 className="chart-label">Top Monthly Search</h1>
-          <div className="border border-gray-700 rounded-lg">
+          <div className="flex justify-center items-center text-xs border border-gray-700 rounded-lg">
             <input
               type="month"
               id="month-date"
               name="month-date"
               className="w-full px-5 py-2 outline-none m-0"
               value={"2025-02"}
-              onChange={(e) => console.log("e.target.value: ", e.target.value)}
             />
           </div>
         </div>
