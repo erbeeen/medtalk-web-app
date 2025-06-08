@@ -1,4 +1,4 @@
-import { useEffect, useState, type Dispatch, type FormEvent, type SetStateAction } from "react";
+import { useState, type Dispatch, type FormEvent, type SetStateAction } from "react";
 import CloseButton from "../buttons/CloseButton";
 import type { ScheduleType } from "../../types/schedule";
 import CancelButton from "../buttons/CancelButton";

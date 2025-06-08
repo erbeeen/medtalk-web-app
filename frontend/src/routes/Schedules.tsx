@@ -4,7 +4,7 @@ import { useNavigate } from "react-router-dom";
 import automaticLogin from "../auth/auth";
 import { createColumnHelper } from "@tanstack/react-table";
 import ScrollTableData from "../components/ScrollTableData";
-import { FaEdit, FaPlus, FaTrash } from "react-icons/fa";
+import { FaEdit, FaTrash } from "react-icons/fa";
 import SearchBar from "../components/SearchBar";
 import Table from "../components/Table";
 // import ScheduleAddModal from "../components/modals/ScheduleAddModal";
@@ -21,7 +21,7 @@ export default function ScheduleRoute({ scrollToTop }: ScheduleRouteProps) {
   const [rowSelection, setRowSelection] = useState({});
   const [searchText, setSearchText] = useState("");
   const [globalFilter, setGlobalFilter] = useState<any>([]);
-  const [isAddModalOpen, setIsAddModalOpen] = useState(false);
+  // const [isAddModalOpen, setIsAddModalOpen] = useState(false);
   const [isDeleteAllModalOpen, setIsDeleteAllModalOpen] = useState(false);
   const navigate = useNavigate();
 
