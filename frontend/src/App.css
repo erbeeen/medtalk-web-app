@@ -62,4 +62,12 @@
     @apply size-5 border-2 border-gray-200 border-l-blue-500 rounded-full animate-spin;
   }
 
+  .chart-container {
+    @apply px-5 pt-3 border-2 border-gray-500 rounded-lg;
+  }
+
+  .chart-label {
+    @apply self-start mb-5;
+  }
+
 }

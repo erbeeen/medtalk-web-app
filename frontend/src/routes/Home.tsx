@@ -26,8 +26,15 @@ export default function HomeRoute() {
   }, []);
 
   return (
-    <>
-      {!isLoading && <Dashboard />}
-    </>
+    <div className="base-layout flex flex-col items-center gap-4">
+
+      <div className="self-start">
+        <h1 className="text-2xl font-bold">Dashboard</h1>
+      </div>
+
+      {!isLoading && (
+        <Dashboard />
+      )}
+    </div>
   );
 }

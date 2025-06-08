@@ -15,12 +15,6 @@ type UsersRouteProps = {
   scrollToTop: () => void;
 }
 
-// TODO: Priority in order
-// try to apply it to others (admins, medications etc)
-// animations:
-//  delete button appearing
-//  add, edit, delete modals appearing 
-
 // FIX: 
 // checkbox selects data even outside the page
 
