@@ -17,11 +17,15 @@
   }
 
   .sidebar {
-    @apply md:w-40 lg:w-56 pt-10 hidden md:flex md:flex-col items-center font-light;
+    @apply w-16 md:w-40 lg:w-56 pt-10 flex flex-col items-center font-light;
   }
 
   .sidebar-link {
     @apply w-11/12 py-4 flex flex-row justify-center items-center rounded-md flex-nowrap;
+  }
+
+  .sidebar-label {
+    @apply hidden md:inline lg:inline xl:inline;
   }
 
   .sidebar-icon {

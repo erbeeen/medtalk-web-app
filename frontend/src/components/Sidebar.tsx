@@ -11,31 +11,31 @@ export default function Sidebar() {
         <div className="sidebar-icon">
           <MdDashboard size="1.2rem" />
         </div>
-        <span className="w-8/12">Dashboard</span>
+        <span className="w-8/12 sidebar-label">Dashboard</span>
       </Link>
       <Link to="/users" className="sidebar-link hover:bg-800 dark:hover:bg-primary-dark/50">
         <div className="sidebar-icon">
           <FaUser size="1.2rem" />
         </div>
-        <span className="w-8/12">Users</span>
+        <span className="w-8/12 sidebar-label">Users</span>
       </Link>
       <Link to="/admins" className="sidebar-link hover:bg-800 dark:hover:bg-primary-dark/50">
         <div className="sidebar-icon">
           <FaUserEdit size="1.5rem" />
         </div>
-        <span className="w-8/12">Admins</span>
+        <span className="w-8/12 sidebar-label">Admins</span>
       </Link>
       <Link to="/medicine" className="sidebar-link hover:bg-800 dark:hover:bg-primary-dark/50">
         <div className="sidebar-icon">
           <FaPills size="1.2rem" />
         </div>
-        <span className="w-8/12">Medicines</span>
+        <span className="w-8/12 sidebar-label">Medicines</span>
       </Link>
       <Link to="/schedules" className="sidebar-link hover:bg-800 dark:hover:bg-primary-dark/50">
         <div className="sidebar-icon">
           <FaCalendarAlt size="1.2rem" />
         </div>
-        <span className="w-8/12">Schedules</span>
+        <span className="w-8/12 sidebar-label">Schedules</span>
       </Link>
       <div
         className="sidebar-link mt-auto mb-5 hover:bg-800 dark:hover:bg-primary-dark/50 cursor-pointer"
@@ -58,7 +58,7 @@ export default function Sidebar() {
         <div className="sidebar-icon">
           <MdLogout size="1.2rem" />
         </div>
-        <span className="w-8/12">Logout</span>
+        <span className="w-8/12 sidebar-label">Logout</span>
       </div>
     </div>
   );

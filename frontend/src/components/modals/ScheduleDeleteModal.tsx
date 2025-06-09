@@ -114,7 +114,7 @@ export default function ScheduleDeleteModal({ onClose, data, setSchedules }: Del
       <div className="fixed inset-0 bg-black/30" aria-hidden={true}>
       </div>
       <div
-        className="w-2/12 px-10 py-5 z-10 flex flex-col bg-light dark:bg-[#181924] border dark:border-gray-700/40 rounded-xl"
+        className="w-2/12 min-w-[300px] max-w-[350px] px-10 py-5 z-10 flex flex-col bg-light dark:bg-[#181924] border dark:border-gray-700/40 rounded-xl"
         onClick={(e) => e.stopPropagation()}
       >
         <div className="w-full mb-5 flex justify-between items-center">

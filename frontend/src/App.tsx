@@ -57,7 +57,7 @@ function App() {
           <div
             ref={mainContentRef}
             id="content-area"
-            className="w-full p-4 flex flex-col flex-1 
+            className="w-full max-w-[1920px] p-4 flex flex-col flex-1 
           overflow-y-auto justify-start align-center gap-10 
           bg-light dark:bg-dark text-light-text dark:text-dark-text/95">
             <Routes>
