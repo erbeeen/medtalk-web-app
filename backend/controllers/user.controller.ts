@@ -18,7 +18,6 @@ import RefreshToken, {
 } from "../models/refresh-token.model.js";
 import sendJsonResponse from "../utils/httpResponder.js";
 import User, { UserType, UserDocument } from "../models/user.model.js";
-import { isToken } from "typescript";
 
 type LoginCredentials = {
   email: string;
@@ -90,6 +89,7 @@ export default class UserController {
           return;
         }
         const newUser: UserDocument = new User({
+          verified: false,
           role: USER_ROLE,
           email: user.email,
           username: user.username,
@@ -410,6 +410,7 @@ export default class UserController {
       userDocuments.map((user) =>
         users.push({
           _id: String(user._id),
+          verified: user.verified,
           role: user.role,
           email: user.email,
           username: user.username,
@@ -499,6 +500,7 @@ export default class UserController {
           return;
         }
         const newAdmin: UserDocument = new User({
+          verified: false,
           role: admin.role,
           email: admin.email,
           username: admin.username,

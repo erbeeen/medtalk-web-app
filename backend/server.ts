@@ -8,18 +8,21 @@ import path from "path";
 import userRouter from "./routes/user.route.js";
 import medicineRouter from "./routes/medicine.route.js";
 import scheduleRouter from "./routes/schedule.routes.js";
+import getTransporter from "./config/nodemailer.js";
 dotenv.config();
 
 const app = express();
 const __dirname = path.dirname(fileURLToPath(import.meta.url));
 const PORT = process.env.PORT || 3000;
 
-app.use(cors({
-  origin: "http://localhost:5173",
-  credentials: true,
-  methods: ["GET", "POST", "PUT", "DELETE", "OPTIONS"],
-  allowedHeaders: ["Content-Type", "Authorization"],
-}));
+app.use(
+  cors({
+    origin: "http://localhost:5173",
+    credentials: true,
+    methods: ["GET", "POST", "PUT", "DELETE", "OPTIONS"],
+    allowedHeaders: ["Content-Type", "Authorization"],
+  }),
+);
 app.use(express.json());
 app.use(logger);
 app.use("/api/users", userRouter);
@@ -35,6 +38,18 @@ if (process.env.NODE_ENV === "production") {
 }
 
 app.listen(PORT, async () => {
-  await dbConnect();
-  console.log("Backend server running");
+  try {
+    console.log("Initializing MongoDB Connection.");
+    await dbConnect();
+    console.log("Connection successful.\n");
+
+    console.log("Initializing Mail Transporter");
+    await getTransporter();
+    console.log("Initialization successsful.\n");
+
+    console.log("Backend server running");
+  } catch (err) {
+    console.error("Error starting server: ", err.stack);
+    process.exit(1);
+  }
 });

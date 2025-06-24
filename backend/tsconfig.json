@@ -2,13 +2,19 @@
   "compilerOptions": {
     "module": "nodenext",
     "moduleResolution": "nodenext",
-    "baseUrl": "./backend",
-    "outDir": "./dist",
+    // "baseUrl": ".",
+    "outDir": "../dist",
     // "sourceMap": true,
     "noImplicitAny": true,
     "allowSyntheticDefaultImports": true,
     "esModuleInterop": true
   }, 
-  "include": ["backend/**/*"],
-  //"exclude": ["node_modules"]
+  "include": [
+    "./**/*.ts"
+  ],
+  "exclude": [
+    "node_modules",
+    "**/*.spec.ts",
+    "**/*.test.ts",
+  ]
 }

@@ -2,6 +2,7 @@ import mongoose from "mongoose";
 
 export type UserType = {
   _id?: mongoose.Types.ObjectId | string;
+  verified: boolean;
   role: string;
   email: string;
   username: string;
@@ -13,6 +14,10 @@ export type UserType = {
 export type UserDocument = UserType & mongoose.Document;
 
 const userSchema = new mongoose.Schema({
+  verified: {
+    type: Boolean,
+    required: true,
+  },
   role: {
     type: String,
     required: true,
