@@ -421,13 +421,9 @@ export default class UserController {
   };
 
   getUsers = async (req: Request, res: Response, next: NextFunction) => {
-    console.log("starting getUsers function");
-
     if (req.query.id !== undefined) {
       const id = String(req.query.id);
       if (!mongoose.Types.ObjectId.isValid(id)) {
-        console.log("objectID.isValid is what's causing the 400 response");
-        
         sendJsonResponse(res, 400, "invalid id");
         return;
       }
@@ -884,6 +880,7 @@ export default class UserController {
           return;
         }
         const newUser: UserDocument = new User({
+          verified: false,
           role: USER_ROLE,
           email: user.email,
           username: user.username,
