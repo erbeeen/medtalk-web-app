@@ -15,6 +15,10 @@ const app = express();
 const __dirname = path.dirname(fileURLToPath(import.meta.url));
 const PORT = process.env.PORT || 3000;
 
+console.log("Initializing Mail Transporter");
+await initializeTransporter();
+console.log("Initialization successsful.\n");
+
 app.use(
   cors({
     origin: "http://localhost:5173",
@@ -42,10 +46,6 @@ app.listen(PORT, async () => {
     console.log("Initializing MongoDB Connection.");
     await dbConnect();
     console.log("Connection successful.\n");
-
-    console.log("Initializing Mail Transporter");
-    await initializeTransporter();
-    console.log("Initialization successsful.\n");
 
     console.log("Backend server running");
   } catch (err) {
