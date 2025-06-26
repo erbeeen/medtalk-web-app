@@ -21,7 +21,7 @@ userRouter.post("/admin", authenticateJwt, uc.createUser);
 userRouter.put("/admin", authenticateJwt, uc.updateAdmin);
 userRouter.delete("/delete/batch", authenticateJwt, uc.deleteUsers);
 userRouter.post("/register", authenticateJwt, uc.registerUser);
-userRouter.get("/verify", uc.registerUser);
+userRouter.get("/verify", uc.verifyUser);
 userRouter.post("/login", authenticateJwt, uc.loginUser);
 userRouter.post("/token", authenticateJwt, uc.refreshAccessToken);
 // TODO: Test functionality without and with auth middleware

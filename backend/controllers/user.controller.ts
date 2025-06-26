@@ -181,6 +181,10 @@ export default class UserController {
   };
 
   verifyUser = async (req: Request, res: Response, next: NextFunction) => {
+    if (req.query.id === undefined) {
+      sendJsonResponse(res, 400, "no id included");
+    }
+
     const id = String(req.query.id);
 
     if (id !== undefined) {
