@@ -190,7 +190,7 @@ export default class UserController {
     }
 
     try {
-      const user = await User.findByIdAndUpdate(
+      await User.findByIdAndUpdate(
         id,
         { verified: true },
         { new: true },
@@ -421,6 +421,8 @@ export default class UserController {
   };
 
   getUsers = async (req: Request, res: Response, next: NextFunction) => {
+    console.log("starting getUsers function");
+    
     const id = String(req.query.id);
 
     if (id !== undefined) {
@@ -430,7 +432,7 @@ export default class UserController {
       }
 
       try {
-        const user: UserDocument = await User.findById(id);
+        const user = await User.findById(id);
 
         if (user === null) {
           sendJsonResponse(res, 404, `no user with id ${id}`);
