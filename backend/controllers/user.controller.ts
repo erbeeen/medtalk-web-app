@@ -162,7 +162,7 @@ export default class UserController {
           // not the API route. The frontend route will call the API route. Use only for testing if this function works
 
           const info = await this.emailTransporter.sendMail({
-            from: '"MedTalk" <medtalk.test.ph@gmail.com>',
+            sender: '"MedTalk" <medtalk.test.ph@gmail.com>',
             to: result.email,
             subject: "Account Verification - MedTalk",
             text: `Thank you for signing up at MedTalk! Click the link to verify your account. https://medtalk-webapp-122bcbf0f96e.herokuapp.com/api/users/verify/?id=${result._id}`,
