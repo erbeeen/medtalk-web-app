@@ -190,11 +190,7 @@ export default class UserController {
     }
 
     try {
-      await User.findByIdAndUpdate(
-        id,
-        { verified: true },
-        { new: true },
-      );
+      await User.findByIdAndUpdate(id, { verified: true }, { new: true });
       sendJsonResponse(res, 200);
     } catch (err) {
       console.error(`${this.verifyUser.name} User.findByIdandUpdate error`);
@@ -897,15 +893,21 @@ export default class UserController {
           // WARN: This is not the correct implementation. The link should be a frontend route,
           // not the API route. The frontend route will call the API route. Use only for testing if this function works
 
-          const info = await this.emailTransporter.sendMail({
-            from: process.env.EMAIL_USERNAME,
-            to: result.email,
-            subject: "Account Verification - MedTalk",
-            text: `Thank you for signing up at MedTalk! Click the link to verify your account. https://medtalk-webapp-122bcbf0f96e.herokuapp.com/api/users/verify/?id=${result._id}`,
-            html: `<p>Thank you for signing up at MedTalk! Click <a href="https://medtalk-webapp-122bcbf0f96e.herokuapp.com/api/users/verify/?id=${result._id}">here</a> to verify your account.</p>`,
-          });
-          console.log("Email sent: ", info.messageId);
-          return;
+          try {
+            const body = `<p>Thank you for signing up at MedTalk! Click <a href="https://medtalk-webapp-122bcbf0f96e.herokuapp.com/api/users/verify/?id=${result._id}">here</a> to verify your account.</p>`;
+            const info = await this.emailTransporter.sendMail({
+              from: process.env.EMAIL_USERNAME,
+              to: result.email,
+              subject: "Account Verification - MedTalk",
+              text: `Thank you for signing up at MedTalk! Click the link to verify your account. https://medtalk-webapp-122bcbf0f96e.herokuapp.com/api/users/verify/?id=${result._id}`,
+              html: body,
+            });
+            console.log("Email sent: ", info.messageId);
+            return;
+          } catch (err) {
+            console.error("Send email verification error: ", err.stack);
+            return;
+          }
         } catch (err) {
           console.error(`${this.createUser.name} newUser.save error`);
           logError(err);
