@@ -20,7 +20,6 @@ import sendJsonResponse from "../utils/httpResponder.js";
 import User, { UserType, UserDocument } from "../models/user.model.js";
 import getTransporter from "../config/nodemailer.js";
 import { Transporter } from "nodemailer";
-import SMTPTransport from "nodemailer/lib/smtp-transport/index.js";
 
 type LoginCredentials = {
   email: string;
@@ -30,10 +29,7 @@ type LoginCredentials = {
 const USER_ROLE = "user";
 
 export default class UserController {
-  private emailTransporter: Transporter<
-    SMTPTransport.SentMessageInfo,
-    SMTPTransport.Options
-  >;
+  private emailTransporter: Transporter;
 
   constructor() {}
 
