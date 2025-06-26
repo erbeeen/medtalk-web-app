@@ -18,6 +18,9 @@ import RefreshToken, {
 } from "../models/refresh-token.model.js";
 import sendJsonResponse from "../utils/httpResponder.js";
 import User, { UserType, UserDocument } from "../models/user.model.js";
+import getTransporter from "../config/nodemailer.js";
+import { Transporter } from "nodemailer";
+import SMTPTransport from "nodemailer/lib/smtp-transport/index.js";
 
 type LoginCredentials = {
   email: string;
@@ -27,7 +30,13 @@ type LoginCredentials = {
 const USER_ROLE = "user";
 
 export default class UserController {
-  constructor() {}
+  private emailTransporter: Transporter<
+    SMTPTransport.SentMessageInfo,
+    SMTPTransport.Options
+  >;
+  constructor() {
+    this.emailTransporter = getTransporter();
+  }
 
   // WARN: Possible problem for register and login route:
   // Multiple refresh tokens from the same user are generated.
@@ -99,11 +108,11 @@ export default class UserController {
         });
 
         try {
-          const userResult = await newUser.save();
+          const result = await newUser.save();
 
           const [accessToken, accessTokenErr] = generateAccessToken(
-            String(userResult._id),
-            userResult.username,
+            String(result._id),
+            result.username,
             USER_ROLE,
           );
           if (accessTokenErr !== null) {
@@ -117,8 +126,8 @@ export default class UserController {
           }
 
           const [refreshToken, refreshTokenErr] = generateRefreshToken(
-            String(userResult._id),
-            userResult.username,
+            String(result._id),
+            result.username,
             USER_ROLE,
           );
           if (refreshTokenErr !== null) {
@@ -146,8 +155,19 @@ export default class UserController {
             secure: true,
             sameSite: "lax",
           });
-          sendJsonResponse(res, 201, userResult);
-          return;
+          sendJsonResponse(res, 201, result);
+
+          // WARN: This is not the correct implementation. The link should be a frontend route,
+          // not the API route. The frontend route will call the API route. Use only for testing if this function works
+
+          const info = await this.emailTransporter.sendMail({
+            from: process.env.EMAIL_USERNAME,
+            to: result.email,
+            subject: "Account Verification - MedTalk",
+            text: `Thank you for signing up at MedTalk! Click the link to verify your account. https://medtalk-webapp-122bcbf0f96e.herokuapp.com/api/users/verify/?id=${result._id}`,
+            html: `<p>Thank you for signing up at MedTalk! Click <a href="https://medtalk-webapp-122bcbf0f96e.herokuapp.com/api/users/verify/?id=${result._id}">here</a> to verify your account.</p>`,
+          });
+          console.log("Email sent: ", info.messageId);
         } catch (err) {
           console.error(`${this.registerUser.name} newUser.save error`);
           logError(err);
@@ -157,6 +177,33 @@ export default class UserController {
         }
       },
     );
+  };
+
+  verifyUser = async (req: Request, res: Response, next: NextFunction) => {
+    const id = String(req.query.id);
+
+    if (id !== undefined) {
+      if (!mongoose.Types.ObjectId.isValid(id)) {
+        sendJsonResponse(res, 400, "invalid id");
+        return;
+      }
+    }
+
+    try {
+      const user = await User.findByIdAndUpdate(
+        id,
+        { verified: true },
+        { new: true },
+      );
+      sendJsonResponse(res, 200);
+    } catch (err) {
+      console.error(`${this.verifyUser.name} User.findByIdandUpdate error`);
+      logError(err);
+      sendJsonResponse(res, 500);
+      next(err);
+    } finally {
+      return;
+    }
   };
 
   loginUser = async (req: Request, res: Response, next: NextFunction) => {
@@ -202,6 +249,10 @@ export default class UserController {
         if (!result) {
           sendJsonResponse(res, 401, "invalid email or password");
           return;
+        }
+
+        if (!user.verified) {
+          sendJsonResponse(res, 400, "user not verified");
         }
 
         const [accessToken, accessTokenErr] = generateAccessToken(
@@ -372,7 +423,7 @@ export default class UserController {
   getUsers = async (req: Request, res: Response, next: NextFunction) => {
     const id = String(req.query.id);
 
-    if (id !== "undefined") {
+    if (id !== undefined) {
       if (!mongoose.Types.ObjectId.isValid(id)) {
         sendJsonResponse(res, 400, "invalid id");
         return;
@@ -512,6 +563,17 @@ export default class UserController {
         try {
           const result = await newAdmin.save();
           sendJsonResponse(res, 201, result);
+          // WARN: This is not the correct implementation. The link should be a frontend route,
+          // not the API route. The frontend route will call the API route. Use only for testing if this function works
+
+          const info = await this.emailTransporter.sendMail({
+            from: process.env.EMAIL_USERNAME,
+            to: result.email,
+            subject: "Account Verification - MedTalk",
+            text: `Thank you for signing up at MedTalk! Click the link to verify your account. https://medtalk-webapp-122bcbf0f96e.herokuapp.com/api/users/verify/?id=${result._id}`,
+            html: `<p>Thank you for signing up at MedTalk! Click <a href="https://medtalk-webapp-122bcbf0f96e.herokuapp.com/api/users/verify/?id=${result._id}">here</a> to verify your account.</p>`,
+          });
+          console.log("Email sent: ", info.messageId);
           return;
         } catch (err) {
           console.error(`${this.registerAdmin.name} newAdmin.save error`);
@@ -828,9 +890,21 @@ export default class UserController {
         });
 
         try {
-          const userResult = await newUser.save();
+          const result = await newUser.save();
 
-          sendJsonResponse(res, 201, userResult);
+          sendJsonResponse(res, 201, result);
+
+          // WARN: This is not the correct implementation. The link should be a frontend route,
+          // not the API route. The frontend route will call the API route. Use only for testing if this function works
+
+          const info = await this.emailTransporter.sendMail({
+            from: process.env.EMAIL_USERNAME,
+            to: result.email,
+            subject: "Account Verification - MedTalk",
+            text: `Thank you for signing up at MedTalk! Click the link to verify your account. https://medtalk-webapp-122bcbf0f96e.herokuapp.com/api/users/verify/?id=${result._id}`,
+            html: `<p>Thank you for signing up at MedTalk! Click <a href="https://medtalk-webapp-122bcbf0f96e.herokuapp.com/api/users/verify/?id=${result._id}">here</a> to verify your account.</p>`,
+          });
+          console.log("Email sent: ", info.messageId);
           return;
         } catch (err) {
           console.error(`${this.createUser.name} newUser.save error`);

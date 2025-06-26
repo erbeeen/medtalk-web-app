@@ -8,7 +8,7 @@ import path from "path";
 import userRouter from "./routes/user.route.js";
 import medicineRouter from "./routes/medicine.route.js";
 import scheduleRouter from "./routes/schedule.routes.js";
-import getTransporter from "./config/nodemailer.js";
+import { initializeTransporter } from "./config/nodemailer.js";
 dotenv.config();
 
 const app = express();
@@ -44,7 +44,7 @@ app.listen(PORT, async () => {
     console.log("Connection successful.\n");
 
     console.log("Initializing Mail Transporter");
-    await getTransporter();
+    await initializeTransporter();
     console.log("Initialization successsful.\n");
 
     console.log("Backend server running");

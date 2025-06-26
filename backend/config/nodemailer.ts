@@ -6,7 +6,7 @@ const isProduction = process.env.NODE_ENV === "production";
 
 let transporterSingleton: null | Transporter<SMTPTransport.SentMessageInfo, SMTPTransport.Options> = null;
 
-async function initializeTransporter() {
+export async function initializeTransporter() {
   const transporter = nodemailer.createTransport({
     host: "smtp.gmail.com",
     port: isProduction ? 465 : 587,
@@ -22,12 +22,12 @@ async function initializeTransporter() {
   });
   await transporter.verify()
 
-  return transporter;
+  transporterSingleton = transporter;
 }
 
-export default async function getTransporter() {
+export default function getTransporter() {
   if (!transporterSingleton) {
-    transporterSingleton = await initializeTransporter();
+    initializeTransporter()
   }
 
   return transporterSingleton;
