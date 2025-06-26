@@ -25,7 +25,7 @@ export async function initializeTransporter() {
   transporterSingleton = transporter;
 }
 
-export default function getTransporter() {
+export default async function getTransporter() {
   if (!transporterSingleton) {
     initializeTransporter()
   }

@@ -34,8 +34,13 @@ export default class UserController {
     SMTPTransport.SentMessageInfo,
     SMTPTransport.Options
   >;
-  constructor() {
-    this.emailTransporter = getTransporter();
+
+  constructor() {}
+
+  static async create(): Promise<UserController> {
+    const controller = new UserController();
+    controller.emailTransporter = await getTransporter();
+    return controller;
   }
 
   // WARN: Possible problem for register and login route:

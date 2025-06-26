@@ -15,9 +15,14 @@ const app = express();
 const __dirname = path.dirname(fileURLToPath(import.meta.url));
 const PORT = process.env.PORT || 3000;
 
-console.log("Initializing Mail Transporter");
-await initializeTransporter();
-console.log("Initialization successsful.\n");
+try {
+  console.log("Initializing Mail Transporter");
+  await initializeTransporter();
+  console.log("Initialization successsful.\n");
+} catch (err) {
+  console.error("Cannot Initialize Mail Transporter\n", err.stack);
+  process.exit(1);
+}
 
 app.use(
   cors({
