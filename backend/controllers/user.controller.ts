@@ -427,6 +427,8 @@ export default class UserController {
 
     if (id !== undefined) {
       if (!mongoose.Types.ObjectId.isValid(id)) {
+        console.log("objectID.isValid is what's causing the 400 response");
+        
         sendJsonResponse(res, 400, "invalid id");
         return;
       }
