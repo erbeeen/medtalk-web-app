@@ -84,6 +84,13 @@ export default function MedicineRoute({ scrollToTop }: MedicineRouteProps) {
       size: 200,
       minSize: 50,
     }),
+    medicineColumnHelper.accessor("Molecule", {
+      header: "Molecule",
+      cell: props => <ScrollTableData props={props} />,
+      enableGlobalFilter: false,
+      size: 200,
+      minSize: 150,
+    }),
     medicineColumnHelper.accessor("Level 1", {
       header: "Level 1",
       cell: props => <ScrollTableData props={props} />,
@@ -104,13 +111,6 @@ export default function MedicineRoute({ scrollToTop }: MedicineRouteProps) {
       header: "Level 4",
       cell: props => <ScrollTableData props={props} />,
       size: 250,
-    }),
-    medicineColumnHelper.accessor("Molecule", {
-      header: "Molecule",
-      cell: props => <ScrollTableData props={props} />,
-      enableGlobalFilter: false,
-      size: 200,
-      minSize: 150,
     }),
     medicineColumnHelper.accessor("Route", {
       header: "Route",
