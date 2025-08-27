@@ -5,8 +5,14 @@
 ## Set up your .env file which will need the following fields:
 - MEDICINE_MONGODB_URI=<your mongodb connection string from MongoDB Atlas>
 - PORT=<desired port (usually 3000 for express)>
+- NODE_ENV=development/production
 - SECRET_ACCESS_TOKEN=<Generate a random string using node's crypto module and save to this field>
 - SECRET_REFRESH_TOKEN=<Generate a random string using node's crypto module and save to this field>
+- MAIL_USERNAME=<email address used for nodemailer>
+- GOOGLE_CLIENT_ID=<OAuth client ID from Google Cloud Console>
+- GOOGLE_CLIENT_SECRET=<OAuth client secret from Google Cloud Console>
+- GOOGLE_ACCESS_TOKEN=<access token from OAuth Playground>
+- GOOGLE_REFRESH_TOKEN=<refresh token from OAuth Playground>
 
 ## To run the backend server
 `npm run dev`
