@@ -8,13 +8,21 @@ import ScheduleRoute from './routes/Schedules';
 import UsersRoute from './routes/Users';
 import LoginRoute from './routes/Login';
 import Sidebar from './components/Sidebar';
+import VerifyAccountRoute from './routes/VerifyAccount';
 import './App.css';
 
 function App() {
   const [isLoading, _setIsLoading] = useState(false);
   const mainContentRef = useRef<HTMLDivElement>(null);
   const location = useLocation();
-  const showSidebar = location.pathname !== "/login";
+  let showSidebar = true;
+  // NOTE: Check on how to add non-existent pages to this statement
+  if (
+    location.pathname === "/login" ||
+    location.pathname === "/verify-account"
+  ) {
+    showSidebar = false;
+  }
 
   const scrollToTop = () => {
     if (mainContentRef.current) {
@@ -47,6 +55,7 @@ function App() {
               <Route path="/admins" element={<AdminsRoute scrollToTop={scrollToTop} />} />
               <Route path="/medicine" element={<MedicineRoute scrollToTop={scrollToTop} />} />
               <Route path="/schedules" element={<ScheduleRoute scrollToTop={scrollToTop} />} />
+              <Route path="/verify-account" element={<VerifyAccountRoute />} />
               <Route path="*" element={<NotFoundRoute />} />
             </Routes>
           </div>
