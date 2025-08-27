@@ -1,3 +1,4 @@
+// import { useEffect, useState, type ReactNode, createContext, useContext } from "react";
 import type { NavigateFunction, NavigateOptions, To } from "react-router-dom";
 
 // WARN: THIS IS A TEMPORARY SOLUTION
@@ -71,3 +72,39 @@ export default async function automaticLogin(
     console.error("error executing automatic login", err);
   }
 }
+
+// type AuthProviderProps = {
+//   children: ReactNode;
+// }
+//
+// const AuthContext = createContext(null);
+
+// export async function AuthProvider({ children }: AuthProviderProps) {
+//   const [user, setUser] = useState(null);
+//   const [loading, setLoading] = useState(true);
+//
+//   useEffect(() => {
+//     async function checkSession() {
+//       try {
+//
+//       } catch {
+//         setUser(null);
+//       } finally {
+//         setLoading(false);
+//       }
+//     }
+//
+//     checkSession();
+//   }, []);
+//
+//   const logout = async () => {
+//     await fetch("/api/users/logout", {
+//       method: "POST",
+//       credentials: "include",
+//     });
+//     setUser(null);
+//   }
+//
+//   // NOTE: This is wrong
+//   return children;
+// }

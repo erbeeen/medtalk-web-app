@@ -8,8 +8,7 @@ import ScrollTableData from "../components/ScrollTableData";
 import UserAddModal from "../components/modals/UserAddModal";
 import UserDeleteModal from "../components/modals/UserDeleteModal";
 import UserEditModal from "../components/modals/UserEditModal";
-import { useNavigate } from "react-router-dom";
-import automaticLogin from "../auth/auth";
+import ProtectedRoute from "../components/ProtectedRoute";
 
 type UsersRouteProps = {
   scrollToTop: () => void;
@@ -26,13 +25,11 @@ export default function UsersRoute({ scrollToTop }: UsersRouteProps) {
   const [globalFilter, setGlobalFilter] = useState<any>([]);
   const [isAddModalOpen, setIsAddModalOpen] = useState(false);
   const [isDeleteAllModalOpen, setIsDeleteAllModalOpen] = useState(false);
-  const navigate = useNavigate();
 
   useEffect(() => {
     document.title = "Users | MedTalk";
-    setIsLoading(true);
 
-    const loadData = async () => {
+    const fetchData = async () => {
       try {
         const response = await fetch("/api/users/", {
           mode: "cors",
@@ -48,10 +45,9 @@ export default function UsersRoute({ scrollToTop }: UsersRouteProps) {
       }
     }
 
-    const loginAndLoadData = async () => {
+    const loadData = async () => {
       try {
-        await automaticLogin(navigate, "/users");
-        await loadData();
+        await fetchData();
       } catch (err) {
         console.error("login failed: ", err);
       } finally {
@@ -59,9 +55,8 @@ export default function UsersRoute({ scrollToTop }: UsersRouteProps) {
       }
     }
 
-
-    loginAndLoadData();
-    // setIsLoading(false);
+    setIsLoading(true);
+    loadData();
   }, []);
 
   const userColumnHelper = createColumnHelper<UserType>();
@@ -167,6 +162,7 @@ export default function UsersRoute({ scrollToTop }: UsersRouteProps) {
   ];
 
   return (
+    <ProtectedRoute>
     <div className="base-layout flex flex-col items-center gap-4">
 
       <div className="self-start">
@@ -236,5 +232,6 @@ export default function UsersRoute({ scrollToTop }: UsersRouteProps) {
         />
       }
     </div>
+    </ProtectedRoute>
   );
 }

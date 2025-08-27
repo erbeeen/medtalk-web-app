@@ -1,7 +1,5 @@
 import { useState, useEffect } from "react";
 import type { ScheduleType } from "../types/schedule";
-import { useNavigate } from "react-router-dom";
-import automaticLogin from "../auth/auth";
 import { createColumnHelper } from "@tanstack/react-table";
 import ScrollTableData from "../components/ScrollTableData";
 import { FaEdit, FaTrash } from "react-icons/fa";
@@ -10,6 +8,7 @@ import Table from "../components/Table";
 // import ScheduleAddModal from "../components/modals/ScheduleAddModal";
 import ScheduleEditModal from "../components/modals/ScheduleEditModal";
 import ScheduleDeleteModal from "../components/modals/ScheduleDeleteModal";
+import ProtectedRoute from "../components/ProtectedRoute";
 
 type ScheduleRouteProps = {
   scrollToTop: () => void;
@@ -23,12 +22,11 @@ export default function ScheduleRoute({ scrollToTop }: ScheduleRouteProps) {
   const [globalFilter, setGlobalFilter] = useState<any>([]);
   // const [isAddModalOpen, setIsAddModalOpen] = useState(false);
   const [isDeleteAllModalOpen, setIsDeleteAllModalOpen] = useState(false);
-  const navigate = useNavigate();
 
   useEffect(() => {
     document.title = "Schedules | MedTalk";
 
-    const loadData = async () => {
+    const fetchData = async () => {
       try {
         const response = await fetch("/api/schedule/all", {
           mode: "cors",
@@ -44,11 +42,9 @@ export default function ScheduleRoute({ scrollToTop }: ScheduleRouteProps) {
       }
     }
 
-    setIsLoading(true);
-    const loginAndLoadData = async () => {
+    const loadData = async () => {
       try {
-        await automaticLogin(navigate, "/schedules");
-        await loadData();
+        await fetchData();
       } catch (err) {
         console.error("login failed: ", err);
       } finally {
@@ -56,7 +52,8 @@ export default function ScheduleRoute({ scrollToTop }: ScheduleRouteProps) {
       }
     }
 
-    loginAndLoadData();
+    setIsLoading(true);
+    loadData();
   }, []);
 
   const scheduleColumnHelper = createColumnHelper<ScheduleType>();
@@ -133,7 +130,7 @@ export default function ScheduleRoute({ scrollToTop }: ScheduleRouteProps) {
               <FaEdit size="1.2rem" />
             </button>
             {isEditModalOpen && (
-              <ScheduleEditModal 
+              <ScheduleEditModal
                 key={props.row.id}
                 onClose={() => {
                   setIsEditModalOpen(false);
@@ -165,72 +162,74 @@ export default function ScheduleRoute({ scrollToTop }: ScheduleRouteProps) {
   ]
 
   return (
-    <div className="base-layout flex flex-col items-center gap-4">
+    <ProtectedRoute>
+      <div className="base-layout flex flex-col items-center gap-4">
 
-      <div className="self-start">
-        <h1 className="text-2xl font-bold">Schedule Management</h1>
-      </div>
-
-      <div className="h-10 w-full mb-2 self-start flex items-center gap-5">
-        <div className="w-10/12">
-          <SearchBar
-            onChange={(value: string) => setSearchText(value)}
-            searchFn={() => setGlobalFilter(searchText)}
-            clearFn={() => {
-              setSearchText("");
-              setGlobalFilter([]);
-            }}
-            value={searchText}
-          />
+        <div className="self-start">
+          <h1 className="text-2xl font-bold">Schedule Management</h1>
         </div>
 
-        <div className="w-2/12 flex justify-end gap-3">
-          {/* <div className="p-2 flex justify-center flex-nowrap items-center cursor-pointer */}
-          {/*   border dark:border-primary-dark/60 dark:hover:bg-primary-dark/80  */}
-          {/*   dark:text-primary-dark/60 dark:hover:text-dark-text rounded-md " */}
-          {/*   onClick={() => setIsAddModalOpen(true)} */}
-          {/* > */}
-          {/*   <FaPlus size="1.3rem" /> */}
-          {/* </div> */}
-          {/* {isAddModalOpen && ( */}
-          {/*   <ScheduleAddModal */}
-          {/*     onClose={() => setIsAddModalOpen(false)} */}
-          {/*     setSchedules={setSchedules} */}
-          {/*   /> */}
-          {/* )} */}
-          <div>
-            {Object.keys(rowSelection).length != 0 && (
-              <button
-                type="button"
-                className="p-2 border rounded-md dark:border-delete-dark/50 
+        <div className="h-10 w-full mb-2 self-start flex items-center gap-5">
+          <div className="w-10/12">
+            <SearchBar
+              onChange={(value: string) => setSearchText(value)}
+              searchFn={() => setGlobalFilter(searchText)}
+              clearFn={() => {
+                setSearchText("");
+                setGlobalFilter([]);
+              }}
+              value={searchText}
+            />
+          </div>
+
+          <div className="w-2/12 flex justify-end gap-3">
+            {/* <div className="p-2 flex justify-center flex-nowrap items-center cursor-pointer */}
+            {/*   border dark:border-primary-dark/60 dark:hover:bg-primary-dark/80  */}
+            {/*   dark:text-primary-dark/60 dark:hover:text-dark-text rounded-md " */}
+            {/*   onClick={() => setIsAddModalOpen(true)} */}
+            {/* > */}
+            {/*   <FaPlus size="1.3rem" /> */}
+            {/* </div> */}
+            {/* {isAddModalOpen && ( */}
+            {/*   <ScheduleAddModal */}
+            {/*     onClose={() => setIsAddModalOpen(false)} */}
+            {/*     setSchedules={setSchedules} */}
+            {/*   /> */}
+            {/* )} */}
+            <div>
+              {Object.keys(rowSelection).length != 0 && (
+                <button
+                  type="button"
+                  className="p-2 border rounded-md dark:border-delete-dark/50 
                 dark:hover:bg-delete-dark/50 dark:text-delete-dark/50 
                 dark:hover:text-dark-text cursor-pointer"
-                onClick={() => setIsDeleteAllModalOpen(true)}>
-                <FaTrash size="1.3rem" />
-              </button>
-            )}
-            {isDeleteAllModalOpen && (
-              <ScheduleDeleteModal
-                onClose={() => setIsDeleteAllModalOpen(false)}
-                data={rowSelection}
-                setSchedules={setSchedules} 
-              />
-            )}
+                  onClick={() => setIsDeleteAllModalOpen(true)}>
+                  <FaTrash size="1.3rem" />
+                </button>
+              )}
+              {isDeleteAllModalOpen && (
+                <ScheduleDeleteModal
+                  onClose={() => setIsDeleteAllModalOpen(false)}
+                  data={rowSelection}
+                  setSchedules={setSchedules}
+                />
+              )}
+            </div>
           </div>
-        </div>
 
+        </div>
+        {!isLoading &&
+          <Table
+            columns={scheduleColumns}
+            content={schedules}
+            rowSelection={rowSelection}
+            onRowSelectionChange={setRowSelection}
+            globalFilter={globalFilter}
+            setGlobalFilter={setGlobalFilter}
+            scrollToTop={scrollToTop}
+          />
+        }
       </div>
-      {!isLoading &&
-        <Table
-          columns={scheduleColumns}
-          content={schedules}
-          rowSelection={rowSelection}
-          onRowSelectionChange={setRowSelection}
-          globalFilter={globalFilter}
-          setGlobalFilter={setGlobalFilter}
-          scrollToTop={scrollToTop}
-        />
-      }
-    </div>
+    </ProtectedRoute>
   );
 }

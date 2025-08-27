@@ -1,6 +1,4 @@
 import { useState, useEffect } from "react";
-import { useNavigate } from "react-router-dom";
-import automaticLogin from "../auth/auth";
 import { createColumnHelper } from "@tanstack/react-table";
 import type { MedicineType } from "../types/medicine";
 import ScrollTableData from "../components/ScrollTableData";
@@ -10,6 +8,7 @@ import Table from "../components/Table";
 import MedicineAddModal from "../components/modals/MedicineAddModal";
 import MedicineEditModal from "../components/modals/MedicineEditModal";
 import MedicineDeleteModal from "../components/modals/MedicineDeleteModal";
+import ProtectedRoute from "../components/ProtectedRoute";
 
 type MedicineRouteProps = {
   scrollToTop: () => void;
@@ -23,12 +22,10 @@ export default function MedicineRoute({ scrollToTop }: MedicineRouteProps) {
   const [globalFilter, setGlobalFilter] = useState<any>([]);
   const [isAddModalOpen, setIsAddModalOpen] = useState(false);
   const [isDeleteAllModalOpen, setIsDeleteAllModalOpen] = useState(false);
-  const navigate = useNavigate();
   useEffect(() => {
     document.title = "Medicines | MedTalk";
-    setIsLoading(true);
 
-    const loadData = async () => {
+    const fetchData = async () => {
       try {
         const response = await fetch("/api/medicine/all", {
           mode: "cors",
@@ -43,10 +40,9 @@ export default function MedicineRoute({ scrollToTop }: MedicineRouteProps) {
       }
     }
 
-    const loginAndLoadData = async () => {
+    const loadData = async () => {
       try {
-        await automaticLogin(navigate, "/medicine");
-        await loadData();
+        await fetchData();
       } catch (err) {
         console.error("login failed: ", err);
       } finally {
@@ -54,12 +50,11 @@ export default function MedicineRoute({ scrollToTop }: MedicineRouteProps) {
       }
     }
 
-    loginAndLoadData();
+    setIsLoading(true);
+    loadData();
 
   }, []);
 
-
-  // TODO: Set medications data
 
   const medicineColumnHelper = createColumnHelper<MedicineType>();
   const medicineColumns = [
@@ -185,74 +180,76 @@ export default function MedicineRoute({ scrollToTop }: MedicineRouteProps) {
   ];
 
   return (
-    <div className="base-layout flex flex-col items-center gap-4">
+    <ProtectedRoute>
+      <div className="base-layout flex flex-col items-center gap-4">
 
-      <div className="self-start">
-        <h1 className="text-2xl font-bold">Medicine Management</h1>
-      </div>
-
-      <div className="h-10 w-full mb-2 self-start flex items-center gap-5">
-        <div className="w-10/12">
-          <SearchBar
-            onChange={(value: string) => setSearchText(value)}
-            searchFn={() => setGlobalFilter(searchText)}
-            clearFn={() => {
-              setSearchText("");
-              setGlobalFilter([]);
-            }}
-            value={searchText}
-          />
+        <div className="self-start">
+          <h1 className="text-2xl font-bold">Medicine Management</h1>
         </div>
 
-        <div className="w-2/12 flex justify-end gap-3">
-          <div className="p-2 flex justify-center flex-nowrap items-center cursor-pointer
+        <div className="h-10 w-full mb-2 self-start flex items-center gap-5">
+          <div className="w-10/12">
+            <SearchBar
+              onChange={(value: string) => setSearchText(value)}
+              searchFn={() => setGlobalFilter(searchText)}
+              clearFn={() => {
+                setSearchText("");
+                setGlobalFilter([]);
+              }}
+              value={searchText}
+            />
+          </div>
+
+          <div className="w-2/12 flex justify-end gap-3">
+            <div className="p-2 flex justify-center flex-nowrap items-center cursor-pointer
             border dark:border-primary-dark/60 dark:hover:bg-primary-dark/80 
             dark:text-primary-dark/60 dark:hover:text-dark-text rounded-md "
-            onClick={() => setIsAddModalOpen(true)}
-          >
-            <FaPlus size="1.3rem" />
-          </div>
-          {isAddModalOpen && (
-            <MedicineAddModal
-              onClose={() => setIsAddModalOpen(false)}
-              setMedicines={setMedicines}
-            />
-          )}
-          <div>
-            {Object.keys(rowSelection).length != 0 && (
-              <button
-                type="button"
-                className="p-2 border rounded-md dark:border-delete-dark/50 
+              onClick={() => setIsAddModalOpen(true)}
+            >
+              <FaPlus size="1.3rem" />
+            </div>
+            {isAddModalOpen && (
+              <MedicineAddModal
+                onClose={() => setIsAddModalOpen(false)}
+                setMedicines={setMedicines}
+              />
+            )}
+            <div>
+              {Object.keys(rowSelection).length != 0 && (
+                <button
+                  type="button"
+                  className="p-2 border rounded-md dark:border-delete-dark/50 
                 dark:hover:bg-delete-dark/50 dark:text-delete-dark/50 
                 dark:hover:text-dark-text cursor-pointer"
-                onClick={() => setIsDeleteAllModalOpen(true)}>
-                <FaTrash size="1.3rem" />
-              </button>
-            )}
-            {isDeleteAllModalOpen && (
-              <MedicineDeleteModal
-                onClose={() => {
-                  setIsDeleteAllModalOpen(false);
-                  setRowSelection({});
-                }}
-                data={rowSelection}
-                setMedicines={setMedicines} />
-            )}
+                  onClick={() => setIsDeleteAllModalOpen(true)}>
+                  <FaTrash size="1.3rem" />
+                </button>
+              )}
+              {isDeleteAllModalOpen && (
+                <MedicineDeleteModal
+                  onClose={() => {
+                    setIsDeleteAllModalOpen(false);
+                    setRowSelection({});
+                  }}
+                  data={rowSelection}
+                  setMedicines={setMedicines} />
+              )}
+            </div>
           </div>
-        </div>
 
+        </div>
+        {!isLoading &&
+          <Table
+            columns={medicineColumns}
+            content={medicines}
+            rowSelection={rowSelection}
+            onRowSelectionChange={setRowSelection}
+            globalFilter={globalFilter}
+            setGlobalFilter={setGlobalFilter}
+            scrollToTop={scrollToTop}
+          />
+        }
       </div>
-      {!isLoading &&
-        <Table
-          columns={medicineColumns}
-          content={medicines}
-          rowSelection={rowSelection}
-          onRowSelectionChange={setRowSelection}
-          globalFilter={globalFilter}
-          setGlobalFilter={setGlobalFilter}
-          scrollToTop={scrollToTop}
-        />
-      }
-    </div>
+    </ProtectedRoute>
   );
 }

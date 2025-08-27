@@ -1,18 +1,22 @@
 import { useState, useEffect } from "react";
-import { useNavigate } from "react-router-dom";
+// import { useNavigate } from "react-router-dom";
 import Dashboard from "../components/Dashboard";
-import automaticLogin from "../auth/auth";
+import ProtectedRoute from "../components/ProtectedRoute";
+// import automaticLogin from "../auth/auth";
 
 export default function HomeRoute() {
   const [isLoading, setIsLoading] = useState(false);
-  const navigate = useNavigate();
+  // const navigate = useNavigate();
   useEffect(() => {
     document.title = "Dashboard | MedTalk";
-    setIsLoading(true);
 
-    const loginAndLoadData = async () => {
+    const delay = (ms: number) => new Promise(resolve => setTimeout(resolve, ms));
+
+    const loadData = async () => {
       try {
-        await automaticLogin(navigate, "/");
+        // await automaticLogin(navigate, "/");
+        await delay(1500);
+        setIsLoading(false);
       } catch (err) {
         console.error("login failed: ", err);
       } finally {
@@ -21,20 +25,22 @@ export default function HomeRoute() {
     }
 
 
-    loginAndLoadData();
-    setIsLoading(false);
+    setIsLoading(true);
+    loadData();
   }, []);
 
   return (
-    <div className="base-layout flex flex-col items-center gap-4">
-
-      <div className="self-start">
-        <h1 className="text-2xl font-bold">Dashboard</h1>
-      </div>
-
+    <ProtectedRoute>
       {!isLoading && (
-        <Dashboard />
+        <div className="base-layout flex flex-col items-center gap-4">
+
+          <div className="self-start">
+            <h1 className="text-2xl font-bold">Dashboard</h1>
+          </div>
+
+          <Dashboard />
+        </div>
       )}
-    </div>
+    </ProtectedRoute>
   );
 }

@@ -1,5 +1,4 @@
-import { useState, useEffect, useRef } from 'react';
-import { useNavigate } from 'react-router-dom';
+import { useState, useRef } from 'react';
 import { Routes, Route, useLocation } from 'react-router-dom';
 import AdminsRoute from './routes/Admins';
 import HomeRoute from './routes/Home';
@@ -10,13 +9,11 @@ import UsersRoute from './routes/Users';
 import LoginRoute from './routes/Login';
 import Sidebar from './components/Sidebar';
 import './App.css';
-import automaticLogin from './auth/auth';
 
 function App() {
-  const [isLoading, setIsLoading] = useState(false);
+  const [isLoading, _setIsLoading] = useState(false);
   const mainContentRef = useRef<HTMLDivElement>(null);
   const location = useLocation();
-  const navigate = useNavigate();
   const showSidebar = location.pathname !== "/login";
 
   const scrollToTop = () => {
@@ -28,23 +25,6 @@ function App() {
       });
     }
   }
-
-  useEffect(() => {
-    setIsLoading(true);
-
-    const login = async () => {
-      try {
-        await automaticLogin(navigate, `${location.pathname}`);
-      } catch (err) {
-        console.error("login failed: ", err);
-      } finally {
-        setIsLoading(false);
-      }
-    }
-
-
-    login();
-  }, [location.pathname, navigate]);
 
   return (
     <>
