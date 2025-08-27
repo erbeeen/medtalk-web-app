@@ -4,8 +4,8 @@ import cookieParser from "cookie-parser";
 import { Router } from "express";
 import UserController from "../controllers/user.controller.js";
 
-const userRouter: Router = Router();
-const uc: UserController = await UserController.create();
+const userRouter = Router();
+const uc = await UserController.create();
 userRouter.use(cookieParser());
 userRouter.use(cors({
   origin: ["http://localhost:5173", "http://localhost:3000"],
@@ -27,6 +27,7 @@ userRouter.post("/token", authenticateJwt, uc.refreshAccessToken);
 // TODO: Test functionality without and with auth middleware
 userRouter.post("/logout", uc.logoutUser);
 userRouter.put("/update", authenticateJwt, uc.updateUser);
+userRouter.put("/change-password", authenticateJwt, uc.changePassword);
 userRouter.delete("/delete", authenticateJwt, uc.deleteUser);
 userRouter.get("/", authenticateJwt, uc.getUsers);
 

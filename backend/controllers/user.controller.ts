@@ -1078,4 +1078,45 @@ export default class UserController {
       next(err);
     }
   };
+
+  changePassword = async (req: Request, res: Response, next: NextFunction) => {
+    const saltRounds = 10;
+    const userID = req.user.id;
+    if (!req.body.password) {
+      sendJsonResponse(res, 400, "No password given");
+      return;
+    }
+
+    const newPassword = String(req.body);
+
+    try {
+      bcrypt.hash(
+        newPassword,
+        saltRounds,
+        async (error: Error, hashed: string) => {
+          if (error) {
+            console.error(`${this.changePassword.name} bcrypt.hash error`);
+            logError(error);
+            sendJsonResponse(res, 500);
+            next(error);
+            return;
+          }
+          const result = await User.findByIdAndUpdate(
+            userID,
+            { password: hashed },
+            { new: true },
+          );
+
+          sendJsonResponse(res, 201, result);
+          return;
+        },
+      );
+    } catch (err) {
+      console.error(`${this.changePassword.name} updating password error`);
+      logError(err);
+      sendJsonResponse(res, 500);
+      next(err);
+      return;
+    }
+  };
 }

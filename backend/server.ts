@@ -7,7 +7,8 @@ import logger from "./middleware/logger.js";
 import path from "path";
 import userRouter from "./routes/user.route.js";
 import medicineRouter from "./routes/medicine.route.js";
-import scheduleRouter from "./routes/schedule.routes.js";
+import scheduleRouter from "./routes/schedule.route.js";
+import authRouter from "./routes/auth.route.js";
 import { initializeTransporter } from "./config/nodemailer.js";
 dotenv.config();
 
@@ -37,6 +38,7 @@ app.use(logger);
 app.use("/api/users", userRouter);
 app.use("/api/medicine", medicineRouter);
 app.use("/api/schedule", scheduleRouter);
+app.use("/api/auth", authRouter);
 
 if (process.env.NODE_ENV === "production") {
   app.use(static_(path.join(__dirname + "/static")));
