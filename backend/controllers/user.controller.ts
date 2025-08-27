@@ -1,4 +1,5 @@
 import bcrypt from "bcrypt";
+import { randomBytes } from "node:crypto";
 import {
   doesUserExist,
   doesUserIdExist,
@@ -168,8 +169,8 @@ export default class UserController {
             },
             to: result.email,
             subject: "Account Verification - MedTalk",
-            text: `Thank you for signing up at MedTalk! Click the link to verify your account. https://medtalk-webapp-122bcbf0f96e.herokuapp.com/api/users/verify/?id=${result._id}`,
-            html: `<p>Thank you for signing up at MedTalk! Click <a href="https://medtalk-webapp-122bcbf0f96e.herokuapp.com/api/users/verify/?id=${result._id}">here</a> to verify your account.</p>`,
+            text: `Thank you for signing up at MedTalk! Click the link to verify your account. https://medtalk-webapp-122bcbf0f96e.herokuapp.com/verify-account/?id=${result._id}`,
+            html: `<p>Thank you for signing up at MedTalk! Click <a href="https://medtalk-webapp-122bcbf0f96e.herokuapp.com/verify-account/?id=${result._id}">here</a> to verify your account.</p>`,
           });
           console.log("Email sent: ", info.messageId);
         } catch (err) {
@@ -501,7 +502,12 @@ export default class UserController {
     }
   };
 
+  // TODO: Auto generate a password and send it to the email
+  // Test out the functionality
   registerAdmin = async (req: Request, res: Response, next: NextFunction) => {
+    const allChars = 'abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789!@#$%^&*()_+|}{[]:;?><,./-=';
+    const passwordLength = 10;
+    let generatedPassword = '';
     if (req.user.role !== "super admin") {
       res.sendStatus(403);
       return;
@@ -515,8 +521,8 @@ export default class UserController {
       !admin.username ||
       !admin.email ||
       !admin.firstName ||
-      !admin.lastName ||
-      !admin.password
+      !admin.lastName
+      // !admin.password
     ) {
       sendJsonResponse(res, 400, "provide all fields");
       return;
@@ -542,8 +548,15 @@ export default class UserController {
       return;
     }
 
+    const bytes = randomBytes(passwordLength);
+
+    for (let i = 0; i < passwordLength; i++) {
+      const randomIndex = bytes[i] % allChars.length;
+      generatedPassword += allChars[randomIndex];
+    }
+
     bcrypt.hash(
-      admin.password,
+      generatedPassword,
       saltRounds,
       async (error: Error, hashed: string) => {
         if (error) {
@@ -572,9 +585,9 @@ export default class UserController {
           const info = await this.emailTransporter.sendMail({
             from: process.env.EMAIL_USERNAME,
             to: result.email,
-            subject: "Account Verification - MedTalk",
-            text: `Thank you for signing up at MedTalk! Click the link to verify your account. https://medtalk-webapp-122bcbf0f96e.herokuapp.com/api/users/verify/?id=${result._id}`,
-            html: `<p>Thank you for signing up at MedTalk! Click <a href="https://medtalk-webapp-122bcbf0f96e.herokuapp.com/api/users/verify/?id=${result._id}">here</a> to verify your account.</p>`,
+            subject: "Account Created - MedTalk",
+            text: `An account has been created on your email. Here are your credentials when logging in:\nEmail: ${result.email}\nPassword: ${generatedPassword}\nDo not forget to change your password after first log in.`,
+            html: `<p>An account has been created on your email. Here are your credentials when logging in:<br><br>Email: ${result.email}<br>Password: ${generatedPassword}<br><br>Do not forget to change your password after first log in.</p>`,
           });
           console.log("Email sent: ", info.messageId);
           return;
