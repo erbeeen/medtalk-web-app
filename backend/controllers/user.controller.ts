@@ -19,8 +19,8 @@ import RefreshToken, {
 } from "../models/refresh-token.model.js";
 import sendJsonResponse from "../utils/httpResponder.js";
 import User, { UserType, UserDocument } from "../models/user.model.js";
-import getTransporter from "../config/nodemailer.js";
-import { Transporter } from "nodemailer";
+import SystemLog from "../models/system-logs.model.js";
+import sendEmail from "../config/nodemailer.js";
 
 type LoginCredentials = {
   email: string;
@@ -28,17 +28,10 @@ type LoginCredentials = {
 };
 
 const USER_ROLE = "user";
+const FROM_EMAIL = `MedTalk <${process.env.MAIL_USERNAME}>`;
 
 export default class UserController {
-  private emailTransporter: Transporter;
-
   constructor() {}
-
-  static async create(): Promise<UserController> {
-    const controller = new UserController();
-    controller.emailTransporter = await getTransporter();
-    return controller;
-  }
 
   // WARN: Possible problem for register and login route:
   // Multiple refresh tokens from the same user are generated.
@@ -50,11 +43,6 @@ export default class UserController {
   // production
 
   registerUser = async (req: Request, res: Response, next: NextFunction) => {
-    // if (req.user !== undefined) {
-    //   sendJsonResponse(res, 200);
-    //   return;
-    // }
-
     const user: UserType = req.body;
     const saltRounds = 10;
     if (
@@ -157,27 +145,44 @@ export default class UserController {
             secure: true,
             sameSite: "lax",
           });
-          sendJsonResponse(res, 201, result);
+          sendJsonResponse(res, 201);
 
           // WARN: This is not the correct implementation. The link should be a frontend route,
           // not the API route. The frontend route will call the API route. Use only for testing if this function works
 
-          const info = await this.emailTransporter.sendMail({
-            from: {
-              name: "MedTalk",
-              address: process.env.MAIL_USERNAME,
-            },
+          sendEmail({
+            from: FROM_EMAIL,
             to: result.email,
             subject: "Account Verification - MedTalk",
             text: `Thank you for signing up at MedTalk! Click the link to verify your account. https://medtalk-webapp-122bcbf0f96e.herokuapp.com/verify-account/?id=${result._id}`,
             html: `<p>Thank you for signing up at MedTalk! Click <a href="https://medtalk-webapp-122bcbf0f96e.herokuapp.com/verify-account/?id=${result._id}">here</a> to verify your account.</p>`,
           });
-          console.log("Email sent: ", info.messageId);
+
+          await SystemLog.create({
+            level: "info",
+            source: "user-registration",
+            category: "authentication",
+            message: "User registered a new account.",
+            data: {
+              _id: result._id,
+              email: result.email,
+              username: result.username,
+            },
+          });
         } catch (err) {
           console.error(`${this.registerUser.name} newUser.save error`);
           logError(err);
           sendJsonResponse(res, 500);
           next(err);
+          await SystemLog.create({
+            level: "error",
+            source: "user-registration",
+            category: "authentication",
+            message: "User failed to register a new account.",
+            data: {
+              error: err,
+            },
+          });
           return;
         }
       },
@@ -199,12 +204,37 @@ export default class UserController {
     }
 
     try {
-      await User.findByIdAndUpdate(id, { verified: true }, { new: true });
+      const result = await User.findByIdAndUpdate(
+        id,
+        { verified: true },
+        { new: true },
+      );
       sendJsonResponse(res, 200);
+
+      await SystemLog.create({
+        level: "info",
+        source: "user-authentication",
+        category: "authentication",
+        message: "User email verification successful.",
+        data: {
+          _id: result._id,
+          email: result.email,
+          username: result.username,
+        },
+      });
     } catch (err) {
       console.error(`${this.verifyUser.name} User.findByIdandUpdate error`);
       logError(err);
       sendJsonResponse(res, 500);
+      await SystemLog.create({
+        level: "error",
+        source: "user-authentication",
+        category: "authentication",
+        message: "User email verification failed.",
+        data: {
+          error: err,
+        },
+      });
       next(err);
     } finally {
       return;
@@ -307,13 +337,26 @@ export default class UserController {
             sameSite: "lax",
           });
           sendJsonResponse(res, 200);
-          return;
+          await SystemLog.create({
+            level: "info",
+            source: "user-authentication",
+            category: "authentication",
+            message: "User login successful.",
+            initiated_by: user.username,
+          });
         } catch (err) {
           console.error(
             `${this.loginUser.name} save refresh token error: ${err}\n${err.stack}`,
           );
           logError(err);
           sendJsonResponse(res, 500);
+          await SystemLog.create({
+            level: "error",
+            source: "user-authentication",
+            category: "authentication",
+            message: "User login failed.",
+            initiated_by: user.username,
+          });
           next(err);
           return;
         }
@@ -376,7 +419,6 @@ export default class UserController {
   };
 
   logoutUser = async (req: Request, res: Response, next: NextFunction) => {
-    // TODO: Test the functionality
     let refreshToken: string = req.body.token;
 
     if (refreshToken === undefined) {
@@ -418,9 +460,26 @@ export default class UserController {
         maxAge: 0,
       });
       sendJsonResponse(res, 200, "token removed");
+      await SystemLog.create({
+        level: "info",
+        source: "user-logout",
+        category: "authentication",
+        message: "User logout successful.",
+        initiated_by: req.user.username,
+      });
     } catch (err) {
       logError(err);
       sendJsonResponse(res, 500);
+      await SystemLog.create({
+        level: "error",
+        source: "user-logout",
+        category: "authentication",
+        message: "User logout failed.",
+        initiated_by: req.user.username,
+        data: {
+          error: err,
+        },
+      });
       next(err);
     }
   };
@@ -502,12 +561,11 @@ export default class UserController {
     }
   };
 
-  // TODO: Auto generate a password and send it to the email
-  // Test out the functionality
   registerAdmin = async (req: Request, res: Response, next: NextFunction) => {
-    const allChars = 'abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789!@#$%^&*()_+|}{[]:;?><,./-=';
+    const allChars =
+      "abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789!@#$%^&*()_+|}{[]:;?><,./-=";
     const passwordLength = 10;
-    let generatedPassword = '';
+    let generatedPassword = "";
     if (req.user.role !== "super admin") {
       res.sendStatus(403);
       return;
@@ -522,7 +580,6 @@ export default class UserController {
       !admin.email ||
       !admin.firstName ||
       !admin.lastName
-      // !admin.password
     ) {
       sendJsonResponse(res, 400, "provide all fields");
       return;
@@ -579,24 +636,41 @@ export default class UserController {
         try {
           const result = await newAdmin.save();
           sendJsonResponse(res, 201, result);
-          // WARN: This is not the correct implementation. The link should be a frontend route,
-          // not the API route. The frontend route will call the API route. Use only for testing if this function works
 
-          const info = await this.emailTransporter.sendMail({
-            from: process.env.EMAIL_USERNAME,
+          sendEmail({
+            from: FROM_EMAIL,
             to: result.email,
             subject: "Account Created - MedTalk",
             text: `An account has been created on your email. Here are your credentials when logging in:\nEmail: ${result.email}\nPassword: ${generatedPassword}\nDo not forget to change your password after first log in.`,
             html: `<p>An account has been created on your email. Here are your credentials when logging in:<br><br>Email: ${result.email}<br>Password: ${generatedPassword}<br><br>Do not forget to change your password after first log in.</p>`,
           });
-          console.log("Email sent: ", info.messageId);
-          return;
+
+          await SystemLog.create({
+            level: "info",
+            source: "admin-creation",
+            category: "admin-management",
+            message: "Admin account creation successful.",
+            initiated_by: req.user.username,
+            data: {
+              email: result.email,
+              username: result.username,
+            },
+          });
         } catch (err) {
           console.error(`${this.registerAdmin.name} newAdmin.save error`);
           logError(err);
           sendJsonResponse(res, 500);
+          await SystemLog.create({
+            level: "error",
+            source: "admin-creation",
+            category: "admin-management",
+            message: "Admin account creation failed.",
+            initiated_by: req.user.username,
+            data: {
+              error: err,
+            },
+          });
           next(err);
-          return;
         }
       },
     );
@@ -605,7 +679,9 @@ export default class UserController {
   loginAdmin = async (req: Request, res: Response, next: NextFunction) => {
     if (req.user !== undefined) {
       const isTokenFromUser =
-        req.user.role !== "super admin" && req.user.role !== "admin";
+        req.user.role !== "super admin" &&
+        req.user.role !== "admin" &&
+        req.user.role !== "doctor";
       const isBodyEmpty =
         req.body === undefined || Object.keys(req.body).length === 0;
 
@@ -630,8 +706,16 @@ export default class UserController {
       return;
     }
 
-    const isNotAdmin = user.role !== "super admin" && user.role !== "admin";
-    if (user === null || isNotAdmin) {
+    if (!user) {
+      sendJsonResponse(res, 401, "invalid email or password");
+      return;
+    }
+
+    const isNotAdmin =
+      user.role !== "super admin" &&
+      user.role !== "admin" &&
+      user.role !== "doctor";
+    if (isNotAdmin) {
       sendJsonResponse(res, 401, "invalid email or password");
       return;
     }
@@ -698,16 +782,32 @@ export default class UserController {
             secure: isProduction,
             sameSite: "lax",
           });
-          sendJsonResponse(res, 200);
-          return;
+          sendJsonResponse(res, 200, {
+            username: user.username,
+            role: user.role,
+          });
+
+          await SystemLog.create({
+            level: "info",
+            source: "authentication",
+            category: "authentication",
+            message: "Admin login successful.",
+            initiated_by: user.username,
+          });
         } catch (err) {
           console.error(
             `${this.loginAdmin.name} save refresh token error: ${err}\n${err.stack}`,
           );
           logError(err);
           sendJsonResponse(res, 500);
+          await SystemLog.create({
+            level: "error",
+            source: "authentication",
+            category: "authentication",
+            message: "Admin login failed.",
+            initiated_by: user.username,
+          });
           next(err);
-          return;
         }
       },
     );
@@ -837,10 +937,35 @@ export default class UserController {
         firstName: updatedAdmin.firstName,
         lastName: updatedAdmin.lastName,
       });
+
+      await SystemLog.create({
+        level: "info",
+        source: "admin-panel",
+        category: "admin-management",
+        message: "Admin profile update successful.",
+        initiated_by: req.user.username,
+        data: {
+          role: updatedAdmin.role,
+          email: updatedAdmin.email,
+          username: updatedAdmin.username,
+          firstName: updatedAdmin.firstName,
+          lastName: updatedAdmin.lastName,
+        },
+      });
     } catch (err) {
       console.error(`${this.updateAdmin.name} User.findByIdandUpdate error`);
       logError(err);
       sendJsonResponse(res, 500);
+      await SystemLog.create({
+        level: "error",
+        source: "admin-panel",
+        category: "admin-management",
+        message: "Admin profile update failed.",
+        initiated_by: req.user.username,
+        data: {
+          error: err,
+        },
+      });
       next(err);
     }
   };
@@ -914,34 +1039,47 @@ export default class UserController {
           // WARN: This is not the correct implementation. The link should be a frontend route,
           // not the API route. The frontend route will call the API route. Use only for testing if this function works
 
-          try {
-            const body = `<p>Thank you for signing up at MedTalk! Click <a href="https://medtalk-webapp-122bcbf0f96e.herokuapp.com/api/users/verify/?id=${result._id}">here</a> to verify your account.</p>`;
-            const info = await this.emailTransporter.sendMail({
-              from: process.env.EMAIL_USERNAME,
-              to: result.email,
-              subject: "Account Verification - MedTalk",
-              text: `Thank you for signing up at MedTalk! Click the link to verify your account. https://medtalk-webapp-122bcbf0f96e.herokuapp.com/api/users/verify/?id=${result._id}`,
-              html: body,
-            });
-            console.log("Email sent: ", info.messageId);
-            return;
-          } catch (err) {
-            console.error("Send email verification error: ", err.stack);
-            return;
-          }
+          const body = `<p>Thank you for signing up at MedTalk! Click <a href="https://medtalk-webapp-122bcbf0f96e.herokuapp.com/api/users/verify/?id=${result._id}">here</a> to verify your account.</p>`;
+          sendEmail({
+            from: FROM_EMAIL,
+            to: result.email,
+            subject: "Account Verification - MedTalk",
+            text: `Thank you for signing up at MedTalk! Click the link to verify your account. https://medtalk-webapp-122bcbf0f96e.herokuapp.com/api/users/verify/?id=${result._id}`,
+            html: body,
+          });
+
+          await SystemLog.create({
+            level: "info",
+            source: "admin-panel",
+            category: "user-management",
+            message: "User creation successful.",
+            initiated_by: req.user.username,
+            data: {
+              email: result.email,
+              username: result.username,
+            },
+          });
         } catch (err) {
           console.error(`${this.createUser.name} newUser.save error`);
           logError(err);
           sendJsonResponse(res, 500);
+          await SystemLog.create({
+            level: "error",
+            source: "admin-panel",
+            category: "user-management",
+            message: "User creation successful.",
+            initiated_by: req.user.username,
+            data: {
+              error: err,
+            },
+          });
           next(err);
-          return;
         }
       },
     );
   };
 
   updateUser = async (req: Request, res: Response, next: NextFunction) => {
-    // TODO: what to do when the password is changed
     // TODO: proceed with the update only when the request
     // is from the same user, from an admin/super admin.
 
@@ -962,8 +1100,7 @@ export default class UserController {
       !editedUserDetails.email ||
       !editedUserDetails.username ||
       !editedUserDetails.firstName ||
-      !editedUserDetails.lastName ||
-      !editedUserDetails.password
+      !editedUserDetails.lastName
     ) {
       sendJsonResponse(res, 400, "provide all fields");
       return;
@@ -1017,10 +1154,26 @@ export default class UserController {
         firstName: updatedUser.firstName,
         lastName: updatedUser.lastName,
       });
+
+      await SystemLog.create({
+        level: "info",
+        source: "admin-panel",
+        category: "user-management",
+        message: "User update profile successful.",
+        initiated_by: req.user.username,
+      });
     } catch (err) {
       console.error(`${this.updateUser.name} User.findByIdandUpdate error`);
       logError(err);
       sendJsonResponse(res, 500);
+      await SystemLog.create({
+        level: "error",
+        source: "admin-panel",
+        category: "user-management",
+        message: "User update profile failed.",
+        initiated_by: req.user.username,
+        data: { error: err },
+      });
       next(err);
     } finally {
       return;
@@ -1062,13 +1215,27 @@ export default class UserController {
     try {
       const result = await User.findByIdAndDelete(id);
       sendJsonResponse(res, 200, result);
+
+      await SystemLog.create({
+        level: "info",
+        source: "admin-management",
+        category: "user-management",
+        message: "User account deletion successful.",
+        initiated_by: req.user.username,
+      });
     } catch (err) {
       console.error(`${this.deleteUser.name} User.findByIdAndDelete error`);
       logError(err);
       sendJsonResponse(res, 500);
+      await SystemLog.create({
+        level: "error",
+        source: "admin-management",
+        category: "user-management",
+        message: "User account deletion failed.",
+        initiated_by: req.user.username,
+        data: { error: err },
+      });
       next(err);
-    } finally {
-      return;
     }
   };
 
@@ -1084,10 +1251,26 @@ export default class UserController {
       const objectIds = idList.map((id) => new mongoose.Types.ObjectId(id));
       const result = await User.deleteMany({ _id: { $in: objectIds } });
       sendJsonResponse(res, 200, result);
+
+      await SystemLog.create({
+        level: "info",
+        source: "admin-management",
+        category: "user-management",
+        message: "User batch account deletion successful.",
+        initiated_by: req.user.username,
+      });
     } catch (err) {
       console.error(`${this.deleteUsers.name} error`);
       logError(err);
       sendJsonResponse(res, 500);
+      await SystemLog.create({
+        level: "error",
+        source: "admin-management",
+        category: "user-management",
+        message: "User batch account deletion failed.",
+        initiated_by: req.user.username,
+        data: { error: err },
+      });
       next(err);
     }
   };
@@ -1121,13 +1304,27 @@ export default class UserController {
           );
 
           sendJsonResponse(res, 201, result);
-          return;
+          await SystemLog.create({
+            level: "info",
+            source: "password-change",
+            category: "user-management",
+            message: "User change password successful.",
+            initiated_by: req.user.username,
+          });
         },
       );
     } catch (err) {
       console.error(`${this.changePassword.name} updating password error`);
       logError(err);
       sendJsonResponse(res, 500);
+      await SystemLog.create({
+        level: "info",
+        source: "password-change",
+        category: "user-management",
+        message: "User change password failed.",
+        initiated_by: req.user.username,
+        data: { error: err },
+      });
       next(err);
       return;
     }

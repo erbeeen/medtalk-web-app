@@ -15,12 +15,8 @@ export default function UserAddModal({ onClose, setUsers }: NewUserModalProps) {
   const [email, setEmail] = useState("");
   const [firstName, setFirstName] = useState("");
   const [lastName, setLastName] = useState("");
-  const [password, setPassword] = useState("");
-  const [confirmPassword, setConfirmPassword] = useState("");
   const [isLoading, setIsLoading] = useState(false);
   const [errMessage, setErrMessage] = useState("");
-  const passwordRegex: RegExp = 
-    /^(?=.*[a-z])(?=.*[A-Z])(?=.*\d)(?=.*[!@#$%^&*()_+={}[\]:;"'<>,.?/\\|`~-])[A-Za-z\d!@#$%^&*()_+={}[\]:;"'<>,.?/\\|`~-]{8,}$/;
   const emailRegex: RegExp = /^[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,}$/;
 
   const handleSubmit = async (e: FormEvent<HTMLFormElement>) => {
@@ -31,9 +27,7 @@ export default function UserAddModal({ onClose, setUsers }: NewUserModalProps) {
       !username ||
       !email ||
       !firstName ||
-      !lastName ||
-      !password ||
-      !confirmPassword
+      !lastName
     ) {
       setErrMessage("Provide all fields.");
       setIsLoading(false);
@@ -46,24 +40,11 @@ export default function UserAddModal({ onClose, setUsers }: NewUserModalProps) {
       return;
     }
 
-    if (password !== confirmPassword) {
-      setErrMessage("Password does not match.");
-      setIsLoading(false);
-      return;
-    }
-
-    if (!passwordRegex.test(password)) {
-      setErrMessage("Password must be at least 8 characters with a mix of characters, numbers, and symbols.");
-      setIsLoading(false);
-      return;
-    }
-
     const newUser: UserType = {
       email: email,
       username: username,
       firstName: firstName,
       lastName: lastName,
-      password: password,
     };
 
     try {
@@ -164,31 +145,31 @@ export default function UserAddModal({ onClose, setUsers }: NewUserModalProps) {
             />
           </div>
 
-          <div className="modal-input-container">
-            <label htmlFor="password" className="w-8/12">Password</label>
-            <input
-              type="password"
-              id="password"
-              name="password"
-              className="modal-input"
-              value={password}
-              onChange={(e) => setPassword(e.target.value)}
-              required
-            />
-          </div>
+          {/* <div className="modal-input-container"> */}
+          {/*   <label htmlFor="password" className="w-8/12">Password</label> */}
+          {/*   <input */}
+          {/*     type="password" */}
+          {/*     id="password" */}
+          {/*     name="password" */}
+          {/*     className="modal-input" */}
+          {/*     value={password} */}
+          {/*     onChange={(e) => setPassword(e.target.value)} */}
+          {/*     required */}
+          {/*   /> */}
+          {/* </div> */}
 
-          <div className="modal-input-container">
-            <label htmlFor="confirm-password" className="w-8/12">Confirm Password</label>
-            <input
-              type="password"
-              id="confirm-password"
-              name="confirm-password"
-              className="modal-input"
-              value={confirmPassword}
-              onChange={(e) => setConfirmPassword(e.target.value)}
-              required
-            />
-          </div>
+          {/* <div className="modal-input-container"> */}
+          {/*   <label htmlFor="confirm-password" className="w-8/12">Confirm Password</label> */}
+          {/*   <input */}
+          {/*     type="password" */}
+          {/*     id="confirm-password" */}
+          {/*     name="confirm-password" */}
+          {/*     className="modal-input" */}
+          {/*     value={confirmPassword} */}
+          {/*     onChange={(e) => setConfirmPassword(e.target.value)} */}
+          {/*     required */}
+          {/*   /> */}
+          {/* </div> */}
 
           <div className="max-w-8/12 ml-auto text-center dark:text-delete-dark/70">
             {errMessage}

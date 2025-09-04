@@ -1,6 +1,7 @@
 import cors from "cors";
-import dbConnect from "./config/db.js";
 import dotenv from "dotenv";
+dotenv.config();
+import dbConnect from "./config/db.js";
 import express, { static as static_ } from "express";
 import { fileURLToPath } from "url";
 import logger from "./middleware/logger.js";
@@ -9,21 +10,12 @@ import userRouter from "./routes/user.route.js";
 import medicineRouter from "./routes/medicine.route.js";
 import scheduleRouter from "./routes/schedule.route.js";
 import authRouter from "./routes/auth.route.js";
-import { initializeTransporter } from "./config/nodemailer.js";
-dotenv.config();
+
+// TODO: Create System Logs Module
 
 const app = express();
 const __dirname = path.dirname(fileURLToPath(import.meta.url));
 const PORT = process.env.PORT || 3000;
-
-try {
-  console.log("Initializing Mail Transporter");
-  await initializeTransporter();
-  console.log("Initialization successsful.\n");
-} catch (err) {
-  console.error("Cannot Initialize Mail Transporter\n", err.stack);
-  process.exit(1);
-}
 
 app.use(
   cors({
@@ -52,7 +44,7 @@ app.listen(PORT, async () => {
   try {
     console.log("Initializing MongoDB Connection.");
     await dbConnect();
-    console.log("Connection successful.\n");
+    console.log("Database connection successful.\n");
 
     console.log("Backend server running");
   } catch (err) {

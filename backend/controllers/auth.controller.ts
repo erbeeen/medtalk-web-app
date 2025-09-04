@@ -1,3 +1,4 @@
+import jwt, { JwtPayload } from "jsonwebtoken";
 import { refreshAccessToken, validateRefreshToken } from "../auth/auth.js";
 import { logError } from "../middleware/logger.js";
 import { NextFunction, Request, Response } from "express";
@@ -12,7 +13,10 @@ export default class AuthController {
       res.sendStatus(401);
       return;
     }
-    sendJsonResponse(res, 200, "Authenticated.");
+    sendJsonResponse(res, 200, {
+      username: req.user.username,
+      role: req.user.role,
+    });
   };
 
   refreshAccessToken = async (
@@ -29,9 +33,7 @@ export default class AuthController {
     }
 
     let refreshToken = req.cookies.refreshToken;
-    if (refreshToken === undefined) {
-      refreshToken = req.body.token;
-    }
+    if (refreshToken === undefined) refreshToken = req.body.token;
 
     try {
       const tokenFromDb = await RefreshToken.findOne({ token: refreshToken });
@@ -54,19 +56,25 @@ export default class AuthController {
         sendJsonResponse(res, 403);
         return;
       }
+
+      // Decode the access token to get username and role
+      const user = jwt.decode(accessToken) as JwtPayload;
+
       const isProduction = process.env.NODE_ENV === "production";
       res.cookie("accessToken", accessToken, {
         httpOnly: true,
         secure: isProduction,
         sameSite: "lax",
       });
-      sendJsonResponse(res, 201, "new token created.");
-      return;
+      
+      sendJsonResponse(res, 201, {
+        username: user.username,
+        role: user.role,
+      });
     } catch (err) {
       logError(err);
       sendJsonResponse(res, 500);
       next(err);
-      return;
     }
   };
 

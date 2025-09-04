@@ -10,8 +10,6 @@ type EditUserModalProps = {
   setMedicines: Dispatch<SetStateAction<Array<MedicineType>>>;
 }
 
-// TODO: 
-
 export default function MedicineEditModal({ onClose, data, setMedicines }: EditUserModalProps) {
   const [level1, setLevel1] = useState(data["Level 1"]);
   const [level2, setLevel2] = useState(data["Level 2"]);

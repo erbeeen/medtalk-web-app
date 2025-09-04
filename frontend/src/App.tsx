@@ -1,5 +1,5 @@
 import { useState, useRef } from 'react';
-import { Routes, Route, useLocation } from 'react-router-dom';
+import { Routes, Route, useLocation, Navigate } from 'react-router-dom';
 import AdminsRoute from './routes/Admins';
 import HomeRoute from './routes/Home';
 import MedicineRoute from './routes/Medicine';
@@ -9,17 +9,27 @@ import UsersRoute from './routes/Users';
 import LoginRoute from './routes/Login';
 import Sidebar from './components/Sidebar';
 import VerifyAccountRoute from './routes/VerifyAccount';
+import { UserProvider } from './contexts/UserContext';
+import ProtectedRoute from './components/ProtectedRoute';
 import './App.css';
+import SystemLogsRoute from './routes/SystemLogs';
+
+// TODO: 
+// - Create change password, reset password, and profile page,
+// - Create welcome user component
+// - Create System Logs Module
+// - (optional) Create switch for light and dark mode
 
 function App() {
   const [isLoading, _setIsLoading] = useState(false);
   const mainContentRef = useRef<HTMLDivElement>(null);
   const location = useLocation();
   let showSidebar = true;
-  // NOTE: Check on how to add non-existent pages to this statement
+  // TODO: Check on how to add non-existent pages to this statement
   if (
     location.pathname === "/login" ||
-    location.pathname === "/verify-account"
+    location.pathname === "/verify-account" ||
+    location.pathname === "/not-found"
   ) {
     showSidebar = false;
   }
@@ -29,38 +39,47 @@ function App() {
       mainContentRef.current.scroll({
         top: 0,
         left: 0,
-        behavior: "smooth",
+        behavior: "instant",
       });
     }
   }
 
   return (
     <>
-      {!isLoading && (
-        <div
-          id="main"
-          className="h-screen flex bg-light dark:bg-dark
-        text-light-text dark:text-dark-text">
-          {showSidebar && <Sidebar />}
+      <UserProvider>
+        {!isLoading && (
           <div
-            ref={mainContentRef}
-            id="content-area"
-            className="w-full max-w-[1920px] p-4 flex flex-col flex-1 
+            id="main"
+            className="h-screen flex bg-light dark:bg-dark
+        text-light-text dark:text-dark-text">
+            {showSidebar && <Sidebar />}
+            <div
+              ref={mainContentRef}
+              id="content-area"
+              className="w-full max-w-[1920px] p-4 flex flex-col flex-1 
           overflow-y-auto justify-start align-center gap-10 
           bg-light dark:bg-dark text-light-text dark:text-dark-text/95">
-            <Routes>
-              <Route path="/" element={<HomeRoute />} />
-              <Route path="/login" element={<LoginRoute />} />
-              <Route path="/users" element={<UsersRoute scrollToTop={scrollToTop} />} />
-              <Route path="/admins" element={<AdminsRoute scrollToTop={scrollToTop} />} />
-              <Route path="/medicine" element={<MedicineRoute scrollToTop={scrollToTop} />} />
-              <Route path="/schedules" element={<ScheduleRoute scrollToTop={scrollToTop} />} />
-              <Route path="/verify-account" element={<VerifyAccountRoute />} />
-              <Route path="*" element={<NotFoundRoute />} />
-            </Routes>
+              <Routes>
+                {/* NOTE: public routes */}
+                <Route path="/verify-account" element={<VerifyAccountRoute />} />
+                <Route path="/not-found" element={<NotFoundRoute />} />
+                <Route path="*" element={<Navigate to={"/not-found"} replace />} />
+
+                {/* NOTE: protected routes */}
+                <Route element={<ProtectedRoute />}>
+                  <Route path="/" element={<HomeRoute />} />
+                  <Route path="/login" element={<LoginRoute />} />
+                  <Route path="/logs" element={<SystemLogsRoute />} />
+                  <Route path="/users" element={<UsersRoute scrollToTop={scrollToTop} />} />
+                  <Route path="/admins" element={<AdminsRoute scrollToTop={scrollToTop} />} />
+                  <Route path="/medicine" element={<MedicineRoute scrollToTop={scrollToTop} />} />
+                  <Route path="/schedules" element={<ScheduleRoute scrollToTop={scrollToTop} />} />
+                </Route>
+              </Routes>
+            </div>
           </div>
-        </div>
-      )}
+        )}
+      </UserProvider>
     </>
   )
 }

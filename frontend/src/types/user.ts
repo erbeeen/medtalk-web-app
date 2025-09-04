@@ -6,6 +6,7 @@ export type UserType = {
   lastName: string;
   email: string;
   password?: string;
+  verified?: boolean;
   actions?: string;
 };
 
@@ -18,5 +19,6 @@ export type AdminUserType = {
   lastName: string;
   email: string;
   password?: string;
+  verified?: boolean;
   actions?: string;
 };

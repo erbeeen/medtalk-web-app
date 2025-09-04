@@ -8,7 +8,6 @@ import ScrollTableData from "../components/ScrollTableData";
 import UserAddModal from "../components/modals/UserAddModal";
 import UserDeleteModal from "../components/modals/UserDeleteModal";
 import UserEditModal from "../components/modals/UserEditModal";
-import ProtectedRoute from "../components/ProtectedRoute";
 
 type UsersRouteProps = {
   scrollToTop: () => void;
@@ -38,7 +37,6 @@ export default function UsersRoute({ scrollToTop }: UsersRouteProps) {
         })
 
         const data = await response.json();
-        console.log(data.data);
         setUsers(data.data);
       } catch (err) {
         console.error("loading medicine data failed: ", err);
@@ -46,13 +44,8 @@ export default function UsersRoute({ scrollToTop }: UsersRouteProps) {
     }
 
     const loadData = async () => {
-      try {
-        await fetchData();
-      } catch (err) {
-        console.error("login failed: ", err);
-      } finally {
-        setIsLoading(false);
-      }
+      await fetchData();
+      setIsLoading(false);
     }
 
     setIsLoading(true);
@@ -108,13 +101,14 @@ export default function UsersRoute({ scrollToTop }: UsersRouteProps) {
       cell: props => <ScrollTableData props={props} />,
       size: 100,
     }),
-    // userColumnHelper.accessor("password", {
-    //   header: "Password",
-    //   cell: props => <ScrollTableData props={props} />,
-    //   enableGlobalFilter: false,
-    //   size: 200,
-    //   minSize: 150,
-    // }),
+    userColumnHelper.accessor("verified", {
+      header: "Verified",
+      // cell: props => <ScrollTableData props={props} />,
+      cell: props => <ScrollTableData props={props} value={String(props.getValue())} />,
+      enableGlobalFilter: false,
+      size: 100,
+      // minSize: 150,
+    }),
     userColumnHelper.accessor("actions", {
       header: "",
       size: 125,
@@ -162,7 +156,6 @@ export default function UsersRoute({ scrollToTop }: UsersRouteProps) {
   ];
 
   return (
-    <ProtectedRoute>
     <div className="base-layout flex flex-col items-center gap-4">
 
       <div className="self-start">
@@ -232,6 +225,5 @@ export default function UsersRoute({ scrollToTop }: UsersRouteProps) {
         />
       }
     </div>
-    </ProtectedRoute>
   );
 }

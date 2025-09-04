@@ -9,8 +9,14 @@ type SearchBarProps = {
   value: any;
 }
 
+// FIX: when searching for paracetamol and ibuprofen on medicine,
+// no results show but records on the database exist. Bug might exist
+// on other types of searches
+
 export default function SearchBar({ onChange, searchFn, clearFn, value }: SearchBarProps) {
   const [isTextboxClear, setisTextboxClear] = useState(true);
+
+  const isFirefox = navigator.userAgent.includes("Firefox");
 
   return (
     <div className="h-10 w-full m-0 flex items-center dark:bg-gray-500/20 text-dark-text rounded-4xl">
@@ -43,7 +49,7 @@ export default function SearchBar({ onChange, searchFn, clearFn, value }: Search
           }
         }}
       />
-      {!isTextboxClear && (
+      {!isTextboxClear && isFirefox && (
         <div className="h-full w-16 flex justify-center items-center
           rounded-r-4xl cursor-pointer dark:text-dark-text/50
           dark:hover:text-dark-text"

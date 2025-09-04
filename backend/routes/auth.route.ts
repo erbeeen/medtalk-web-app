@@ -16,7 +16,7 @@ authRouter.use(cors({
 }));
 
 authRouter.post("/validate", authenticateJwt, ac.validateAccessToken);
-authRouter.post("/refresh-token", ac.refreshAccessToken);
+authRouter.post("/refresh-token", authenticateJwt, ac.refreshAccessToken);
 authRouter.post("/logout", ac.logout);
 
 export default authRouter;

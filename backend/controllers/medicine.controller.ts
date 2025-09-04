@@ -9,7 +9,7 @@ export default class MedicineController {
   constructor() {}
 
   createMedicine = async (req: Request, res: Response): Promise<void> => {
-    if (req.user.role !== "super admin" && req.user.role !== "admin") {
+    if (req.user.role !== "super admin" && req.user.role !== "doctor") {
       res.sendStatus(403);
       return;
     }
@@ -17,12 +17,12 @@ export default class MedicineController {
     try {
       const medicineData: MedicineType = req.body;
       if (
-          !medicineData["Level 1"] ||
-          !medicineData["Level 2"] ||
-          !medicineData["Level 3"] ||
-          !medicineData.Molecule ||
-          !medicineData["Technical Specifications"] ||
-          !medicineData["ATC Code"]
+        !medicineData["Level 1"] ||
+        !medicineData["Level 2"] ||
+        !medicineData["Level 3"] ||
+        !medicineData.Molecule ||
+        !medicineData["Technical Specifications"] ||
+        !medicineData["ATC Code"]
       ) {
         sendJsonResponse(res, 400, "Provide required fields");
         return;
@@ -37,7 +37,7 @@ export default class MedicineController {
   };
 
   getAllMedicines = async (req: Request, res: Response) => {
-    if (req.user.role !== "super admin" && req.user.role !== "admin") {
+    if (req.user.role !== "super admin" && req.user.role !== "doctor") {
       res.sendStatus(403);
       return;
     }
@@ -57,7 +57,7 @@ export default class MedicineController {
     req: Request,
     res: Response,
   ): Promise<void> => {
-    if (req.user.role !== "super admin" && req.user.role !== "admin") {
+    if (req.user.role !== "super admin" && req.user.role !== "doctor") {
       res.sendStatus(403);
       return;
     }
@@ -125,7 +125,7 @@ export default class MedicineController {
   };
 
   updateMedicine = async (req: Request, res: Response): Promise<void> => {
-    if (req.user.role !== "super admin" && req.user.role !== "admin") {
+    if (req.user.role !== "super admin" && req.user.role !== "doctor") {
       res.sendStatus(403);
       return;
     }
@@ -149,8 +149,12 @@ export default class MedicineController {
     }
   };
 
-  deleteMedicine = async (req: Request, res: Response, next: NextFunction): Promise<void> => {
-    if (req.user.role !== "super admin" && req.user.role !== "admin") {
+  deleteMedicine = async (
+    req: Request,
+    res: Response,
+    next: NextFunction,
+  ): Promise<void> => {
+    if (req.user.role !== "super admin" && req.user.role !== "doctor") {
       res.sendStatus(403);
       return;
     }
@@ -178,6 +182,11 @@ export default class MedicineController {
   };
 
   deleteMedicines = async (req: Request, res: Response, next: NextFunction) => {
+    if (req.user.role !== "super admin" && req.user.role !== "doctor") {
+      res.sendStatus(403);
+      return;
+    }
+
     const idList = req.body;
 
     if (!idList || !Array.isArray(idList) || idList.length === 0) {
@@ -195,7 +204,7 @@ export default class MedicineController {
       sendJsonResponse(res, 500);
       next(err);
     }
-  }
+  };
 
   // Search medicines with advanced filtering
   searchMedicines = async (req: Request, res: Response): Promise<void> => {

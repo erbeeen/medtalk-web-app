@@ -5,7 +5,7 @@ import { Router } from "express";
 import UserController from "../controllers/user.controller.js";
 
 const userRouter = Router();
-const uc = await UserController.create();
+const uc = new UserController();
 userRouter.use(cookieParser());
 userRouter.use(cors({
   origin: ["http://localhost:5173", "http://localhost:3000"],

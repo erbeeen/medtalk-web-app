@@ -8,7 +8,6 @@ import Table from "../components/Table";
 import MedicineAddModal from "../components/modals/MedicineAddModal";
 import MedicineEditModal from "../components/modals/MedicineEditModal";
 import MedicineDeleteModal from "../components/modals/MedicineDeleteModal";
-import ProtectedRoute from "../components/ProtectedRoute";
 
 type MedicineRouteProps = {
   scrollToTop: () => void;
@@ -22,8 +21,10 @@ export default function MedicineRoute({ scrollToTop }: MedicineRouteProps) {
   const [globalFilter, setGlobalFilter] = useState<any>([]);
   const [isAddModalOpen, setIsAddModalOpen] = useState(false);
   const [isDeleteAllModalOpen, setIsDeleteAllModalOpen] = useState(false);
+
   useEffect(() => {
     document.title = "Medicines | MedTalk";
+
 
     const fetchData = async () => {
       try {
@@ -41,13 +42,8 @@ export default function MedicineRoute({ scrollToTop }: MedicineRouteProps) {
     }
 
     const loadData = async () => {
-      try {
-        await fetchData();
-      } catch (err) {
-        console.error("login failed: ", err);
-      } finally {
-        setIsLoading(false);
-      }
+      await fetchData();
+      setIsLoading(false);
     }
 
     setIsLoading(true);
@@ -180,76 +176,74 @@ export default function MedicineRoute({ scrollToTop }: MedicineRouteProps) {
   ];
 
   return (
-    <ProtectedRoute>
-      <div className="base-layout flex flex-col items-center gap-4">
+    <div className="base-layout flex flex-col items-center gap-4">
 
-        <div className="self-start">
-          <h1 className="text-2xl font-bold">Medicine Management</h1>
+      <div className="self-start">
+        <h1 className="text-2xl font-bold">Medicine Management</h1>
+      </div>
+
+      <div className="h-10 w-full mb-2 self-start flex items-center gap-5">
+        <div className="w-10/12">
+          <SearchBar
+            onChange={(value: string) => setSearchText(value)}
+            searchFn={() => setGlobalFilter(searchText)}
+            clearFn={() => {
+              setSearchText("");
+              setGlobalFilter([]);
+            }}
+            value={searchText}
+          />
         </div>
 
-        <div className="h-10 w-full mb-2 self-start flex items-center gap-5">
-          <div className="w-10/12">
-            <SearchBar
-              onChange={(value: string) => setSearchText(value)}
-              searchFn={() => setGlobalFilter(searchText)}
-              clearFn={() => {
-                setSearchText("");
-                setGlobalFilter([]);
-              }}
-              value={searchText}
-            />
-          </div>
-
-          <div className="w-2/12 flex justify-end gap-3">
-            <div className="p-2 flex justify-center flex-nowrap items-center cursor-pointer
+        <div className="w-2/12 flex justify-end gap-3">
+          <div className="p-2 flex justify-center flex-nowrap items-center cursor-pointer
             border dark:border-primary-dark/60 dark:hover:bg-primary-dark/80 
             dark:text-primary-dark/60 dark:hover:text-dark-text rounded-md "
-              onClick={() => setIsAddModalOpen(true)}
-            >
-              <FaPlus size="1.3rem" />
-            </div>
-            {isAddModalOpen && (
-              <MedicineAddModal
-                onClose={() => setIsAddModalOpen(false)}
-                setMedicines={setMedicines}
-              />
-            )}
-            <div>
-              {Object.keys(rowSelection).length != 0 && (
-                <button
-                  type="button"
-                  className="p-2 border rounded-md dark:border-delete-dark/50 
+            onClick={() => setIsAddModalOpen(true)}
+          >
+            <FaPlus size="1.3rem" />
+          </div>
+          {isAddModalOpen && (
+            <MedicineAddModal
+              onClose={() => setIsAddModalOpen(false)}
+              setMedicines={setMedicines}
+            />
+          )}
+          <div>
+            {Object.keys(rowSelection).length != 0 && (
+              <button
+                type="button"
+                className="p-2 border rounded-md dark:border-delete-dark/50 
                 dark:hover:bg-delete-dark/50 dark:text-delete-dark/50 
                 dark:hover:text-dark-text cursor-pointer"
-                  onClick={() => setIsDeleteAllModalOpen(true)}>
-                  <FaTrash size="1.3rem" />
-                </button>
-              )}
-              {isDeleteAllModalOpen && (
-                <MedicineDeleteModal
-                  onClose={() => {
-                    setIsDeleteAllModalOpen(false);
-                    setRowSelection({});
-                  }}
-                  data={rowSelection}
-                  setMedicines={setMedicines} />
-              )}
-            </div>
+                onClick={() => setIsDeleteAllModalOpen(true)}>
+                <FaTrash size="1.3rem" />
+              </button>
+            )}
+            {isDeleteAllModalOpen && (
+              <MedicineDeleteModal
+                onClose={() => {
+                  setIsDeleteAllModalOpen(false);
+                  setRowSelection({});
+                }}
+                data={rowSelection}
+                setMedicines={setMedicines} />
+            )}
           </div>
-
         </div>
-        {!isLoading &&
-          <Table
-            columns={medicineColumns}
-            content={medicines}
-            rowSelection={rowSelection}
-            onRowSelectionChange={setRowSelection}
-            globalFilter={globalFilter}
-            setGlobalFilter={setGlobalFilter}
-            scrollToTop={scrollToTop}
-          />
-        }
+
       </div>
-    </ProtectedRoute>
+      {!isLoading &&
+        <Table
+          columns={medicineColumns}
+          content={medicines}
+          rowSelection={rowSelection}
+          onRowSelectionChange={setRowSelection}
+          globalFilter={globalFilter}
+          setGlobalFilter={setGlobalFilter}
+          scrollToTop={scrollToTop}
+        />
+      }
+    </div>
   );
 }

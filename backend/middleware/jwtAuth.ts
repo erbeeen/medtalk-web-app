@@ -46,8 +46,10 @@ export default function authenticateJwt(
       if (err) {
         if (
           req.originalUrl == "/api/users/login" || 
+          req.originalUrl == "/api/users/admin/login" ||
           req.originalUrl == "/api/users/token" ||
-          req.originalUrl == "/api/auth/validate"
+          req.originalUrl == "/api/auth/validate" ||
+          req.originalUrl == "/api/auth/refresh-token"
         ) {
           next();
         } else {

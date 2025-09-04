@@ -8,17 +8,10 @@ import AdminAddModal from "../components/modals/AdminAddModal";
 import AdminDeleteModal from "../components/modals/AdminDeleteModal";
 import ScrollTableData from "../components/ScrollTableData";
 import AdminEditModal from "../components/modals/AdminEditModal";
-import ProtectedRoute from "../components/ProtectedRoute";
 
 type AdminsRouteProps = {
   scrollToTop: () => void;
 }
-
-// TODO: Priority in order
-// try to apply it to others (admins, medications etc)
-// animations:
-//  delete button appearing
-//  add, edit, delete modals appearing
 
 // FIX: 
 // checkbox selects data even outside the page
@@ -51,13 +44,8 @@ export default function AdminsRoute({ scrollToTop }: AdminsRouteProps) {
     }
 
     const loadData = async () => {
-      try {
-        await fetchData();
-      } catch (err) {
-        console.error("login failed: ", err);
-      } finally {
-        setIsLoading(false);
-      }
+      await fetchData();
+      setIsLoading(false);
     }
 
 
@@ -165,76 +153,74 @@ export default function AdminsRoute({ scrollToTop }: AdminsRouteProps) {
   ];
 
   return (
-    <ProtectedRoute>
-      <div className="base-layout flex flex-col items-center gap-4">
+    <div className="base-layout flex flex-col items-center gap-4">
 
-        <div className="self-start">
-          <h1 className="text-2xl font-bold">Admin Management</h1>
+      <div className="self-start">
+        <h1 className="text-2xl font-bold">Admin Management</h1>
+      </div>
+
+      <div className="h-10 w-full mb-2 self-start flex items-center gap-5">
+        <div className="w-10/12">
+          <SearchBar
+            onChange={(value: string) => setSearchText(value)}
+            searchFn={() => setGlobalFilter(searchText)}
+            clearFn={() => {
+              setSearchText("");
+              setGlobalFilter([]);
+            }}
+            value={searchText}
+          />
         </div>
 
-        <div className="h-10 w-full mb-2 self-start flex items-center gap-5">
-          <div className="w-10/12">
-            <SearchBar
-              onChange={(value: string) => setSearchText(value)}
-              searchFn={() => setGlobalFilter(searchText)}
-              clearFn={() => {
-                setSearchText("");
-                setGlobalFilter([]);
-              }}
-              value={searchText}
-            />
-          </div>
-
-          <div className="w-2/12 flex justify-end gap-3">
-            <div className="p-2 flex justify-center flex-nowrap items-center cursor-pointer
+        <div className="w-2/12 flex justify-end gap-3">
+          <div className="p-2 flex justify-center flex-nowrap items-center cursor-pointer
             border dark:border-primary-dark/60 dark:hover:bg-primary-dark/80 
             dark:text-primary-dark/60 dark:hover:text-dark-text rounded-md "
-              onClick={() => setIsAddModalOpen(true)}
-            >
-              <FaPlus size="1.3rem" />
-            </div>
-            {isAddModalOpen && (
-              <AdminAddModal
-                onClose={() => setIsAddModalOpen(false)}
-                setAdmins={setAdmins}
-              />
-            )}
-            <div>
-              {Object.keys(rowSelection).length != 0 && (
-                <button
-                  type="button"
-                  className="p-2 border rounded-md dark:border-delete-dark/50 
+            onClick={() => setIsAddModalOpen(true)}
+          >
+            <FaPlus size="1.3rem" />
+          </div>
+          {isAddModalOpen && (
+            <AdminAddModal
+              onClose={() => setIsAddModalOpen(false)}
+              setAdmins={setAdmins}
+            />
+          )}
+          <div>
+            {Object.keys(rowSelection).length != 0 && (
+              <button
+                type="button"
+                className="p-2 border rounded-md dark:border-delete-dark/50 
                 dark:hover:bg-delete-dark/50 dark:text-delete-dark/50 
                 dark:hover:text-dark-text cursor-pointer"
-                  onClick={() => setIsDeleteAllModalOpen(true)}>
-                  <FaTrash size="1.3rem" />
-                </button>
-              )}
-              {isDeleteAllModalOpen && (
-                <AdminDeleteModal
-                  onClose={() => {
-                    setIsDeleteAllModalOpen(false);
-                    setRowSelection({});
-                  }}
-                  data={rowSelection}
-                  setAdmins={setAdmins} />
-              )}
-            </div>
+                onClick={() => setIsDeleteAllModalOpen(true)}>
+                <FaTrash size="1.3rem" />
+              </button>
+            )}
+            {isDeleteAllModalOpen && (
+              <AdminDeleteModal
+                onClose={() => {
+                  setIsDeleteAllModalOpen(false);
+                  setRowSelection({});
+                }}
+                data={rowSelection}
+                setAdmins={setAdmins} />
+            )}
           </div>
-
         </div>
-        {!isLoading &&
-          <Table
-            columns={adminColumns}
-            content={admins}
-            rowSelection={rowSelection}
-            onRowSelectionChange={setRowSelection}
-            globalFilter={globalFilter}
-            setGlobalFilter={setGlobalFilter}
-            scrollToTop={scrollToTop}
-          />
-        }
+
       </div>
-    </ProtectedRoute>
-  )
+      {!isLoading &&
+        <Table
+          columns={adminColumns}
+          content={admins}
+          rowSelection={rowSelection}
+          onRowSelectionChange={setRowSelection}
+          globalFilter={globalFilter}
+          setGlobalFilter={setGlobalFilter}
+          scrollToTop={scrollToTop}
+        />
+      }
+    </div>
+  );
 }

@@ -1,5 +1,6 @@
 import { useState, useEffect, type FormEvent } from "react";
 import { useNavigate } from "react-router-dom";
+import { useUser } from "../contexts/UserContext";
 import SubmitButton from "../components/buttons/SubmitButton";
 import medtalkDarkLogo from "../assets/medtalk-dark-logo.png";
 
@@ -16,6 +17,7 @@ export default function LoginRoute() {
   const [errMessage, setErrMessage] = useState("");
   const emailRegex: RegExp = /^[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,}$/;
   const navigate = useNavigate();
+  const { setUser } = useUser();
 
   const handleLogin = async (e: FormEvent<HTMLFormElement>) => {
     setIsLoading(true);
@@ -54,6 +56,8 @@ export default function LoginRoute() {
         setIsLoading(false);
         return;
       }
+
+      setUser({username: result.data.username, role: result.data.role});
       navigate("/");
     } catch (err) {
       console.error(`Error executing login function: ${err}`);

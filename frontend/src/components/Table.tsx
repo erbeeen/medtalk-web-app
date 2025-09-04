@@ -35,11 +35,11 @@ type TableProps = {
 // and possibly causing it are pages having only one entry.
 // either fix the bug or only make the table scrollable
 
-// FIX: scrolling to top screws up on next page buttons when deleteing entries
+// FIX: scrolling to top screws up on next page buttons when deleting entries
 // and possibly causing it are pages having only one entry.
 // either fix the bug or only make the table scrollable
 
-// TODO: make the table mobile responsive
+// TODO: (not sure if finished) make the table mobile responsive
 
 export default function Table({
   columns,
