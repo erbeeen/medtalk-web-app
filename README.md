@@ -11,8 +11,8 @@
 - MAIL_USERNAME=email address used for nodemailer
 - GOOGLE_CLIENT_ID=OAuth client ID from Google Cloud Console
 - GOOGLE_CLIENT_SECRET=OAuth client secret from Google Cloud Console
-- GOOGLE_ACCESS_TOKEN=access token from OAuth Playground
 - GOOGLE_REFRESH_TOKEN=refresh token from OAuth Playground
+- GOOGLE_REDIRECT_URI=https://developers.google.com/oauthplayground
 
 ## To run the backend server
 `npm run dev`
