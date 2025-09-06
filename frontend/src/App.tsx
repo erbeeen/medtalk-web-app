@@ -9,6 +9,7 @@ import UsersRoute from './routes/Users';
 import LoginRoute from './routes/Login';
 import Sidebar from './components/Sidebar';
 import VerifyAccountRoute from './routes/VerifyAccount';
+import AccountVerifiedRoute from './routes/AccountVerified';
 import { UserProvider } from './contexts/UserContext';
 import ProtectedRoute from './components/ProtectedRoute';
 import './App.css';
@@ -25,10 +26,11 @@ function App() {
   const mainContentRef = useRef<HTMLDivElement>(null);
   const location = useLocation();
   let showSidebar = true;
-  // TODO: Check on how to add non-existent pages to this statement
+  // Pages that should not show the sidebar
   if (
     location.pathname === "/login" ||
     location.pathname === "/verify-account" ||
+    location.pathname === "/account-verified" ||
     location.pathname === "/not-found"
   ) {
     showSidebar = false;
@@ -62,6 +64,7 @@ function App() {
               <Routes>
                 {/* NOTE: public routes */}
                 <Route path="/verify-account" element={<VerifyAccountRoute />} />
+                <Route path="/account-verified" element={<AccountVerifiedRoute />} />
                 <Route path="/not-found" element={<NotFoundRoute />} />
                 <Route path="*" element={<Navigate to={"/not-found"} replace />} />
 
