@@ -14,12 +14,13 @@ import sendJsonResponse from "../utils/httpResponder.js";
 // 9/10/2025, for each 8am and 8pm within that period is already one
 // document in the database
 
+// TODO: Figure out how to update future doses using batch id
 
 export default class ScheduleController {
   constructor() {}
 
+  // NOTE: Deprecated
   addSchedule = async (req: Request, res: Response, next: NextFunction) => {
-    // TODO: Test functionality
     const schedule: ScheduleType = req.body;
 
     if (
@@ -55,6 +56,18 @@ export default class ScheduleController {
   addBatchSchedule = async (req: Request, res: Response, next: NextFunction ) => {
     try {
       const schedules: Array<ScheduleType> = req.body.schedules;
+
+      if (
+        !schedules[0].userID ||
+        !schedules[0].medicineName ||
+        !schedules[0].measurement ||
+        schedules[0].isTaken === undefined ||
+        !schedules[0].date
+      ) {
+        sendJsonResponse(res, 400, "provide all required fields.");
+        return;
+      }
+
       const batchId = uuidv4();
 
       schedules.map((schedule) => schedule.batchId = batchId);
