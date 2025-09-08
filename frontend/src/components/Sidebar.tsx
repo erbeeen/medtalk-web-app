@@ -11,6 +11,7 @@ export default function Sidebar() {
   return (
     <div className="sidebar bg-gray-700/40 ">
       <UserInfo />
+      <hr className="w-3/4 mx-auto mt-3 "/>
       {(user?.role === "super admin" || user?.role === "doctor") &&
         <Link to="/" className="sidebar-link hover:bg-primary-800/20 hover:text-dark-text dark:hover:bg-primary-dark/50">
           <div className="sidebar-icon">

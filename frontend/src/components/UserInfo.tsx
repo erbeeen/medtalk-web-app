@@ -5,22 +5,28 @@ import { IoPersonCircle } from "react-icons/io5";
 
 export default function UserInfo() {
   const { user } = useUser();
+  let role = `${user!.role[0].toUpperCase()}${user!.role.substring(1)}`;
+  if (user!.role === "super admin") {
+    role = "Super Admin";
+  }
 
-  // TODO: Not lining up with the rest of the
-  // sidebar icons
   return (
     <>
-      <div className="w-full flex flex-row justify-center items-center invisible">
-        <div className="sidebar-icon">
-          <IoPersonCircle size="1.5rem" />
-        </div>
+      <div className="w-full flex flex-row justify-center items-center">
+        <Link to={"/profile"}>
+          <div className="px-3">
+            <IoPersonCircle size="3rem" />
+          </div>
+        </Link>
         <div className="w-8/12 flex flex-col">
-          <p>{user?.username}</p>
-          <h3>{user?.role}</h3>
-          <Link to={"/profile"}>
-            <span className="underline">profile</span>
-          </Link>
-
+          <h1 className="mb-0.5">{user?.username}</h1>
+          <div className="flex flex-row text-[11px]">
+            <h3>{role}</h3>
+            <span className="px-0.5">|</span>
+            <Link to={"/profile"}>
+              View Profile
+            </Link>
+          </div>
         </div>
       </div>
     </>
