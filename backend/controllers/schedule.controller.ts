@@ -1,11 +1,19 @@
-import { logError } from "../middleware/logger.js";
-import mongoose from "mongoose";
 import { Request, Response, NextFunction } from "express";
+import mongoose from "mongoose";
+import { v4 as uuidv4 } from "uuid";
+import { logError } from "../middleware/logger.js";
 import Schedule, {
   ScheduleType,
   ScheduleDocument,
 } from "../models/schedule.model.js";
 import sendJsonResponse from "../utils/httpResponder.js";
+
+// TODO: Figure out how will the system log activities here
+// as each schedule is its own data, not the medicine added as a whole
+// For example: If Paracetamol was added for 8am and 8pm for 9/8/2025 to
+// 9/10/2025, for each 8am and 8pm within that period is already one
+// document in the database
+
 
 export default class ScheduleController {
   constructor() {}
@@ -43,12 +51,34 @@ export default class ScheduleController {
     }
   };
 
+  // NOTE: Adding schedule on a batch to have their own uuid for the group
+  addBatchSchedule = async (req: Request, res: Response, next: NextFunction ) => {
+    try {
+      const schedules: Array<ScheduleType> = req.body.schedules;
+      const batchId = uuidv4();
+
+      schedules.map((schedule) => schedule.batchId = batchId);
+
+      const result = await Schedule.insertMany(schedules);
+      sendJsonResponse(res, 201, result);
+
+
+    } catch (err) {
+      
+      logError(err);
+      sendJsonResponse(res, 500);
+      next(err);
+    }
+  }
+
   getAllSchedule = async (req: Request, res: Response, next: NextFunction) => {
     try {
       const result = await Schedule.find();
       sendJsonResponse(res, 200, result);
     } catch (err) {
+      logError(err);
       sendJsonResponse(res, 500);
+      next(err);
     }
   }
 
@@ -101,9 +131,8 @@ export default class ScheduleController {
     }
   };
 
-  // TODO: Update Schedule Route
   updateSchedule = async (req: Request, res: Response, next: NextFunction) => {
-    // NOTE: This implementation uses the id of a schedule
+    // TODO: This implementation uses the id of a schedule
     // changing future doses is not yet available
     const scheduleID = String(req.query.id);
     const scheduleDetails: ScheduleType = req.body;
@@ -150,7 +179,6 @@ export default class ScheduleController {
     }
   };
 
-  // TODO: Delete Schedule Route
   deleteSchedule = async (req: Request, res: Response, next: NextFunction) => {
     // NOTE: This implementation uses the id of a schedule
     // deleting future schedules is not yet available

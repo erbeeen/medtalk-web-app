@@ -79,6 +79,7 @@ import mongoose from "mongoose";
 // (tbd) date
 
 export type ScheduleType = {
+  batchId: string;
   userID: mongoose.Types.ObjectId | string;
   medicineName: string;
   measurement: string;
@@ -88,6 +89,10 @@ export type ScheduleType = {
 };
 
 const scheduleSchema = new mongoose.Schema({
+  batchId: {
+    type: String,
+    required: true,
+  },
   userID: {
     type: mongoose.SchemaTypes.ObjectId,
     required: true,
