@@ -7,6 +7,7 @@ import Schedule, {
   ScheduleDocument,
 } from "../models/schedule.model.js";
 import sendJsonResponse from "../utils/httpResponder.js";
+import SystemLog from "../models/system-logs.model.js";
 
 // TODO: Figure out how will the system log activities here
 // as each schedule is its own data, not the medicine added as a whole
@@ -53,7 +54,11 @@ export default class ScheduleController {
   };
 
   // NOTE: Adding schedule on a batch to have their own uuid for the group
-  addBatchSchedule = async (req: Request, res: Response, next: NextFunction ) => {
+  addBatchSchedule = async (
+    req: Request,
+    res: Response,
+    next: NextFunction,
+  ) => {
     try {
       const schedules: Array<ScheduleType> = req.body.schedules;
 
@@ -70,19 +75,39 @@ export default class ScheduleController {
 
       const batchId = uuidv4();
 
-      schedules.map((schedule) => schedule.batchId = batchId);
+      schedules.map((schedule) => (schedule.batchId = batchId));
 
       const result = await Schedule.insertMany(schedules);
       sendJsonResponse(res, 201, result);
 
-
+      await SystemLog.create({
+        level: "info",
+        source: "schedule-panel",
+        category: "schedule-management",
+        message: "User schedule creation successful.",
+        initiated_by: req.user.username,
+        data: {
+          batchId: batchId,
+          medicine: schedules[0].medicineName,
+          target: schedules[0].userID,
+        },
+      });
     } catch (err) {
-      
       logError(err);
       sendJsonResponse(res, 500);
+      await SystemLog.create({
+        level: "error",
+        source: "schedule-panel",
+        kategory: "schedule-management",
+        message: "User schedule creation failed.",
+        initiated_by: req.user.username,
+        data: {
+          error: err
+        }
+      });
       next(err);
     }
-  }
+  };
 
   getAllSchedule = async (req: Request, res: Response, next: NextFunction) => {
     try {
@@ -93,7 +118,7 @@ export default class ScheduleController {
       sendJsonResponse(res, 500);
       next(err);
     }
-  }
+  };
 
   getSchedule = async (req: Request, res: Response, next: NextFunction) => {
     // TODO: Test Functionality
@@ -133,7 +158,7 @@ export default class ScheduleController {
     }
 
     try {
-      const result = await Schedule.find({ userID: userID } );
+      const result = await Schedule.find({ userID: userID });
       sendJsonResponse(res, 200, result);
     } catch (err) {
       logError(err);
