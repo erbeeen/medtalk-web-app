@@ -83,7 +83,7 @@ export default function AdminsRoute({ scrollToTop }: AdminsRouteProps) {
     adminColumnHelper.accessor("role", {
       header: "Role",
       cell: props => <ScrollTableData props={props} />,
-      size: 100,
+      size: 150,
       minSize: 100,
     }),
     adminColumnHelper.accessor("email", {
