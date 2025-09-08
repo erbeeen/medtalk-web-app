@@ -4,6 +4,7 @@ import { logError } from "../middleware/logger.js";
 import { NextFunction, Request, Response } from "express";
 import RefreshToken from "../models/refresh-token.model.js";
 import sendJsonResponse from "../utils/httpResponder.js";
+import SystemLog from "../models/system-logs.model.js";
 
 export default class AuthController {
   constructor() {}
@@ -66,7 +67,7 @@ export default class AuthController {
         secure: isProduction,
         sameSite: "lax",
       });
-      
+
       sendJsonResponse(res, 201, {
         username: user.username,
         role: user.role,
@@ -119,9 +120,24 @@ export default class AuthController {
         maxAge: 0,
       });
       sendJsonResponse(res, 200, "token removed");
+      await SystemLog.create({
+        level: "info",
+        source: "authentication",
+        category: "authentication",
+        message: "User logout successful",
+        initiated_by: req.user.username,
+      });
     } catch (err) {
       logError(err);
       sendJsonResponse(res, 500);
+      await SystemLog.create({
+        level: "error",
+        source: "authentication",
+        category: "authentication",
+        message: "User logout failed",
+        initiated_by: req.user.username,
+        data: { error: err },
+      });
       next(err);
     }
   };

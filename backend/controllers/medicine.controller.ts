@@ -3,6 +3,7 @@ import Medicine, { MedicineType } from "../models/medicine.model.js";
 import sendJsonResponse from "../utils/httpResponder.js";
 import { logError } from "../middleware/logger.js";
 import SearchedMedicine from "../models/searched-medicines.model.js";
+import SystemLog from "../models/system-logs.model.js";
 import mongoose from "mongoose";
 
 export default class MedicineController {
@@ -30,9 +31,29 @@ export default class MedicineController {
       const newMedicine = new Medicine(medicineData);
       const savedMedicine = await newMedicine.save();
       sendJsonResponse(res, 201, savedMedicine);
+
+      await SystemLog.create({
+        level: "info",
+        source: "medicine-panel",
+        category: "medicine-management",
+        message: "Medicine creation successful.",
+        initiated_by: req.user.username,
+        data: {
+          _id: savedMedicine._id,
+          molecule: savedMedicine.Molecule,
+        },
+      });
     } catch (err) {
       console.error("createMedicine error:", err);
       sendJsonResponse(res, 500);
+      await SystemLog.create({
+        level: "error",
+        source: "medicine-panel",
+        category: "medicine-management",
+        message: "Medicine creation failed.",
+        initiated_by: req.user.username,
+        data: { error: err },
+      });
     }
   };
 
@@ -143,9 +164,27 @@ export default class MedicineController {
       }
 
       sendJsonResponse(res, 200, updatedMedicine);
+
+      await SystemLog.create({
+        level: "info",
+        source: "medicine-panel",
+        category: "medicine-management",
+        message: "Medicine information update successful.",
+        initiated_by: req.user.username,
+        data: { ...updatedMedicine },
+      });
     } catch (err) {
       console.error("updateMedicine error:", err);
       sendJsonResponse(res, 500, "Error updating medicine");
+
+      await SystemLog.create({
+        level: "error",
+        source: "medicine-panel",
+        category: "medicine-management",
+        message: "Medicine creation failed.",
+        initiated_by: req.user.username,
+        data: { error: err },
+      });
     }
   };
 
@@ -173,11 +212,26 @@ export default class MedicineController {
       }
 
       sendJsonResponse(res, 200, deletedMedicine);
-      return;
+      await SystemLog.create({
+        level: "info",
+        source: "medicine-panel",
+        category: "medicine-management",
+        message: "Medicine deletion successful.",
+        initiated_by: req.user.username,
+        data: { ...deletedMedicine },
+      });
     } catch (err) {
       logError(err);
       sendJsonResponse(res, 500);
       next(err);
+      await SystemLog.create({
+        level: "error",
+        source: "medicine-panel",
+        category: "medicine-management",
+        message: "Medicine deletion successful.",
+        initiated_by: req.user.username,
+        data: { error: err },
+      });
     }
   };
 
@@ -198,10 +252,28 @@ export default class MedicineController {
       const objectIds = idList.map((id) => new mongoose.Types.ObjectId(id));
       const result = await Medicine.deleteMany({ _id: { $in: objectIds } });
       sendJsonResponse(res, 200, result);
+
+      await SystemLog.create({
+        level: "info",
+        source: "medicine-panel",
+        category: "medicine-management",
+        message: "Medicine batch deletion successful.",
+        initiated_by: req.user.username,
+        data: { ...result },
+      });
+
     } catch (err) {
       console.error(`${this.deleteMedicines.name} error`);
       logError(err);
       sendJsonResponse(res, 500);
+      await SystemLog.create({
+        level: "error",
+        source: "medicine-panel",
+        category: "medicine-management",
+        message: "Medicine batch deletion failed.",
+        initiated_by: req.user.username,
+        data: { error: err },
+      });
       next(err);
     }
   };
