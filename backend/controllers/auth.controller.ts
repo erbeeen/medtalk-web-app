@@ -25,18 +25,18 @@ export default class AuthController {
     res: Response,
     next: NextFunction,
   ) => {
-    if (
-      req.cookies.refreshToken === undefined &&
-      req.body.token === undefined
-    ) {
-      res.sendStatus(401);
-      return;
-    }
-
-    let refreshToken = req.cookies.refreshToken;
-    if (refreshToken === undefined) refreshToken = req.body.token;
-
     try {
+      if (
+        req.cookies.refreshToken === undefined &&
+        req.body.token === undefined
+      ) {
+        res.sendStatus(401);
+        return;
+      }
+
+      let refreshToken = req.cookies.refreshToken;
+      if (refreshToken === undefined) refreshToken = req.body.token;
+
       const tokenFromDb = await RefreshToken.findOne({ token: refreshToken });
       if (tokenFromDb === null) {
         res.sendStatus(403);
@@ -80,31 +80,32 @@ export default class AuthController {
   };
 
   logout = async (req: Request, res: Response, next: NextFunction) => {
-    if (
-      req.cookies.refreshToken === undefined &&
-      req.body.token === undefined
-    ) {
-      sendJsonResponse(res, 400, "provide refreshToken");
-    }
-    let refreshToken = req.cookies.refreshToken;
-    if (refreshToken === undefined) {
-      req.body.token;
-    }
-    const [isTokenValid, tokenValidErr] =
-      await validateRefreshToken(refreshToken);
-    if (tokenValidErr !== null) {
-      logError(tokenValidErr);
-      sendJsonResponse(res, 500);
-      next(tokenValidErr);
-      return;
-    }
-
-    if (!isTokenValid) {
-      sendJsonResponse(res, 400, "invalid token");
-      return;
-    }
-
     try {
+      if (
+        req.cookies.refreshToken === undefined &&
+        req.body.token === undefined
+      ) {
+        sendJsonResponse(res, 400, "provide refreshToken");
+        return;
+      }
+      let refreshToken = req.cookies.refreshToken;
+      if (refreshToken === undefined) {
+        req.body.token;
+      }
+      const [isTokenValid, tokenValidErr] =
+        await validateRefreshToken(refreshToken);
+      if (tokenValidErr !== null) {
+        logError(tokenValidErr);
+        sendJsonResponse(res, 500);
+        next(tokenValidErr);
+        return;
+      }
+
+      if (!isTokenValid) {
+        sendJsonResponse(res, 400, "invalid token");
+        return;
+      }
+
       await RefreshToken.findOneAndDelete({ refreshToken });
       const isProduction = process.env.NODE_ENV === "production";
       res.cookie("accessToken", "", {
