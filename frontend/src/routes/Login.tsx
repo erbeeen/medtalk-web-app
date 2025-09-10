@@ -79,7 +79,7 @@ export default function LoginRoute() {
 
         <form onSubmit={handleLogin}>
           <div className="h-full px-10 flex flex-col justify-center gap-5 ">
-            <h1 className="text-5xl font-bold mb-auto self-center"> Admin Portal</h1>
+            <h1 className="text-5xl font-bold mb-auto self-center">Login</h1>
             <div className="flex flex-col gap-1">
               <label htmlFor="email" className="pl-1">Email</label>
               <input
@@ -113,7 +113,7 @@ export default function LoginRoute() {
             <div className="text-sm text-center mt-2">
               <button
                 type="button"
-                className="underline hover:opacity-80"
+                className="underline hover:opacity-80 cursor-pointer"
                 onClick={() => navigate("/forgot-password")}
               >
                 Forgot password?

@@ -5,15 +5,15 @@ import { IoPersonCircle } from "react-icons/io5";
 
 export default function UserInfo() {
   const { user } = useUser();
-  let role = `${user!.role[0].toUpperCase()}${user!.role.substring(1)}`;
-  if (user!.role === "super admin") {
+  let role = `${user?.role[0].toUpperCase()}${user?.role.substring(1)}`;
+  if (user?.role === "super admin") {
     role = "Super Admin";
   }
 
   return (
     <>
       <div className="w-full flex flex-row justify-center items-center">
-        <Link to={"/profile"}>
+        <Link to={"/account"}>
           <div className="px-3">
             <IoPersonCircle size="3rem" />
           </div>
@@ -23,7 +23,7 @@ export default function UserInfo() {
           <div className="flex flex-row text-[11px]">
             <h3>{role}</h3>
             <span className="px-0.5">|</span>
-            <Link to={"/profile"}>
+            <Link to={"/account"}>
               View Profile
             </Link>
           </div>

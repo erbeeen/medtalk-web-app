@@ -1,6 +1,6 @@
 import { Link, useNavigate } from "react-router-dom";
 import { MdDashboard, MdLogout } from "react-icons/md";
-import { FaUser, FaPills, FaCalendarAlt, FaUserEdit, FaKey } from "react-icons/fa";
+import { FaUser, FaPills, FaCalendarAlt, FaUserEdit, FaKey, FaFileAlt } from "react-icons/fa";
 import { useUser } from "../contexts/UserContext";
 import UserInfo from "./UserInfo";
 
@@ -23,7 +23,7 @@ export default function Sidebar() {
       {(user?.role === "admin" || user?.role === "super admin") &&
         <Link to="/logs" className="sidebar-link hover:bg-800 dark:hover:bg-primary-dark/50">
           <div className="sidebar-icon">
-            <FaUser size="1.2rem" />
+            <FaFileAlt size="1.2rem" />
           </div>
           <span className="sidebar-label">System Logs</span>
         </Link>
@@ -60,12 +60,12 @@ export default function Sidebar() {
           </Link>
         </>
       )}
-      <Link to="/account" className="sidebar-link hover:bg-800 dark:hover:bg-primary-dark/50">
-        <div className="sidebar-icon">
-          <FaKey size="1.2rem" />
-        </div>
-        <span className="sidebar-label">Account</span>
-      </Link>
+      {/* <Link to="/account" className="sidebar-link hover:bg-800 dark:hover:bg-primary-dark/50"> */}
+      {/*   <div className="sidebar-icon"> */}
+      {/*     <FaKey size="1.2rem" /> */}
+      {/*   </div> */}
+      {/*   <span className="sidebar-label">Account</span> */}
+      {/* </Link> */}
       <div
         className="sidebar-link mt-auto mb-5 hover:bg-800 dark:hover:bg-primary-dark/50 cursor-pointer"
         onClick={async () => {
