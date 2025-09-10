@@ -34,7 +34,9 @@ export default function authenticateJwt(
       req.originalUrl == "/api/users/login" ||
       req.originalUrl == "/api/users/admin/login" ||
       req.originalUrl == "/api/users/register" ||
-      req.originalUrl == "/api/users/token"
+      req.originalUrl == "/api/users/token" ||
+      req.originalUrl == "/api/users/forgot-password" ||
+      req.originalUrl == "/api/users/reset-password"
     ) {
       next();
     } else {
@@ -49,7 +51,9 @@ export default function authenticateJwt(
           req.originalUrl == "/api/users/admin/login" ||
           req.originalUrl == "/api/users/token" ||
           req.originalUrl == "/api/auth/validate" ||
-          req.originalUrl == "/api/auth/refresh-token"
+          req.originalUrl == "/api/auth/refresh-token" ||
+          req.originalUrl == "/api/users/forgot-password" ||
+          req.originalUrl == "/api/users/reset-password"
         ) {
           next();
         } else {

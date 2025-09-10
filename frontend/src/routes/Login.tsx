@@ -110,6 +110,15 @@ export default function LoginRoute() {
             </div>
 
             <SubmitButton isLoading={isLoading}>Sign in</SubmitButton>
+            <div className="text-sm text-center mt-2">
+              <button
+                type="button"
+                className="underline hover:opacity-80"
+                onClick={() => navigate("/forgot-password")}
+              >
+                Forgot password?
+              </button>
+            </div>
           </div>
         </form>
 

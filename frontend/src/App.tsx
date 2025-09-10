@@ -14,6 +14,9 @@ import { UserProvider } from './contexts/UserContext';
 import ProtectedRoute from './components/ProtectedRoute';
 import './App.css';
 import SystemLogsRoute from './routes/SystemLogs';
+import AccountSettingsRoute from './routes/AccountSettings';
+import ForgotPasswordRoute from './routes/ForgotPassword';
+import ResetPasswordRoute from './routes/ResetPassword';
 
 // TODO: 
 // - Create change password, reset password, and profile page,
@@ -31,7 +34,9 @@ function App() {
     location.pathname === "/login" ||
     location.pathname === "/verify-account" ||
     location.pathname === "/account-verified" ||
-    location.pathname === "/not-found"
+    location.pathname === "/not-found" ||
+    location.pathname === "/forgot-password" ||
+    location.pathname === "/reset-password"
   ) {
     showSidebar = false;
   }
@@ -65,6 +70,8 @@ function App() {
                 {/* NOTE: public routes */}
                 <Route path="/verify-account" element={<VerifyAccountRoute />} />
                 <Route path="/account-verified" element={<AccountVerifiedRoute />} />
+                <Route path="/forgot-password" element={<ForgotPasswordRoute />} />
+                <Route path="/reset-password" element={<ResetPasswordRoute />} />
                 <Route path="/not-found" element={<NotFoundRoute />} />
                 <Route path="*" element={<Navigate to={"/not-found"} replace />} />
 
@@ -77,6 +84,7 @@ function App() {
                   <Route path="/admins" element={<AdminsRoute scrollToTop={scrollToTop} />} />
                   <Route path="/medicine" element={<MedicineRoute scrollToTop={scrollToTop} />} />
                   <Route path="/schedules" element={<ScheduleRoute scrollToTop={scrollToTop} />} />
+                  <Route path="/account" element={<AccountSettingsRoute />} />
                 </Route>
               </Routes>
             </div>

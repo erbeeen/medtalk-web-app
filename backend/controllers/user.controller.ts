@@ -20,6 +20,7 @@ import RefreshToken, {
 import sendJsonResponse from "../utils/httpResponder.js";
 import User, { UserType, UserDocument } from "../models/user.model.js";
 import SystemLog from "../models/system-logs.model.js";
+import PasswordResetToken from "../models/password-reset-token.model.js";
 import sendEmail from "../config/nodemailer.js";
 
 type LoginCredentials = {
@@ -1284,7 +1285,7 @@ export default class UserController {
       return;
     }
 
-    const newPassword = String(req.body);
+    const newPassword = String(req.body.password);
 
     try {
       bcrypt.hash(
@@ -1328,6 +1329,110 @@ export default class UserController {
       });
       next(err);
       return;
+    }
+  };
+
+  requestPasswordReset = async (
+    req: Request,
+    res: Response,
+    next: NextFunction,
+  ) => {
+    try {
+      const { email } = req.body as { email?: string };
+      if (!email) {
+        sendJsonResponse(res, 400, "No email provided");
+        return;
+      }
+
+      const user = await fetchUserByEmail(email);
+      // For privacy, always respond success even if not found
+      if (!user) {
+        sendJsonResponse(res, 200);
+        return;
+      }
+
+      const token = randomBytes(32).toString("hex");
+      const expiresAt = new Date(Date.now() + 1000 * 60 * 30); // 30 minutes
+
+      await PasswordResetToken.create({
+        userId: user._id,
+        token,
+        expiresAt,
+        used: false,
+      });
+
+      const baseUrl = process.env.FRONTEND_BASE_URL || "http://localhost:5173";
+      const resetLink = `${baseUrl}/reset-password?token=${token}`;
+
+      await sendEmail({
+        from: FROM_EMAIL,
+        to: user.email,
+        subject: "Reset your MedTalk password",
+        text: `Click the link to reset your password: ${resetLink}`,
+        html: `<p>You requested a password reset.</p><p>Click <a href="${resetLink}">here</a> to set a new password. This link expires in 30 minutes.</p>`,
+      });
+
+      await SystemLog.create({
+        level: "info",
+        source: "password-reset",
+        category: "authentication",
+        message: "Password reset email sent",
+        data: { email: user.email },
+      });
+
+      sendJsonResponse(res, 200);
+    } catch (err) {
+      logError(err);
+      sendJsonResponse(res, 500);
+      next(err);
+    }
+  };
+
+  resetPassword = async (
+    req: Request,
+    res: Response,
+    next: NextFunction,
+  ) => {
+    try {
+      const { token, password } = req.body as { token?: string; password?: string };
+      if (!token || !password) {
+        sendJsonResponse(res, 400, "Missing token or password");
+        return;
+      }
+
+      const prt = await PasswordResetToken.findOne({ token });
+      if (!prt || prt.used || prt.expiresAt < new Date()) {
+        sendJsonResponse(res, 400, "Invalid or expired token");
+        return;
+      }
+
+      const saltRounds = 10;
+      bcrypt.hash(password, saltRounds, async (error: Error, hashed: string) => {
+        if (error) {
+          logError(error);
+          sendJsonResponse(res, 500);
+          next(error);
+          return;
+        }
+
+        await User.findByIdAndUpdate(prt.userId, { password: hashed });
+        prt.used = true;
+        await prt.save();
+
+        await SystemLog.create({
+          level: "info",
+          source: "password-reset",
+          category: "authentication",
+          message: "Password reset successful",
+          data: { userId: prt.userId },
+        });
+
+        sendJsonResponse(res, 200);
+      });
+    } catch (err) {
+      logError(err);
+      sendJsonResponse(res, 500);
+      next(err);
     }
   };
 }

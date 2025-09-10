@@ -26,6 +26,8 @@ userRouter.post("/login", authenticateJwt, uc.loginUser);
 userRouter.post("/token", authenticateJwt, uc.refreshAccessToken);
 // TODO: Test functionality without and with auth middleware
 userRouter.post("/logout", uc.logoutUser);
+userRouter.post("/forgot-password", uc.requestPasswordReset);
+userRouter.post("/reset-password", uc.resetPassword);
 userRouter.put("/update", authenticateJwt, uc.updateUser);
 userRouter.put("/change-password", authenticateJwt, uc.changePassword);
 userRouter.delete("/delete", authenticateJwt, uc.deleteUser);
