@@ -20,7 +20,6 @@ import ResetPasswordRoute from './routes/ResetPassword';
 
 // TODO: 
 // - Create change password, reset password, and profile page,
-// - Create welcome user component
 // - Create System Logs Module
 // - (optional) Create switch for light and dark mode
 

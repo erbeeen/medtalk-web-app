@@ -817,7 +817,6 @@ export default class UserController {
   };
 
   getAdmin = async (req: Request, res: Response, next: NextFunction) => {
-    // TODO: No route yet
     if (req.user.role !== "super admin") {
       res.sendStatus(403);
       return;
@@ -1082,9 +1081,6 @@ export default class UserController {
   };
 
   updateUser = async (req: Request, res: Response, next: NextFunction) => {
-    // TODO: proceed with the update only when the request
-    // is from the same user, from an admin/super admin.
-
     const id = String(req.query.id);
     const editedUserDetails: UserType = req.body;
 
@@ -1183,9 +1179,6 @@ export default class UserController {
   };
 
   deleteUser = async (req: Request, res: Response, next: NextFunction) => {
-    // TODO: proceed with the deletion only when the request
-    // is from the same user or from a super admin.
-
     const id: string = String(req.query.id);
 
     if (!id) {
@@ -1344,7 +1337,10 @@ export default class UserController {
         return;
       }
 
-      const user = await fetchUserByEmail(email);
+      const [user, userErr] = await fetchUserByEmail(email);
+
+      if (userErr) throw userErr;
+
       // For privacy, always respond success even if not found
       if (!user) {
         sendJsonResponse(res, 200);
@@ -1372,6 +1368,8 @@ export default class UserController {
         html: `<p>You requested a password reset.</p><p>Click <a href="${resetLink}">here</a> to set a new password. This link expires in 30 minutes.</p>`,
       });
 
+      sendJsonResponse(res, 200);
+
       await SystemLog.create({
         level: "info",
         source: "password-reset",
@@ -1379,8 +1377,6 @@ export default class UserController {
         message: "Password reset email sent",
         data: { email: user.email },
       });
-
-      sendJsonResponse(res, 200);
     } catch (err) {
       logError(err);
       sendJsonResponse(res, 500);
@@ -1419,6 +1415,8 @@ export default class UserController {
         prt.used = true;
         await prt.save();
 
+        sendJsonResponse(res, 200);
+
         await SystemLog.create({
           level: "info",
           source: "password-reset",
@@ -1427,7 +1425,6 @@ export default class UserController {
           data: { userId: prt.userId },
         });
 
-        sendJsonResponse(res, 200);
       });
     } catch (err) {
       logError(err);
