@@ -9,14 +9,6 @@ import Schedule, {
 import sendJsonResponse from "../utils/httpResponder.js";
 import SystemLog from "../models/system-logs.model.js";
 
-// TODO: Figure out how will the system log activities here
-// as each schedule is its own data, not the medicine added as a whole
-// For example: If Paracetamol was added for 8am and 8pm for 9/8/2025 to
-// 9/10/2025, for each 8am and 8pm within that period is already one
-// document in the database
-
-// TODO: Figure out how to update future doses using batch id
-
 export default class ScheduleController {
   constructor() {}
 
