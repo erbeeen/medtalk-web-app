@@ -102,8 +102,8 @@ export default class ScheduleController {
         message: "User schedule creation failed.",
         initiated_by: req.user.username,
         data: {
-          error: err
-        }
+          error: err,
+        },
       });
       next(err);
     }
@@ -169,11 +169,11 @@ export default class ScheduleController {
     }
   };
 
+  // TODO: Test functionality of updating future doses
   updateSchedule = async (req: Request, res: Response, next: NextFunction) => {
-    // TODO: This implementation uses the id of a schedule
-    // changing future doses is not yet available
     const scheduleID = String(req.query.id);
-    const scheduleDetails: ScheduleType = req.body;
+    const scheduleDetails: ScheduleType = req.body.schedule;
+    const changeFutureDoses = Boolean(req.body.changeFutureDoses);
 
     if (!scheduleID) {
       sendJsonResponse(res, 400, "no schedule id provided");
@@ -185,35 +185,50 @@ export default class ScheduleController {
       return;
     }
 
-    if (
-      !scheduleDetails.userID ||
-      !scheduleDetails.medicineName ||
-      !scheduleDetails.measurement ||
-      scheduleDetails.isTaken === undefined ||
-      !scheduleDetails.date
-    ) {
-      sendJsonResponse(res, 400, "provide all required fields.");
-      return;
-    }
-
-    if (!mongoose.Types.ObjectId.isValid(scheduleDetails.userID)) {
-      sendJsonResponse(res, 400, "invalid user id.");
-      return;
-    }
-
     try {
-      const result: ScheduleDocument = await Schedule.findByIdAndUpdate(
-        scheduleID,
-        scheduleDetails,
-        { new: true },
-      );
+      let result: any;
+      if (changeFutureDoses) {
+        const reference = await Schedule.findById(scheduleID);
+        const updateDetails = { ...scheduleDetails };
+        if (updateDetails.date) {
+          result = await Schedule.updateMany(
+            {
+              batchId: reference.batchId,
+              $expr: {
+                $and: [
+                  { date: ["$date", reference.date] },
+                  { $eq: [{ $hour: "$date" }, { $hour: reference.date }] },
+                  { $eq: [{ $minute: "$date" }, { $minute: reference.date }] },
+                ],
+              },
+            },
+            {
+              $set: updateDetails,
+            },
+            { new: true },
+          );
+        } else {
+          result = await Schedule.updateMany(
+            {
+              batchId: reference.batchId,
+              date: { $gte: reference.date },
+            },
+            {
+              $set: updateDetails,
+            },
+            { new: true },
+          );
+        }
+      } else {
+        result = await Schedule.findByIdAndUpdate(scheduleID, scheduleDetails, {
+          new: true,
+        });
+      }
       sendJsonResponse(res, 201, result);
     } catch (err) {
       logError(err);
       sendJsonResponse(res, 500);
       next(err);
-    } finally {
-      return;
     }
   };
 
