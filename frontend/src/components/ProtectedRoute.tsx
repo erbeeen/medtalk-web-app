@@ -22,7 +22,7 @@ export default function ProtectedRoute() {
 
         if (response.status === 200) {
           const result = await response.json();
-          setUser({ username: result.data.username, role: result.data.role });
+          setUser({ id: result.data.id, username: result.data.username, role: result.data.role });
         }
 
         if (response.status === 401) {
@@ -34,7 +34,7 @@ export default function ProtectedRoute() {
 
           if (res.status == 201) {
             const result = await res.json();
-            setUser({ username: result.data.username, role: result.data.role });
+            setUser({ id: result.data.id, username: result.data.username, role: result.data.role });
           }
 
           if (res.status === 401 || res.status === 403) {

@@ -15,6 +15,7 @@ export default class AuthController {
       return;
     }
     sendJsonResponse(res, 200, {
+      id: req.user.id,
       username: req.user.username,
       role: req.user.role,
     });
@@ -69,6 +70,7 @@ export default class AuthController {
       });
 
       sendJsonResponse(res, 201, {
+        id: user.id,
         username: user.username,
         role: user.role,
       });

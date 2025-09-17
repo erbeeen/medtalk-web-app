@@ -60,12 +60,12 @@ export default function Sidebar() {
           </Link>
         </>
       )}
-      {/* <Link to="/account" className="sidebar-link hover:bg-800 dark:hover:bg-primary-dark/50"> */}
-      {/*   <div className="sidebar-icon"> */}
-      {/*     <FaKey size="1.2rem" /> */}
-      {/*   </div> */}
-      {/*   <span className="sidebar-label">Account</span> */}
-      {/* </Link> */}
+      <Link to="/account" className="sidebar-link hover:bg-800 dark:hover:bg-primary-dark/50">
+        <div className="sidebar-icon">
+          <FaKey size="1.2rem" />
+        </div>
+        <span className="sidebar-label">Account</span>
+      </Link>
       <div
         className="sidebar-link mt-auto mb-5 hover:bg-800 dark:hover:bg-primary-dark/50 cursor-pointer"
         onClick={async () => {
