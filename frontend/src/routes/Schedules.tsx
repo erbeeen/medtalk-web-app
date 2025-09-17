@@ -77,6 +77,11 @@ export default function ScheduleRoute({ scrollToTop }: ScheduleRouteProps) {
       cell: props => <ScrollTableData props={props} />,
       size: 100,
     }),
+    scheduleColumnHelper.accessor("batchId", {
+      header: "Batch ID",
+      cell: props => <ScrollTableData props={props} />,
+      size: 100,
+    }),
     scheduleColumnHelper.accessor("userID", {
       header: "User ID",
       cell: props => <ScrollTableData props={props} />,

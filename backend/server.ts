@@ -6,10 +6,11 @@ import express, { static as static_ } from "express";
 import { fileURLToPath } from "url";
 import logger from "./middleware/logger.js";
 import path from "path";
-import userRouter from "./routes/user.route.js";
+import authRouter from "./routes/auth.route.js";
 import medicineRouter from "./routes/medicine.route.js";
 import scheduleRouter from "./routes/schedule.route.js";
-import authRouter from "./routes/auth.route.js";
+import systemLogsRouter from "./routes/systemlogs.route.js";
+import userRouter from "./routes/user.route.js";
 
 // TODO: Create System Logs Module
 
@@ -31,6 +32,7 @@ app.use("/api/users", userRouter);
 app.use("/api/medicine", medicineRouter);
 app.use("/api/schedule", scheduleRouter);
 app.use("/api/auth", authRouter);
+app.use("/api/logs", systemLogsRouter);
 
 if (process.env.NODE_ENV === "production") {
   app.use(static_(path.join(__dirname + "/static")));

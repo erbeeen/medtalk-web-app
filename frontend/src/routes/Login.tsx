@@ -4,6 +4,8 @@ import { useUser } from "../contexts/UserContext";
 import SubmitButton from "../components/buttons/SubmitButton";
 import medtalkDarkLogo from "../assets/medtalk-dark-logo.png";
 
+// FIX: After logging in, it defaults to dashboard. Dashboard should
+// only be available for super admin and doctor
 export default function LoginRoute() {
   useEffect(() => {
     document.title = "Log In | MedTalk";
@@ -73,7 +75,7 @@ export default function LoginRoute() {
           <img
             src={medtalkDarkLogo}
             alt="medtalk logo"
-            className="size-44 lg:size-96 self-center"
+            className="size-44 lg:size-96 self-center object-contain"
           />
         </div>
 
@@ -113,7 +115,7 @@ export default function LoginRoute() {
             <div className="text-sm text-center mt-2">
               <button
                 type="button"
-                className="underline hover:opacity-80 cursor-pointer"
+                className="underline decoration-1 hover:opacity-80 cursor-pointer"
                 onClick={() => navigate("/forgot-password")}
               >
                 Forgot password?

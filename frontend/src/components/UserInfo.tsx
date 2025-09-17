@@ -18,7 +18,7 @@ export default function UserInfo() {
             <IoPersonCircle size="3rem" />
           </div>
         </Link>
-        <div className="w-8/12 flex flex-col">
+        <div className="w-8/12 hidden md:flex lg:flex xl:flex flex-col">
           <h1 className="mb-0.5">{user?.username}</h1>
           <div className="flex flex-row text-[11px]">
             <h3>{role}</h3>

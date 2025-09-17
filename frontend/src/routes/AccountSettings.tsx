@@ -111,7 +111,7 @@ export default function AccountSettingsRoute() {
           <FaUserCircle className="text-gray-500 dark:text-gray-300" size={120} />
           <h1 className="text-2xl md:text-3xl font-semibold">Welcome{username ? ", " + username : ""}</h1>
           <p className="text-sm md:text-base text-light-text/70 dark:text-dark-text/70">
-            Manage your profile here. View your recent activity here.
+            Manage your profile here.
           </p>
         </div>
 

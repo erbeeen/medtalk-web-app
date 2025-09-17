@@ -13,7 +13,7 @@
   }
 
   .base-layout {
-    @apply px-0 pt-12 md:px-6 lg:px-12;
+    @apply px-0 pt-12 md:px-6 lg:px-12 flex flex-col items-center gap-4;
   }
 
   .sidebar {
@@ -74,4 +74,7 @@
     @apply self-start mb-5;
   }
 
+  .logs-category {
+    @apply py-1 px-3 flex justify-center items-center border rounded-md cursor-pointer;
+  }
 }

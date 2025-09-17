@@ -164,7 +164,7 @@ export default class UserController {
             level: "info",
             source: "user-registration",
             category: "authentication",
-            message: "User registered a new account.",
+            message: "User registration successful.",
             data: {
               _id: result._id,
               email: result.email,
@@ -180,7 +180,7 @@ export default class UserController {
             level: "error",
             source: "user-registration",
             category: "authentication",
-            message: "User failed to register a new account.",
+            message: "User registration failed.",
             data: {
               error: err,
             },
