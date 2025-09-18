@@ -4,7 +4,7 @@ import AdminsRoute from './routes/Admins';
 import HomeRoute from './routes/Home';
 import MedicineRoute from './routes/Medicine';
 import NotFoundRoute from './routes/NotFound';
-import ScheduleRoute from './routes/Schedules';
+// import ScheduleRoute from './routes/Schedules';
 import UsersRoute from './routes/Users';
 import LoginRoute from './routes/Login';
 import Sidebar from './components/Sidebar';
@@ -19,9 +19,7 @@ import ForgotPasswordRoute from './routes/ForgotPassword';
 import ResetPasswordRoute from './routes/ResetPassword';
 
 // TODO: 
-// - Create change password, reset password, and profile page,
-// - Create System Logs Module
-// - (optional) Create switch for light and dark mode
+// - Create switch for light and dark mode
 
 function App() {
   const [isLoading, _setIsLoading] = useState(false);

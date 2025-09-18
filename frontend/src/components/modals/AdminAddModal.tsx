@@ -10,9 +10,6 @@ type NewUserModalProps = {
   setAdmins: Dispatch<SetStateAction<Array<AdminUserType>>>;
 }
 
-// TODO: Remove password from the field. It must be auto generated
-// by the server
-
 export default function AdminAddModal({ onClose, setAdmins }: NewUserModalProps) {
   const [role, setRole] = useState("");
   const [username, setUsername] = useState("");

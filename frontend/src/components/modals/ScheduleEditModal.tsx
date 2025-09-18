@@ -10,10 +10,6 @@ type EditUserModalProps = {
   setSchedules: Dispatch<SetStateAction<Array<ScheduleType>>>;
 }
 
-// TODO: 
-// add animations
-// add api request to edit record on database
-
 export default function ScheduleEditModal({ onClose, data, setSchedules }: EditUserModalProps) {
   const originalDate = new Date(data.date);
   const originalYear = originalDate.getFullYear();
