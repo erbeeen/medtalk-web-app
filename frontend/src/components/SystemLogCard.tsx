@@ -11,7 +11,7 @@ export default function SystemLogCard({ log }: { log: SystemLogType }) {
   const detailsText = showMore ? "Hide Details" : "More Details";
   return (
     <div className={`py-2 ${cursorPointer}`} onClick={() => {
-      setShowMore(!showMore);
+      if (log.data) setShowMore(!showMore);
     }}>
       <div className="flex flex-col items-start ">
         <div key={log._id} className="w-full pb-2 pl-3 flex flex-row justify-around">
@@ -39,7 +39,7 @@ export default function SystemLogCard({ log }: { log: SystemLogType }) {
         <div className={`pl-6 transition-all duration-100 ease-in-out ${showMore ? 'my-3 max-h-96 opacity-100' : 'max-h-0 opacity-0'}`}>
           {log.data && (
             Object.entries(log.data).map(([key, value]) => (
-              <p key={key} className="text-sm">
+              <p key={key} className="text-xs">
                 {key}: {String(value)}
               </p>
             )
