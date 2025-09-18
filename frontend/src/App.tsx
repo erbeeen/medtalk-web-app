@@ -82,7 +82,7 @@ function App() {
                   <Route path="/users" element={<UsersRoute scrollToTop={scrollToTop} />} />
                   <Route path="/admins" element={<AdminsRoute scrollToTop={scrollToTop} />} />
                   <Route path="/medicine" element={<MedicineRoute scrollToTop={scrollToTop} />} />
-                  <Route path="/schedules" element={<ScheduleRoute scrollToTop={scrollToTop} />} />
+                  {/* <Route path="/schedules" element={<ScheduleRoute scrollToTop={scrollToTop} />} /> */}
                   <Route path="/account" element={<AccountSettingsRoute />} />
                 </Route>
               </Routes>

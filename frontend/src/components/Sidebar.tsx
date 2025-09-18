@@ -1,6 +1,6 @@
 import { Link, useNavigate } from "react-router-dom";
 import { MdDashboard, MdLogout } from "react-icons/md";
-import { FaUser, FaPills, FaCalendarAlt, FaUserEdit, FaFileAlt } from "react-icons/fa";
+import { FaUser, FaPills, FaUserEdit, FaFileAlt } from "react-icons/fa";
 import { useUser } from "../contexts/UserContext";
 import UserInfo from "./UserInfo";
 
@@ -52,12 +52,12 @@ export default function Sidebar() {
             </div>
             <span className="sidebar-label">Medicines</span>
           </Link>
-          <Link to="/schedules" className="sidebar-link hover:bg-800 dark:hover:bg-primary-dark/50">
-            <div className="sidebar-icon">
-              <FaCalendarAlt size="1.2rem" />
-            </div>
-            <span className="sidebar-label">Schedules</span>
-          </Link>
+          {/* <Link to="/schedules" className="sidebar-link hover:bg-800 dark:hover:bg-primary-dark/50"> */}
+          {/*   <div className="sidebar-icon"> */}
+          {/*     <FaCalendarAlt size="1.2rem" /> */}
+          {/*   </div> */}
+          {/*   <span className="sidebar-label">Schedules</span> */}
+          {/* </Link> */}
         </>
       )}
       <div
