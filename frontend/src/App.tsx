@@ -12,6 +12,9 @@ import VerifyAccountRoute from './routes/VerifyAccount';
 import AccountVerifiedRoute from './routes/AccountVerified';
 import { UserProvider } from './contexts/UserContext';
 import ProtectedRoute from './components/ProtectedRoute';
+import RoleGuard from './components/RoleGuard';
+import RoleBasedRedirect from './components/RoleBasedRedirect';
+import UnauthorizedRoute from './routes/Unauthorized';
 import './App.css';
 import SystemLogsRoute from './routes/SystemLogs';
 import AccountSettingsRoute from './routes/AccountSettings';
@@ -33,7 +36,8 @@ function App() {
     location.pathname === "/account-verified" ||
     location.pathname === "/not-found" ||
     location.pathname === "/forgot-password" ||
-    location.pathname === "/reset-password"
+    location.pathname === "/reset-password" ||
+    location.pathname === "/unauthorized"
   ) {
     showSidebar = false;
   }
@@ -70,17 +74,52 @@ function App() {
                 <Route path="/forgot-password" element={<ForgotPasswordRoute />} />
                 <Route path="/reset-password" element={<ResetPasswordRoute />} />
                 <Route path="/not-found" element={<NotFoundRoute />} />
+                <Route path="/unauthorized" element={<UnauthorizedRoute />} />
                 <Route path="*" element={<Navigate to={"/not-found"} replace />} />
 
                 {/* NOTE: protected routes */}
                 <Route element={<ProtectedRoute />}>
-                  <Route path="/" element={<HomeRoute />} />
                   <Route path="/login" element={<LoginRoute />} />
-                  <Route path="/logs" element={<SystemLogsRoute />} />
-                  <Route path="/users" element={<UsersRoute scrollToTop={scrollToTop} />} />
-                  <Route path="/admins" element={<AdminsRoute scrollToTop={scrollToTop} />} />
-                  <Route path="/medicine" element={<MedicineRoute scrollToTop={scrollToTop} />} />
-                  {/* <Route path="/schedules" element={<ScheduleRoute scrollToTop={scrollToTop} />} /> */}
+                  
+                  {/* Role-based dashboard redirect */}
+                  <Route path="/dashboard" element={<RoleBasedRedirect />} />
+                  
+                  {/* Dashboard - only for super admin and doctor */}
+                  <Route path="/" element={
+                    <RoleGuard allowedRoles={["super admin", "doctor"]}>
+                      <HomeRoute />
+                    </RoleGuard>
+                  } />
+                  
+                  {/* System Logs - only for admin and super admin */}
+                  <Route path="/logs" element={
+                    <RoleGuard allowedRoles={["admin", "super admin"]}>
+                      <SystemLogsRoute />
+                    </RoleGuard>
+                  } />
+                  
+                  {/* Users - only for admin and super admin */}
+                  <Route path="/users" element={
+                    <RoleGuard allowedRoles={["admin", "super admin"]}>
+                      <UsersRoute scrollToTop={scrollToTop} />
+                    </RoleGuard>
+                  } />
+                  
+                  {/* Admins - only for super admin */}
+                  <Route path="/admins" element={
+                    <RoleGuard allowedRoles={["super admin"]}>
+                      <AdminsRoute scrollToTop={scrollToTop} />
+                    </RoleGuard>
+                  } />
+                  
+                  {/* Medicine - only for doctor and super admin */}
+                  <Route path="/medicine" element={
+                    <RoleGuard allowedRoles={["doctor", "super admin"]}>
+                      <MedicineRoute scrollToTop={scrollToTop} />
+                    </RoleGuard>
+                  } />
+                  
+                  {/* Account - accessible to all authenticated users */}
                   <Route path="/account" element={<AccountSettingsRoute />} />
                 </Route>
               </Routes>

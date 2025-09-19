@@ -59,8 +59,23 @@ export default function LoginRoute() {
         return;
       }
 
-      setUser({username: result.data.username, role: result.data.role});
-      navigate("/");
+      setUser({id: result.data.id, username: result.data.username, role: result.data.role});
+      
+      // Redirect based on user role
+      switch (result.data.role) {
+        case "super admin":
+        case "doctor":
+          navigate("/"); // Dashboard
+          break;
+        case "admin":
+          navigate("/users"); // Users management
+          break;
+        case "user":
+          navigate("/account"); // Profile page
+          break;
+        default:
+          navigate("/unauthorized");
+      }
     } catch (err) {
       console.error(`Error executing login function: ${err}`);
       setErrMessage("Server error. Try again later.")
