@@ -35,15 +35,6 @@ const FROM_EMAIL = `MedTalk <${process.env.MAIL_USERNAME}>`;
 export default class UserController {
   constructor() {}
 
-  // WARN: Possible problem for register and login route:
-  // Multiple refresh tokens from the same user are generated.
-  // I don't know if it's just a problem with development because
-  // there's no defined logging process yet on mobile,
-  // so developers often log in everytime, and the previous tokens
-  // are just left hanging on the database. I have no functions yet to
-  // delete those. I don't know if this will be a problem later on in
-  // production
-
   registerUser = async (req: Request, res: Response, next: NextFunction) => {
     const user: UserType = req.body;
     const saltRounds = 10;
@@ -879,7 +870,7 @@ export default class UserController {
 
     const [userIdExists, userIdErr] = await doesUserIdExist(id);
     if (userIdErr !== null) {
-      console.error(`${this.updateUser.name} doesUserIdExist error`);
+      console.error(`${this.updateAdmin.name} doesUserIdExist error`);
       logError(userIdErr);
       sendJsonResponse(res, 500);
       next(userIdErr);
@@ -1094,35 +1085,32 @@ export default class UserController {
       return;
     }
 
-    if (
-      !editedUserDetails.email ||
-      !editedUserDetails.username ||
-      !editedUserDetails.firstName ||
-      !editedUserDetails.lastName
-    ) {
-      sendJsonResponse(res, 400, "provide all fields");
-      return;
-    }
-
-    const [usernameExists, emailExists, userExistsErr] = await doesUserExist(
-      editedUserDetails.username,
-      editedUserDetails.email,
-    );
-    if (userExistsErr !== null) {
-      next(userExistsErr);
-      sendJsonResponse(res, 500);
-      return;
-    }
-
-    if (usernameExists) {
-      sendJsonResponse(res, 409, "username is already taken");
-      return;
-    }
-
-    if (emailExists) {
-      sendJsonResponse(res, 409, "email is already taken");
-      return;
-    }
+    // TODO: Check email only if body has email
+    // Check username only if body has username
+    
+    // if (editedUserDetails.email) {
+    //   const [usernameExists, emailExists, userExistsErr] = await doesUserExist(
+    //     editedUserDetails.username,
+    //     editedUserDetails.email,
+    //   );
+    //   if (userExistsErr !== null) {
+    //     next(userExistsErr);
+    //     sendJsonResponse(res, 500);
+    //     return;
+    //   }
+    // }
+    //
+    // if (editedUserDetails.username) {
+    //   if (usernameExists) {
+    //     sendJsonResponse(res, 409, "username is already taken");
+    //     return;
+    //   }
+    // }
+    //
+    // if (emailExists) {
+    //   sendJsonResponse(res, 409, "email is already taken");
+    //   return;
+    // }
 
     const [userIdExists, userIdErr] = await doesUserIdExist(id);
     if (userIdErr !== null) {
@@ -1170,7 +1158,7 @@ export default class UserController {
         category: "user-management",
         message: "User update profile failed.",
         initiated_by: req.user.username,
-        data: { error: err },
+        data: { ...err },
       });
       next(err);
     } finally {
@@ -1228,7 +1216,7 @@ export default class UserController {
         category: "user-management",
         message: "User account deletion failed.",
         initiated_by: req.user.username,
-        data: { error: err },
+        data: { ...err },
       });
       next(err);
     }
@@ -1264,7 +1252,7 @@ export default class UserController {
         category: "user-management",
         message: "User batch account deletion failed.",
         initiated_by: req.user.username,
-        data: { error: err },
+        data: { ...err },
       });
       next(err);
     }
@@ -1274,7 +1262,7 @@ export default class UserController {
     const saltRounds = 10;
     const userID = req.user.id;
     if (!req.body.password) {
-      sendJsonResponse(res, 400, "No password given");
+      sendJsonResponse(res, 400, "No password given.");
       return;
     }
 
@@ -1318,7 +1306,7 @@ export default class UserController {
         category: "user-management",
         message: "User change password failed.",
         initiated_by: req.user.username,
-        data: { error: err },
+        data: { ...err },
       });
       next(err);
       return;
@@ -1380,17 +1368,23 @@ export default class UserController {
     } catch (err) {
       logError(err);
       sendJsonResponse(res, 500);
+      await SystemLog.create({
+        level: "error",
+        source: "password-reset",
+        category: "authentication",
+        message: "Request password reset failed.",
+        data: { ...err },
+      });
       next(err);
     }
   };
 
-  resetPassword = async (
-    req: Request,
-    res: Response,
-    next: NextFunction,
-  ) => {
+  resetPassword = async (req: Request, res: Response, next: NextFunction) => {
     try {
-      const { token, password } = req.body as { token?: string; password?: string };
+      const { token, password } = req.body as {
+        token?: string;
+        password?: string;
+      };
       if (!token || !password) {
         sendJsonResponse(res, 400, "Missing token or password");
         return;
@@ -1403,32 +1397,42 @@ export default class UserController {
       }
 
       const saltRounds = 10;
-      bcrypt.hash(password, saltRounds, async (error: Error, hashed: string) => {
-        if (error) {
-          logError(error);
-          sendJsonResponse(res, 500);
-          next(error);
-          return;
-        }
+      bcrypt.hash(
+        password,
+        saltRounds,
+        async (error: Error, hashed: string) => {
+          if (error) {
+            logError(error);
+            sendJsonResponse(res, 500);
+            next(error);
+            return;
+          }
 
-        await User.findByIdAndUpdate(prt.userId, { password: hashed });
-        prt.used = true;
-        await prt.save();
+          await User.findByIdAndUpdate(prt.userId, { password: hashed });
+          prt.used = true;
+          await prt.save();
 
-        sendJsonResponse(res, 200);
+          sendJsonResponse(res, 200);
 
-        await SystemLog.create({
-          level: "info",
-          source: "password-reset",
-          category: "authentication",
-          message: "Password reset successful",
-          data: { userId: prt.userId },
-        });
-
-      });
+          await SystemLog.create({
+            level: "info",
+            source: "password-reset",
+            category: "authentication",
+            message: "Password reset successful",
+            data: { userId: prt.userId },
+          });
+        },
+      );
     } catch (err) {
       logError(err);
       sendJsonResponse(res, 500);
+      await SystemLog.create({
+        level: "error",
+        source: "password-reset",
+        category: "authentication",
+        message: "Password reset failed",
+        data: { ...err },
+      });
       next(err);
     }
   };

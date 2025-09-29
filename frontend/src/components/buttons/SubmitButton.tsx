@@ -9,7 +9,7 @@ export default function SubmitButton({ isLoading, children }: SubmitButtonProps)
   return (
     <button
       type="submit"
-      className={"button-layout dark:border-primary-dark/50 dark:hover:bg-primary-dark/70"}
+      className={"button-layout transition-colors duration-[50] bg-primary hover:bg-primary/90 text-light"}
       disabled={isLoading}
     >
       {isLoading ? <div className="spinner"></div> : children }

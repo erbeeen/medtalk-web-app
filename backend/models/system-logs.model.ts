@@ -43,7 +43,12 @@ const systemLogSchema = new mongoose.Schema({
   data: {
     type: mongoose.Schema.Types.Mixed,
     required: false,
-  }
+  },
+  createdAt: {
+    type: Date,
+    default: Date.now,
+    expires: '5y',
+  },
 });
 
 const SystemLog = mongoose.model("system_logs", systemLogSchema);

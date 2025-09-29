@@ -1,4 +1,5 @@
 import { Link, useNavigate } from "react-router-dom";
+import { FaCalendarAlt } from "react-icons/fa";
 import { MdDashboard, MdLogout } from "react-icons/md";
 import { FaUser, FaPills, FaUserEdit, FaFileAlt } from "react-icons/fa";
 import { useUser } from "../contexts/UserContext";
@@ -9,59 +10,60 @@ export default function Sidebar() {
   const { user } = useUser();
 
   return (
-    <div className="sidebar bg-gray-700/40 ">
+    <div className="sidebar dark:bg-[#053143] ">
       <UserInfo />
-      <hr className="w-3/4 mx-auto my-4 "/>
+      <hr className="w-3/4 mx-auto my-4 text-gray-300"/>
       {(user?.role === "super admin" || user?.role === "doctor") &&
-        <Link to="/" className="sidebar-link hover:bg-primary-800/20 hover:text-dark-text dark:hover:bg-primary-dark/50">
-          <div className="sidebar-icon">
+        <Link to="/" className="sidebar-link hover:bg-gray-200 hover:text-black dark:hover:bg-primary-dark/50">
+          <div className="sidebar-icon text-current">
             <MdDashboard size="1.2rem" />
           </div>
-          <span className="sidebar-label">Dashboard</span>
+          <span className="sidebar-label text-current">Dashboard</span>
         </Link>
       }
       {(user?.role === "admin" || user?.role === "super admin") &&
-        <Link to="/logs" className="sidebar-link hover:bg-800 dark:hover:bg-primary-dark/50">
-          <div className="sidebar-icon">
+        <Link to="/logs" className="sidebar-link hover:bg-gray-200 hover:text-black dark:hover:bg-primary-dark/50">
+          <div className="sidebar-icon text-current">
             <FaFileAlt size="1.2rem" />
           </div>
-          <span className="sidebar-label">System Logs</span>
+          <span className="sidebar-label text-current">System Logs</span>
         </Link>
       }
       {(user?.role === "admin" || user?.role === "super admin") &&
-        <Link to="/users" className="sidebar-link hover:bg-800 dark:hover:bg-primary-dark/50">
-          <div className="sidebar-icon">
+        <Link to="/users" className="sidebar-link hover:bg-gray-200 hover:text-black dark:hover:bg-primary-dark/50">
+          <div className="sidebar-icon text-current">
             <FaUser size="1.2rem" />
           </div>
-          <span className="sidebar-label">Users</span>
+          <span className="sidebar-label text-current">Users</span>
         </Link>
       }
       {user?.role === "super admin" &&
-        <Link to="/admins" className="sidebar-link hover:bg-800 dark:hover:bg-primary-dark/50">
-          <div className="sidebar-icon">
+        <Link to="/admins" className="sidebar-link hover:bg-gray-200 hover:text-black dark:hover:bg-primary-dark/50">
+          <div className="sidebar-icon text-current">
             <FaUserEdit size="1.5rem" />
           </div>
-          <span className="sidebar-label">Admins</span>
+          <span className="sidebar-label text-current">Admins</span>
         </Link>
       }
       {(user?.role === "doctor" || user?.role === "super admin") && (
         <>
-          <Link to="/medicine" className="sidebar-link hover:bg-800 dark:hover:bg-primary-dark/50">
-            <div className="sidebar-icon">
+          <Link to="/medicine" className="sidebar-link hover:bg-gray-200 hover:text-black dark:hover:bg-primary-dark/50">
+            <div className="sidebar-icon text-current">
               <FaPills size="1.2rem" />
             </div>
-            <span className="sidebar-label">Medicines</span>
+            <span className="sidebar-label text-current">Medicines</span>
           </Link>
-          {/* <Link to="/schedules" className="sidebar-link hover:bg-800 dark:hover:bg-primary-dark/50"> */}
-          {/*   <div className="sidebar-icon"> */}
-          {/*     <FaCalendarAlt size="1.2rem" /> */}
-          {/*   </div> */}
-          {/*   <span className="sidebar-label">Schedules</span> */}
-          {/* </Link> */}
+
+          <Link to="/schedules" className="sidebar-link hover:bg-gray-200 hover:text-black dark:hover:bg-primary-dark/50">
+            <div className="sidebar-icon text-current">
+              <FaCalendarAlt size="1.2rem" />
+            </div>
+            <span className="sidebar-label text-current">Schedules</span>
+          </Link>
         </>
       )}
       <div
-        className="sidebar-link mt-auto mb-5 hover:bg-800 dark:hover:bg-primary-dark/50 cursor-pointer"
+        className="sidebar-link mt-auto mb-5 hover:bg-gray-200 hover:text-black dark:hover:bg-primary-dark/50 cursor-pointer"
         onClick={async () => {
           try {
             const response = await fetch("/api/auth/logout", {
@@ -78,10 +80,10 @@ export default function Sidebar() {
           }
         }}
       >
-        <div className="sidebar-icon">
+        <div className="sidebar-icon text-current">
           <MdLogout size="1.2rem" />
         </div>
-        <span className="w-8/12 sidebar-label">Logout</span>
+        <span className="w-8/12 sidebar-label text-current">Logout</span>
       </div>
     </div>
   );

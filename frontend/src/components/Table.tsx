@@ -35,11 +35,9 @@ type TableProps = {
 // and possibly causing it are pages having only one entry.
 // either fix the bug or only make the table scrollable
 
-// FIX: scrolling to top screws up on next page buttons when deleting entries
+// FIX: scrolling to top screws up on next page buttons when deleteing entries
 // and possibly causing it are pages having only one entry.
 // either fix the bug or only make the table scrollable
-
-// TODO: (not sure if finished) make the table mobile responsive
 
 export default function Table({
   columns,
@@ -84,48 +82,10 @@ export default function Table({
 
   return (
     <>
-      <div id="table-ref" ref={tableRef} className="h-full w-full border border-dark/10 dark:border-light/10 rounded-2xl overflow-x-scroll">
-        <table className="w-full text-left border-collapse border-spacing-0 table-fixed">
-          <thead>
-            {table.getHeaderGroups().map((headerGroup) => (
-              <tr key={headerGroup.id} className="bg-gray-700/40 border-b border-dark/10 dark:border-light/10 rounded-2xl">
-                {headerGroup.headers.map((header) => (
-                  <th
-                    className="py-5 px-4 align-middle font-medium "
-                    key={header.id}
-                    style={{
-                      width: header.getSize(),
-                      minWidth: header.column.columnDef.minSize,
-                      maxWidth: header.column.columnDef.maxSize
-                    }}>
-                    {header.isPlaceholder
-                      ? null
-                      : flexRender(
-                        header.column.columnDef.header,
-                        header.getContext()
-                      )}
-                  </th>
-                ))}
-              </tr>
-            ))}
-          </thead>
-          <tbody className="h-full flex-1 overflow-y-scroll">
-            {table.getRowModel().rows.map((row) => (
-              <tr key={row.id} className="border-b border-dark/10 dark:border-light/10 font-light align-middle">
-                {row.getVisibleCells().map((cell) => (
-                  <td className="py-3 px-4" key={cell.id} id={cell.id}>
-                    {flexRender(cell.column.columnDef.cell, cell.getContext())}
-                  </td>
-                ))}
-              </tr>
-            ))}
-          </tbody>
-        </table>
-      </div>
-      <div className={`w-full p-3 flex justify-center items-center gap-2 overflow-x-clip ${table.getPageCount() <= 0 ? "hidden py-5" : ""}`}>
+      <div className={`w-full px-3 flex justify-center items-center gap-2 overflow-x-clip ${table.getPageCount() <= 1 ? "hidden py-5" : ""}`}>
 
         <div className={
-          `p-1.5 flex justify-center items-center border rounded-sm 
+          `p-1 flex justify-center items-center border rounded-sm 
           dark:border-secondary-dark/50 dark:hover:bg-secondary/50 
           dark:text-secondary-dark/50 dark:hover:text-dark-text 
           ${table.getCanPreviousPage() ? "cursor-pointer" : ""}`}
@@ -140,7 +100,7 @@ export default function Table({
           </button>
         </div>
 
-        <div className={`p-1.5 flex justify-center items-center border rounded-sm 
+        <div className={`p-1 flex justify-center items-center border rounded-sm 
           dark:border-secondary-dark/50 dark:hover:bg-secondary/50 
           dark:text-secondary-dark/50 dark:hover:text-dark-text 
           ${table.getCanPreviousPage() ? "cursor-pointer" : ""}`}
@@ -159,7 +119,7 @@ export default function Table({
           {`${pagination.pageIndex + 1} of ${table.getPageCount()}`}
         </span>
 
-        <div className={`p-1.5 flex justify-center items-center border rounded-sm
+        <div className={`p-1 flex justify-center items-center border rounded-sm
           dark:border-secondary-dark/50 dark:hover:bg-secondary/50 
           dark:text-secondary-dark/50 dark:hover:text-dark-text 
           ${table.getCanNextPage() ? "cursor-pointer" : ""}`}
@@ -173,7 +133,112 @@ export default function Table({
             <FaAngleRight />
           </button>
         </div>
-        <div className={`p-1.5 flex justify-center items-center border rounded-sm
+        <div className={`p-1 flex justify-center items-center border rounded-sm
+          dark:border-secondary-dark/50 dark:hover:bg-secondary/50 
+          dark:text-secondary-dark/50 dark:hover:text-dark-text 
+          ${table.getCanNextPage() ? "cursor-pointer" : ""}`}
+          onClick={() => {
+            if (table.getCanNextPage()) {
+              table.lastPage();
+              scrollToTop();
+            }
+          }}>
+          <button className={table.getCanNextPage() ? "cursor-pointer" : ""}>
+            <FaAngleDoubleRight />
+          </button>
+        </div>
+      </div>
+      <div id="table-ref" ref={tableRef} className="w-full border border-dark/10 dark:border-light/10 rounded-xl overflow-x-scroll">
+        <table className="w-full text-left border-collapse border-spacing-0 table-fixed">
+          <thead>
+            {table.getHeaderGroups().map((headerGroup) => (
+              <tr key={headerGroup.id} className="bg-[#15977f] text-white border-b border-dark/10 dark:border-light/10 rounded-2xl">
+                {headerGroup.headers.map((header) => (
+                  <th
+                    className="p-3 align-middle text-sm font-medium"
+                    key={header.id}
+                    style={{
+                      width: header.getSize(),
+                      minWidth: header.column.columnDef.minSize,
+                      maxWidth: header.column.columnDef.maxSize
+                    }}>
+                    {header.isPlaceholder
+                      ? null
+                      : flexRender(
+                        header.column.columnDef.header,
+                        header.getContext()
+                      )}
+                  </th>
+                ))}
+              </tr>
+            ))}
+          </thead>
+          <tbody className="flex-1 overflow-y-scroll">
+            {table.getRowModel().rows.map((row) => (
+              <tr key={row.id} className="border-b border-dark/10 dark:border-light/10 text-sm font-medium align-middle">
+                {row.getVisibleCells().map((cell) => (
+                  <td className="py-1 px-4" key={cell.id} id={cell.id}>
+                    {flexRender(cell.column.columnDef.cell, cell.getContext())}
+                  </td>
+                ))}
+              </tr>
+            ))}
+          </tbody>
+        </table>
+
+      </div>
+      <div className={`w-full px-3 mb-5 flex justify-center items-center gap-2 overflow-x-clip ${table.getPageCount() <= 1 ? "hidden py-5" : ""}`}>
+
+        <div className={
+          `p-1 flex justify-center items-center border rounded-sm 
+          dark:border-secondary-dark/50 dark:hover:bg-secondary/50 
+          dark:text-secondary-dark/50 dark:hover:text-dark-text 
+          ${table.getCanPreviousPage() ? "cursor-pointer" : ""}`}
+          onClick={() => {
+            if (table.getCanPreviousPage()) {
+              table.firstPage();
+              scrollToTop();
+            }
+          }}>
+          <button className={table.getCanPreviousPage() ? "cursor-pointer" : ""}>
+            <FaAngleDoubleLeft />
+          </button>
+        </div>
+
+        <div className={`p-1 flex justify-center items-center border rounded-sm 
+          dark:border-secondary-dark/50 dark:hover:bg-secondary/50 
+          dark:text-secondary-dark/50 dark:hover:text-dark-text 
+          ${table.getCanPreviousPage() ? "cursor-pointer" : ""}`}
+          onClick={() => {
+            if (table.getCanPreviousPage()) {
+              table.previousPage();
+              scrollToTop();
+            }
+          }}>
+          <button className={table.getCanPreviousPage() ? "cursor-pointer" : ""}>
+            <FaAngleLeft />
+          </button>
+        </div>
+
+        <span className="mx-2 text-xs dark:text-dark-text/80">
+          {`${pagination.pageIndex + 1} of ${table.getPageCount()}`}
+        </span>
+
+        <div className={`p-1 flex justify-center items-center border rounded-sm
+          dark:border-secondary-dark/50 dark:hover:bg-secondary/50 
+          dark:text-secondary-dark/50 dark:hover:text-dark-text 
+          ${table.getCanNextPage() ? "cursor-pointer" : ""}`}
+          onClick={() => {
+            if (table.getCanNextPage()) {
+              scrollToTop();
+              table.nextPage();
+            }
+          }}>
+          <button className={`${table.getCanNextPage() ? "cursor-pointer" : ""}`}>
+            <FaAngleRight />
+          </button>
+        </div>
+        <div className={`p-1 flex justify-center items-center border rounded-sm
           dark:border-secondary-dark/50 dark:hover:bg-secondary/50 
           dark:text-secondary-dark/50 dark:hover:text-dark-text 
           ${table.getCanNextPage() ? "cursor-pointer" : ""}`}

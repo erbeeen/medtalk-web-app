@@ -8,20 +8,20 @@
 
 @layer components {
   :root {
-    font-family: "Mona Sans",sans-serif;
+    font-family: "Mona Sans", sans-serif;
     color: var(--color-light);
   }
 
   .base-layout {
-    @apply px-0 pt-12 md:px-6 lg:px-12 flex flex-col items-center gap-4;
+    @apply px-0 pt-12 md:px-6 lg:px-8 flex flex-col items-center gap-4;
   }
 
   .sidebar {
-    @apply w-16 md:w-40 lg:w-56 pt-10 flex flex-col items-center font-light;
+    @apply w-16 md:w-40 lg:w-56 pt-10 flex flex-col items-center font-light border-r border-r-gray-300 dark:border-r-gray-300/20;
   }
 
   .sidebar-link {
-    @apply w-11/12 py-4 flex flex-row justify-center items-center rounded-md flex-nowrap;
+    @apply w-11/12 py-3 flex flex-row justify-center items-center rounded-md flex-nowrap font-medium;
   }
 
   .sidebar-label {
@@ -29,7 +29,7 @@
   }
 
   .sidebar-icon {
-    @apply w-4/12 flex flex-row justify-center items-center;
+    @apply w-4/12 flex flex-row justify-center items-center text-[#0f0f0f] dark:text-white;
   }
 
   .modal-input-container {
@@ -50,7 +50,7 @@
   }
 
   .scrollbar::webkit-scrollbar {
-    display:flex;
+    display: flex;
   }
 
   .scrollbar {
@@ -59,11 +59,11 @@
   }
 
   .button-layout {
-    @apply min-w-[5rem] py-2 px-5 inline-flex justify-center items-center font-medium text-sm border rounded-4xl cursor-pointer;
+    @apply min-w-[5rem] py-2 px-5 inline-flex justify-center items-center font-medium text-sm rounded-xl cursor-pointer;
   }
 
   .spinner {
-    @apply size-5 border-2 border-gray-200 border-l-blue-500 rounded-full animate-spin;
+    @apply size-5 border-3 border-gray-200 border-l-[#149647] rounded-full animate-spin;
   }
 
   .chart-container {
@@ -75,6 +75,33 @@
   }
 
   .logs-category {
-    @apply py-1 px-3 flex justify-center items-center border rounded-md cursor-pointer;
+    @apply py-1 px-3 flex justify-center items-center border border-gray-500 rounded-md cursor-pointer;
+  }
+
+  .pdf-only {
+    display: none;
+  }
+
+  .hide {
+    display: none;
+  }
+
+  @media (pointer: fine) {
+    ::-webkit-scrollbar,
+    ::-webkit-scrollbar-corner {
+      background: transparent;
+      height: 3px;
+      width: 1px;
+    }
+
+    ::-webkit-scrollbar-thumb {
+      background: black;
+    }
+
+    @media (prefers-color-scheme: dark) {
+      ::-webkit-scrollbar-thumb {
+        background: white;
+      }
+    }
   }
 }

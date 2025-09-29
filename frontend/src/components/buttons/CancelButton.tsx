@@ -6,7 +6,7 @@ export default function CancelButton({ onClick }: CancelButtonProps) {
   return (
     <button
       type="button"
-      className="button-layout dark:border-secondary-dark/70 dark:hover:bg-secondary-dark/70"
+      className="button-layout bg-gray-200 dark:bg-gray-400 hover:bg-gray-200/80 dark:hover:bg-gray-400/80"
       onClick={onClick}
     >
       Cancel

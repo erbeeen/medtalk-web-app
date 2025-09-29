@@ -52,7 +52,7 @@ export default class MedicineController {
         category: "medicine-management",
         message: "Medicine creation failed.",
         initiated_by: req.user.username,
-        data: { error: err },
+        data: { ...err },
       });
     }
   };
@@ -183,7 +183,7 @@ export default class MedicineController {
         category: "medicine-management",
         message: "Medicine creation failed.",
         initiated_by: req.user.username,
-        data: { error: err },
+        data: { ...err },
       });
     }
   };
@@ -230,7 +230,7 @@ export default class MedicineController {
         category: "medicine-management",
         message: "Medicine deletion successful.",
         initiated_by: req.user.username,
-        data: { error: err },
+        data: { ...err },
       });
     }
   };
@@ -272,7 +272,7 @@ export default class MedicineController {
         category: "medicine-management",
         message: "Medicine batch deletion failed.",
         initiated_by: req.user.username,
-        data: { error: err },
+        data: { ...err },
       });
       next(err);
     }

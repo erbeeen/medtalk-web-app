@@ -11,8 +11,7 @@ import medicineRouter from "./routes/medicine.route.js";
 import scheduleRouter from "./routes/schedule.route.js";
 import systemLogsRouter from "./routes/systemlogs.route.js";
 import userRouter from "./routes/user.route.js";
-
-// TODO: Create System Logs Module
+import analyticsRouter from "./routes/analytics.route.js";
 
 const app = express();
 const __dirname = path.dirname(fileURLToPath(import.meta.url));
@@ -33,6 +32,7 @@ app.use("/api/medicine", medicineRouter);
 app.use("/api/schedule", scheduleRouter);
 app.use("/api/auth", authRouter);
 app.use("/api/logs", systemLogsRouter);
+app.use("/api/analytics", analyticsRouter);
 
 if (process.env.NODE_ENV === "production") {
   app.use(static_(path.join(__dirname + "/static")));
@@ -44,6 +44,7 @@ if (process.env.NODE_ENV === "production") {
 
 app.listen(PORT, async () => {
   try {
+    console.clear();
     console.log("Initializing MongoDB Connection.");
     await dbConnect();
     console.log("Database connection successful.\n");

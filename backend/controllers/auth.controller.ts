@@ -139,7 +139,7 @@ export default class AuthController {
         category: "authentication",
         message: "User logout failed",
         initiated_by: req.user.username,
-        data: { error: err },
+        data: { ...err },
       });
       next(err);
     }

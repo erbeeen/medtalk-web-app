@@ -6,28 +6,45 @@
 /* #A060FF */
 /* #00E4E3 */
 
-@theme {
+@theme :root {
   /* --color-dark-bg: #121212; NOTE: recommended dark theme bg in some org */
 
   /* NOTE: This is from realtime colors */
   --color-light: #f4f4f4;
 
-  /* NOTE: ----------- Light Mode Colors ------------ */
-  --color-light-text: #040316;
-  --color-light: hsl(240, 60%, 99%); /* NOTE: light bg */
-  --color-primary: #1affff;
-  --color-secondary: #3f009e;
-  --color-accent: #0600c2;
+  /* WARN: ----------- Old Light Mode Colors ------------ */
+  /* --color-light-text: #040316; */
+  /* --color-light: hsl(240, 60%, 99%); */
+  /* --color-primary: #1affff; */
+  /* --color-secondary: #3f009e; */
+  /* --color-accent: #0600c2; */
 
-  /* NOTE: ----------- Dark Mode Colors ------------- */
-  --color-dark-text: #eae9fc;
-  --color-dark: #050A30; /* NOTE: dark bg */
-  --color-primary-dark: #00E4E3;
-  --color-secondary-dark: #A060FF;
-  --color-accent-dark: hsl(264, 100%, 69%);
-  --color-edit-dark: #FFD700;
-  --color-delete-dark: #FF0000;
+  /* WARN: ----------- Old Dark Mode Colors ------------- */
+  /* --color-dark-text: #eae9fc; */
+  /* --color-dark: #050A30; */
+  /* --color-primary-dark: #00E4E3; */
+  /* --color-secondary-dark: #A060FF; */
+  /* --color-accent-dark: hsl(264, 100%, 69%); */
 
+  /* NOTE: ----------- New Light Mode Colors ------------- */
+  --color-light-text: #000;
+  /* --color-light: #CCECEE;  */
+  --color-light: #fff;
+  --color-primary: #149647;
+  --color-secondary: #053143;
+  --color-accent: #E2FCD6;
+
+  /* NOTE: ----------- New Dark Mode Colors ------------- */
+  --color-dark-text: #fff;
+  --color-dark: #042431;
+  --color-dark2: #053143;
+  --color-dark-primary: #CCECEE;
+  --color-dark-secondary: #E2FCD6;
+  
+
+  --color-edit: #FFD700;
+  /* --color-delete: #FF0000; */
+  --color-delete: #ED0000;
   --font-mona: "Mona Sans", sans-serif;
 }
 
@@ -46,15 +63,15 @@ body {
 }
 
 /* NOTE: study this media query */
-@media (prefers-color-scheme: light) {
-  :root {
-   color: #213547;
-    background-color: #ffffff;
-  }
-  a:hover {
-    color: #747bff;
-  }
-  button {
-    background-color: #f9f9f9;
-  }
-}
+/* @media (prefers-color-scheme: light) { */
+/*   :root { */
+/*    color: #213547; */
+/*     background-color: #ffffff; */
+/*   } */
+/*   a:hover { */
+/*     color: #747bff; */
+/*   } */
+/*   button { */
+/*     background-color: #f9f9f9; */
+/*   } */
+/* } */

@@ -19,9 +19,7 @@ export default class SystemLogsController {
         source: "system-logs",
         category: "system-logs",
         message: "Failed to fetch system logs.",
-        data: {
-          error: err,
-        },
+        data: { ...err },
       });
     }
   };

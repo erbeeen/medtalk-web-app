@@ -16,10 +16,10 @@ export default function SystemLogCard({ log }: { log: SystemLogType }) {
       <div className="flex flex-col items-start ">
         <div key={log._id} className="w-full pb-2 pl-3 flex flex-row justify-around">
           <div className="w-10/12">
-            <h2 className="text-lg font-medium">{log.message}</h2>
-            <p className="text-sm">{dateString}</p>
+            <h2 className="text-md font-medium">{log.message}</h2>
+            <p className="text-xs">{dateString}</p>
             {log.initiated_by && (
-              <p className="text-sm">Initiated by: {log.initiated_by}</p>
+              <p className="text-xs">Initiated by: {log.initiated_by}</p>
             )}
             <div className="w-full py-1 flex flex-row justify-start gap-1">
               <LogsCategoryIcon label={log.level} />
@@ -38,11 +38,22 @@ export default function SystemLogCard({ log }: { log: SystemLogType }) {
         </div>
         <div className={`pl-6 transition-all duration-100 ease-in-out ${showMore ? 'my-3 max-h-96 opacity-100' : 'max-h-0 opacity-0'}`}>
           {log.data && (
-            Object.entries(log.data).map(([key, value]) => (
-              <p key={key} className="text-xs">
-                {key}: {String(value)}
-              </p>
-            )
+            Object.entries(log.data).map(([key, value]) => {
+              if (typeof value === "object" && value !== null) {
+                for (const [subkey, subvalue] of Object.entries(value)) {
+                  return (
+                    <p key={key} className="text-xs">
+                      {subkey}: {String(subvalue)}
+                    </p>
+                  );
+                }
+              }
+              return (
+                <p key={key} className="text-xs">
+                  {key}: {String(value)}
+                </p>
+              );
+            }
             ))}
         </div>
       </div>

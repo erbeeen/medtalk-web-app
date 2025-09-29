@@ -7,13 +7,29 @@ type LogsCategoryButtonProps = {
 export default function LogsCategoryButton({ label, updateFilters }: LogsCategoryButtonProps) {
   const [isActive, setIsActive] = useState(false);
 
+  // ${(!isActive && label === "error") ? 'hover:bg-delete hover:text-white' : 'bg-delete text-white'}
   useEffect(() => {
     updateFilters(label, isActive);
   }, [isActive]);
 
-  return (
+  if (label !== "error") return (
     <div
-      className={`logs-category ${!isActive ? 'bg-gray-700/40 hover:bg-gray-700/80' : 'bg-gray-700/80'}`}
+      className={`logs-category 
+        ${!isActive ? 'hover:bg-primary dark:hover:bg-dark-primary hover:text-white dark:hover:text-black' : 'bg-primary dark:bg-dark-primary text-white dark:text-black'}
+      `}
+      onClick={() => {
+        setIsActive(prev => !prev);
+      }}
+    >
+      <button className="text-xs cursor-pointer">{label}</button>
+    </div>
+  );
+
+  if (label === "error") return (
+    <div
+      className={`logs-category 
+        ${!isActive ? 'hover:bg-delete hover:text-white' : 'bg-delete text-white'}
+      `}
       onClick={() => {
         setIsActive(prev => !prev);
       }}

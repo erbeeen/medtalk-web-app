@@ -74,12 +74,12 @@ export default function MedicineRoute({ scrollToTop }: MedicineRouteProps) {
       size: 50,
       minSize: 50,
     }),
-    medicineColumnHelper.accessor("_id", {
-      header: "_id",
-      cell: props => <ScrollTableData props={props} />,
-      size: 200,
-      minSize: 50,
-    }),
+    // medicineColumnHelper.accessor("_id", {
+    //   header: "_id",
+    //   cell: props => <ScrollTableData props={props} />,
+    //   size: 200,
+    //   minSize: 50,
+    // }),
     medicineColumnHelper.accessor("Molecule", {
       header: "Molecule",
       cell: props => <ScrollTableData props={props} />,
@@ -88,23 +88,23 @@ export default function MedicineRoute({ scrollToTop }: MedicineRouteProps) {
       minSize: 150,
     }),
     medicineColumnHelper.accessor("Level 1", {
-      header: "Level 1",
+      header: "Level 1 Info",
       cell: props => <ScrollTableData props={props} />,
       size: 300,
       minSize: 300,
     }),
     medicineColumnHelper.accessor("Level 2", {
-      header: "Level 2",
+      header: "Level 2 Info",
       cell: props => <ScrollTableData props={props} />,
       size: 250,
     }),
     medicineColumnHelper.accessor("Level 3", {
-      header: "Level 3",
+      header: "Level 3 Info",
       cell: props => <ScrollTableData props={props} />,
       size: 250,
     }),
     medicineColumnHelper.accessor("Level 4", {
-      header: "Level 4",
+      header: "Level 4 Info",
       cell: props => <ScrollTableData props={props} />,
       size: 250,
     }),
@@ -131,7 +131,7 @@ export default function MedicineRoute({ scrollToTop }: MedicineRouteProps) {
     }),
     medicineColumnHelper.accessor("actions", {
       header: "",
-      size: 125,
+      size: 115,
       cell: (props) => {
         const [isEditModalOpen, setIsEditModalOpen] = useState(false);
         const [isDeleteModalOpen, setIsDeleteModalOpen] = useState(false);
@@ -139,10 +139,9 @@ export default function MedicineRoute({ scrollToTop }: MedicineRouteProps) {
           <div className="text-center">
             <button
               type="button"
-              className="p-1.5 mx-1.5 border border-edit-dark/70 dark:hover:bg-edit-dark/70 
-              dark:text-edit-dark dark:hover:text-dark-text rounded-md cursor-pointer"
+              className="p-1.5 mx-1 border bg-edit hover:bg-edit/70 border-edit text-black rounded-md cursor-pointer"
               onClick={() => setIsEditModalOpen(true)}>
-              <FaEdit size="1.2rem" />
+              <FaEdit />
             </button>
             {isEditModalOpen && (
               <MedicineEditModal key={props.row.id}
@@ -155,10 +154,9 @@ export default function MedicineRoute({ scrollToTop }: MedicineRouteProps) {
             )}
             <button
               type="button"
-              className="p-1.5 mx-1.5 border dark:border-delete-dark/50 dark:hover:bg-delete-dark/50 
-              dark:text-delete-dark/50 dark:hover:text-dark-text rounded-md cursor-pointer"
+              className="p-1.5 mx-1 text-white bg-delete hover:bg-delete/70 border border-delete rounded-md cursor-pointer"
               onClick={() => setIsDeleteModalOpen(true)}>
-              <FaTrash size="1.2rem" />
+              <FaTrash />
             </button>
             {isDeleteModalOpen && (
               <MedicineDeleteModal
@@ -195,13 +193,12 @@ export default function MedicineRoute({ scrollToTop }: MedicineRouteProps) {
           />
         </div>
 
-        <div className="w-2/12 flex justify-end gap-3">
-          <div className="p-2 flex justify-center flex-nowrap items-center cursor-pointer
-            border dark:border-primary-dark/60 dark:hover:bg-primary-dark/80 
-            dark:text-primary-dark/60 dark:hover:text-dark-text rounded-md "
+        <div className="w-2/12 flex justify-end gap-2">
+          <div className="px-2 py-1.5 flex justify-center flex-nowrap items-center 
+            cursor-pointer rounded-md bg-primary hover:bg-primary/80 text-white"
             onClick={() => setIsAddModalOpen(true)}
           >
-            <FaPlus size="1.3rem" />
+            <FaPlus size="1.2rem" />
           </div>
           {isAddModalOpen && (
             <MedicineAddModal
@@ -213,11 +210,9 @@ export default function MedicineRoute({ scrollToTop }: MedicineRouteProps) {
             {Object.keys(rowSelection).length != 0 && (
               <button
                 type="button"
-                className="p-2 border rounded-md dark:border-delete-dark/50 
-                dark:hover:bg-delete-dark/50 dark:text-delete-dark/50 
-                dark:hover:text-dark-text cursor-pointer"
+                className="p-2 rounded-md text-white bg-delete hover:bg-delete/70 cursor-pointer"
                 onClick={() => setIsDeleteAllModalOpen(true)}>
-                <FaTrash size="1.3rem" />
+                <FaTrash size="1.2rem" />
               </button>
             )}
             {isDeleteAllModalOpen && (

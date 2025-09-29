@@ -3,20 +3,30 @@ import SubmitButton from "../components/buttons/SubmitButton";
 import { useUser } from "../contexts/UserContext";
 import { FaUserCircle } from "react-icons/fa";
 
+type UserProfile = {
+  firstName?: string | undefined;
+  lastName?: string | undefined;
+  email?: string | undefined;
+  username?: string | undefined;
+}
+
 export default function AccountSettingsRoute() {
   useEffect(() => {
     document.title = "Account Settings | MedTalk";
   }, []);
 
-  const { user } = useUser();
+  const { user, setUser } = useUser();
   const [firstName, setFirstName] = useState("");
   const [lastName, setLastName] = useState("");
   const [email, setEmail] = useState("");
   const [username, setUsername] = useState("");
   const [password, setPassword] = useState("");
   const [confirmPassword, setConfirmPassword] = useState("");
-  const [isLoading, setIsLoading] = useState(false);
-  const [message, setMessage] = useState<string | null>(null);
+  const [isUpdateProfileLoading, setIsUpdateProfileLoading] = useState(false);
+  const [isUpdatePasswordLoading, setIsUpdatePasswordLoading] = useState(false);
+  const [updateProfileMessage, setUpdateProfileMessage] = useState<string | null>(null);
+  const [updatePasswordMessage, setUpdatePasswordMessage] = useState<string | null>(null);
+  const [referenceProfile, setReferenceProfile] = useState<UserProfile>({});
 
   useEffect(() => {
     const fetchProfile = async () => {
@@ -29,6 +39,13 @@ export default function AccountSettingsRoute() {
         });
         if (res.status === 200) {
           const result = await res.json();
+
+          setReferenceProfile({
+            firstName: result.data.firstName,
+            lastName: result.data.lastName,
+            email: result.data.email,
+            username: result.data.username,
+          });
           setFirstName(result.data.firstName ?? "");
           setLastName(result.data.lastName ?? "");
           setEmail(result.data.email ?? "");
@@ -42,17 +59,29 @@ export default function AccountSettingsRoute() {
   }, [user?.id]);
 
   const handleUpdateProfile = async (e: FormEvent<HTMLFormElement>) => {
+    console.log('update profile called');
+    
     e.preventDefault();
     if (!user?.id) return;
-    setIsLoading(true);
-    setMessage(null);
+    setIsUpdateProfileLoading(true);
+    setUpdateProfileMessage(null);
+
+    const payload: any = {};
     try {
-      const body = JSON.stringify({
-        email,
-        username,
-        firstName,
-        lastName,
-      });
+      if (referenceProfile.firstName !== firstName) {
+        payload.firstName = firstName;
+      }
+      if (referenceProfile.lastName !== lastName) {
+        payload.lastName = lastName;
+      }
+      if (referenceProfile.email !== email) {
+        payload.email = email;
+      }
+      if (referenceProfile.username !== username) {
+        payload.username = username;
+      }
+      const body = JSON.stringify(payload);
+
       const response = await fetch(`/api/users/update/?id=${user.id}`, {
         mode: "cors",
         method: "PUT",
@@ -61,26 +90,39 @@ export default function AccountSettingsRoute() {
         body,
       });
       const result = await response.json();
+      console.log('result:');
+      console.log(result);
       if (!result.success) {
-        setMessage("Failed to update profile.");
+        setUpdateProfileMessage("Failed to update profile.");
       } else {
-        setMessage("Profile updated successfully.");
+        setUpdateProfileMessage("Profile updated successfully.");
+        setReferenceProfile({
+          firstName: result.data.firstName,
+          lastName: result.data.lastName,
+          email: result.data.email,
+          username: result.data.username,
+        });
+        setFirstName(result.data.firstName ?? "");
+        setLastName(result.data.lastName ?? "");
+        setEmail(result.data.email ?? "");
+        setUsername(result.data.username ?? "");
+        setUser({id: result.data._id, username: result.data.username, role: result.data.role});
       }
     } catch {
-      setMessage("Server error. Try again later.");
+      setUpdateProfileMessage("Server error. Try again later.");
     } finally {
-      setIsLoading(false);
+      setIsUpdateProfileLoading(false);
     }
   };
 
-  const handleSubmit = async (e: FormEvent<HTMLFormElement>) => {
+  const handleUpdatePassword = async (e: FormEvent<HTMLFormElement>) => {
     e.preventDefault();
     if (password !== confirmPassword) {
-      setMessage("Passwords do not match");
+      setUpdatePasswordMessage("Passwords do not match");
       return;
     }
-    setIsLoading(true);
-    setMessage(null);
+    setIsUpdatePasswordLoading(true);
+    setUpdateProfileMessage(null);
     try {
       const response = await fetch("/api/users/change-password", {
         method: "PUT",
@@ -90,95 +132,95 @@ export default function AccountSettingsRoute() {
       });
       const result = await response.json();
       if (!result.success) {
-        setMessage("Failed to change password.");
-        setIsLoading(false);
+        setUpdatePasswordMessage(result.data);
+        setIsUpdateProfileLoading(false);
         return;
       }
-      setMessage("Password changed successfully.");
+      setUpdatePasswordMessage("Password changed successfully.");
       setPassword("");
       setConfirmPassword("");
     } catch {
-      setMessage("Server error. Try again later.");
+      setUpdatePasswordMessage("Server error. Try again later.");
     } finally {
-      setIsLoading(false);
+      setIsUpdatePasswordLoading(false);
     }
   };
 
   return (
     <div className="w-full flex justify-center items-start">
-      <div className="w-full max-w-5xl flex flex-col items-center gap-8 bg-gray-800/20 dark:bg-gray-800/30 rounded-xl p-8 shadow-lg">
+      <div className="w-full max-w-5xl flex flex-col items-center gap-8 rounded-xl p-8 ">
         <div className="w-full flex flex-col items-center gap-3 text-center">
           <FaUserCircle className="text-gray-500 dark:text-gray-300" size={120} />
-          <h1 className="text-2xl md:text-3xl font-semibold">Welcome{username ? ", " + username : ""}</h1>
+          <h1 className="text-2xl md:text-3xl font-semibold">Welcome{user?.username ? `, ${user.username}` : ""}</h1>
           <p className="text-sm md:text-base text-light-text/70 dark:text-dark-text/70">
             Manage your profile here.
           </p>
         </div>
 
         <div className="w-full grid grid-cols-1 md:grid-cols-2 gap-8">
-        <form onSubmit={handleUpdateProfile} className="w-full">
-          <div className="h-full px-6 md:px-10 py-6 flex flex-col justify-center gap-5 bg-gray-700/20 dark:bg-gray-700/30 rounded-lg">
-            <h2 className="text-xl font-bold mb-2">Profile</h2>
-            <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-              <div className="flex flex-col gap-1">
-                <label htmlFor="firstName" className="pl-1">First Name</label>
-                <input id="firstName" className="modal-input" value={firstName} onChange={(e) => setFirstName(e.target.value)} required />
+          <form onSubmit={handleUpdateProfile} className="w-full">
+            <div className="h-full px-6 md:px-10 py-6 flex flex-col justify-center gap-5 bg-gray-200 dark:bg-gray-700/30 rounded-lg">
+              <h2 className="text-xl font-bold mb-2">Profile</h2>
+              <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                <div className="flex flex-col gap-1">
+                  <label htmlFor="firstName" className="pl-1">First Name</label>
+                  <input id="firstName" className="modal-input" value={firstName} onChange={(e) => setFirstName(e.target.value)} required />
+                </div>
+                <div className="flex flex-col gap-1">
+                  <label htmlFor="lastName" className="pl-1">Last Name</label>
+                  <input id="lastName" className="modal-input" value={lastName} onChange={(e) => setLastName(e.target.value)} required />
+                </div>
               </div>
               <div className="flex flex-col gap-1">
-                <label htmlFor="lastName" className="pl-1">Last Name</label>
-                <input id="lastName" className="modal-input" value={lastName} onChange={(e) => setLastName(e.target.value)} required />
+                <label htmlFor="email" className="pl-1">Email Address</label>
+                <input id="email" type="email" className="modal-input" value={email} onChange={(e) => setEmail(e.target.value)} required />
               </div>
+              <div className="flex flex-col gap-1">
+                <label htmlFor="username" className="pl-1">Username</label>
+                <input id="username" className="modal-input" value={username} onChange={(e) => setUsername(e.target.value)} required />
+              </div>
+              <div className="flex justify-center items-center dark:text-delete-dark/90 text-sm min-h-5">
+                {updateProfileMessage}
+              </div>
+              <SubmitButton isLoading={isUpdateProfileLoading}>Update</SubmitButton>
             </div>
-            <div className="flex flex-col gap-1">
-              <label htmlFor="email" className="pl-1">Email Address</label>
-              <input id="email" type="email" className="modal-input" value={email} onChange={(e) => setEmail(e.target.value)} required />
-            </div>
-            <div className="flex flex-col gap-1">
-              <label htmlFor="username" className="pl-1">Username</label>
-              <input id="username" className="modal-input" value={username} onChange={(e) => setUsername(e.target.value)} required />
-            </div>
-            <div className="flex justify-center items-center dark:text-delete-dark/90 text-sm min-h-5">
-              {message}
-            </div>
-            <SubmitButton isLoading={isLoading}>Update</SubmitButton>
-          </div>
-        </form>
+          </form>
 
-        <form onSubmit={handleSubmit} className="w-full">
-          <div className="h-full px-6 md:px-10 py-6 flex flex-col justify-center gap-5 bg-gray-700/20 dark:bg-gray-700/30 rounded-lg">
-            <h2 className="text-xl font-bold mb-2">Change Password</h2>
-          <div className="flex flex-col gap-1">
-            <label htmlFor="password" className="pl-1">New Password</label>
-            <input
-              type="password"
-              id="password"
-              name="password"
-              className="modal-input"
-              value={password}
-              onChange={(e) => setPassword(e.target.value)}
-              required
-              minLength={8}
-            />
-          </div>
-          <div className="flex flex-col gap-1">
-            <label htmlFor="confirmPassword" className="pl-1">Confirm Password</label>
-            <input
-              type="password"
-              id="confirmPassword"
-              name="confirmPassword"
-              className="modal-input"
-              value={confirmPassword}
-              onChange={(e) => setConfirmPassword(e.target.value)}
-              required
-              minLength={8}
-            />
-          </div>
-            <div className="flex justify-center items-center dark:text-delete-dark/90 text-sm min-h-5">
-              {message}
+          <form onSubmit={handleUpdatePassword} className="w-full">
+            <div className="h-full px-6 md:px-10 py-6 flex flex-col justify-center gap-5 bg-gray-200 dark:bg-gray-700/30 rounded-lg">
+              <h2 className="text-xl font-bold mb-2">Change Password</h2>
+              <div className="flex flex-col gap-1">
+                <label htmlFor="password" className="pl-1">New Password</label>
+                <input
+                  type="password"
+                  id="password"
+                  name="password"
+                  className="modal-input"
+                  value={password}
+                  onChange={(e) => setPassword(e.target.value)}
+                  required
+                  minLength={8}
+                />
+              </div>
+              <div className="flex flex-col gap-1">
+                <label htmlFor="confirmPassword" className="pl-1">Confirm Password</label>
+                <input
+                  type="password"
+                  id="confirmPassword"
+                  name="confirmPassword"
+                  className="modal-input"
+                  value={confirmPassword}
+                  onChange={(e) => setConfirmPassword(e.target.value)}
+                  required
+                  minLength={8}
+                />
+              </div>
+              <div className="flex justify-center items-center dark:text-delete-dark/90 text-sm min-h-5">
+                {updatePasswordMessage}
+              </div>
+              <SubmitButton isLoading={isUpdatePasswordLoading}>Update password</SubmitButton>
             </div>
-            <SubmitButton isLoading={isLoading}>Update password</SubmitButton>
-          </div>
-        </form>
+          </form>
         </div>
       </div>
     </div>

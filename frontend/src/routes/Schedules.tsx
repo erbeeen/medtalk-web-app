@@ -1,11 +1,12 @@
 import { useState, useEffect } from "react";
 import type { ScheduleType } from "../types/schedule";
+import { FaPlus } from "react-icons/fa";
 import { createColumnHelper } from "@tanstack/react-table";
 import ScrollTableData from "../components/ScrollTableData";
 import { FaEdit, FaTrash } from "react-icons/fa";
 import SearchBar from "../components/SearchBar";
 import Table from "../components/Table";
-// import ScheduleAddModal from "../components/modals/ScheduleAddModal";
+import ScheduleAddModal from "../components/modals/ScheduleAddModal";
 import ScheduleEditModal from "../components/modals/ScheduleEditModal";
 import ScheduleDeleteModal from "../components/modals/ScheduleDeleteModal";
 
@@ -19,7 +20,7 @@ export default function ScheduleRoute({ scrollToTop }: ScheduleRouteProps) {
   const [rowSelection, setRowSelection] = useState({});
   const [searchText, setSearchText] = useState("");
   const [globalFilter, setGlobalFilter] = useState<any>([]);
-  // const [isAddModalOpen, setIsAddModalOpen] = useState(false);
+  const [isAddModalOpen, setIsAddModalOpen] = useState(false);
   const [isDeleteAllModalOpen, setIsDeleteAllModalOpen] = useState(false);
 
   useEffect(() => {
@@ -180,29 +181,26 @@ export default function ScheduleRoute({ scrollToTop }: ScheduleRouteProps) {
           />
         </div>
 
-        <div className="w-2/12 flex justify-end gap-3">
-          {/* <div className="p-2 flex justify-center flex-nowrap items-center cursor-pointer */}
-          {/*   border dark:border-primary-dark/60 dark:hover:bg-primary-dark/80  */}
-          {/*   dark:text-primary-dark/60 dark:hover:text-dark-text rounded-md " */}
-          {/*   onClick={() => setIsAddModalOpen(true)} */}
-          {/* > */}
-          {/*   <FaPlus size="1.3rem" /> */}
-          {/* </div> */}
-          {/* {isAddModalOpen && ( */}
-          {/*   <ScheduleAddModal */}
-          {/*     onClose={() => setIsAddModalOpen(false)} */}
-          {/*     setSchedules={setSchedules} */}
-          {/*   /> */}
-          {/* )} */}
+        <div className="w-2/12 flex justify-end gap-2">
+          <div className="px-2 py-1.5 flex justify-center flex-nowrap items-center 
+            cursor-pointer rounded-md bg-primary hover:bg-primary/80 text-white"
+            onClick={() => setIsAddModalOpen(true)}
+          >
+            <FaPlus size="1.2rem" />
+          </div>
+          {isAddModalOpen && (
+            <ScheduleAddModal
+              onClose={() => setIsAddModalOpen(false)}
+              setSchedules={setSchedules}
+            />
+          )}
           <div>
             {Object.keys(rowSelection).length != 0 && (
               <button
                 type="button"
-                className="p-2 border rounded-md dark:border-delete-dark/50 
-                dark:hover:bg-delete-dark/50 dark:text-delete-dark/50 
-                dark:hover:text-dark-text cursor-pointer"
+                className="p-2 rounded-md text-white bg-delete hover:bg-delete/70 cursor-pointer"
                 onClick={() => setIsDeleteAllModalOpen(true)}>
-                <FaTrash size="1.3rem" />
+                <FaTrash size="1.2rem" />
               </button>
             )}
             {isDeleteAllModalOpen && (

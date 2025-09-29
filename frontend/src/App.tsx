@@ -4,7 +4,7 @@ import AdminsRoute from './routes/Admins';
 import HomeRoute from './routes/Home';
 import MedicineRoute from './routes/Medicine';
 import NotFoundRoute from './routes/NotFound';
-// import ScheduleRoute from './routes/Schedules';
+import ScheduleRoute from './routes/Schedules';
 import UsersRoute from './routes/Users';
 import LoginRoute from './routes/Login';
 import Sidebar from './components/Sidebar';
@@ -47,7 +47,7 @@ function App() {
       mainContentRef.current.scroll({
         top: 0,
         left: 0,
-        behavior: "instant",
+        behavior: "smooth",
       });
     }
   }
@@ -64,7 +64,7 @@ function App() {
             <div
               ref={mainContentRef}
               id="content-area"
-              className="w-full max-w-[1920px] p-4 flex flex-col flex-1 
+              className="w-full max-w-[1920px] flex flex-col flex-1 
           overflow-y-auto justify-start align-center gap-10 
           bg-light dark:bg-dark text-light-text dark:text-dark-text/95">
               <Routes>
@@ -119,6 +119,13 @@ function App() {
                     </RoleGuard>
                   } />
                   
+                  {/* Schedules - only for doctor and super admin */}
+                  <Route path="/schedules" element={
+                    <RoleGuard allowedRoles={["doctor", "super admin"]}>
+                      <ScheduleRoute scrollToTop={scrollToTop} />
+                    </RoleGuard>
+                  } />
+
                   {/* Account - accessible to all authenticated users */}
                   <Route path="/account" element={<AccountSettingsRoute />} />
                 </Route>

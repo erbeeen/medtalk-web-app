@@ -2,11 +2,12 @@ import { useState, useEffect, type FormEvent } from "react";
 import { useNavigate } from "react-router-dom";
 import { useUser } from "../contexts/UserContext";
 import SubmitButton from "../components/buttons/SubmitButton";
-import medtalkDarkLogo from "../assets/medtalk-dark-logo.png";
+import medTalkLogo from "../assets/light-logo-with-name.svg";
+import medtalkDarkLogo from "../assets/dark-logo-with-name.svg";
+import userPrefersDarkMode from "../contexts/DarkModeContext";
 
-// FIX: After logging in, it defaults to dashboard. Dashboard should
-// only be available for super admin and doctor
 export default function LoginRoute() {
+  const isDarkMode = userPrefersDarkMode();
   useEffect(() => {
     document.title = "Log In | MedTalk";
   }, []);
@@ -85,10 +86,11 @@ export default function LoginRoute() {
 
   return (
     <div className="h-screen w-full flex justify-center items-center">
-      <div className="p-6 flex justify-center items-center dark:bg-gray-800/50 border border-gray-700 rounded-4xl">
+      {/* <div className="p-6 flex justify-center items-center dark:bg-gray-800/50 border border-gray-700 rounded-4xl"> */}
+      <div className="p-6 flex justify-center items-center">
         <div className="h-full flex flex-col justify-center items-center">
           <img
-            src={medtalkDarkLogo}
+            src={`${!isDarkMode ? medTalkLogo : medtalkDarkLogo}`}
             alt="medtalk logo"
             className="size-44 lg:size-96 self-center object-contain"
           />

@@ -75,11 +75,11 @@ export default function AdminsRoute({ scrollToTop }: AdminsRouteProps) {
       size: 50,
       minSize: 50,
     }),
-    adminColumnHelper.accessor("_id", {
-      header: "_id",
-      cell: props => <ScrollTableData props={props} />,
-      size: 100,
-    }),
+    // adminColumnHelper.accessor("_id", {
+    //   header: "_id",
+    //   cell: props => <ScrollTableData props={props} />,
+    //   size: 100,
+    // }),
     adminColumnHelper.accessor("role", {
       header: "Role",
       cell: props => <ScrollTableData props={props} />,
@@ -108,7 +108,7 @@ export default function AdminsRoute({ scrollToTop }: AdminsRouteProps) {
     }),
     adminColumnHelper.accessor("actions", {
       header: "",
-      size: 125,
+      size: 100,
       cell: (props) => {
         const [isEditModalOpen, setIsEditModalOpen] = useState(false);
         const [isDeleteModalOpen, setIsDeleteModalOpen] = useState(false);
@@ -116,10 +116,9 @@ export default function AdminsRoute({ scrollToTop }: AdminsRouteProps) {
           <div className="text-center">
             <button
               type="button"
-              className="p-1.5 mx-1.5 border border-edit-dark/70 dark:hover:bg-edit-dark/70 
-              dark:text-edit-dark dark:hover:text-dark-text rounded-md cursor-pointer"
+              className="p-1.5 mx-1 border bg-edit hover:bg-edit/70 border-edit text-black rounded-md cursor-pointer"
               onClick={() => setIsEditModalOpen(true)}>
-              <FaEdit size="1.2rem" />
+              <FaEdit />
             </button>
             {isEditModalOpen && (
               <AdminEditModal key={props.row.id}
@@ -132,10 +131,9 @@ export default function AdminsRoute({ scrollToTop }: AdminsRouteProps) {
             )}
             <button
               type="button"
-              className="p-1.5 mx-1.5 border dark:border-delete-dark/50 dark:hover:bg-delete-dark/50 
-              dark:text-delete-dark/50 dark:hover:text-dark-text rounded-md cursor-pointer"
+              className="p-1.5 mx-1 text-white bg-delete hover:bg-delete/70 border border-delete rounded-md cursor-pointer"
               onClick={() => setIsDeleteModalOpen(true)}>
-              <FaTrash size="1.2rem" />
+              <FaTrash />
             </button>
             {isDeleteModalOpen && (
               <AdminDeleteModal
@@ -172,13 +170,12 @@ export default function AdminsRoute({ scrollToTop }: AdminsRouteProps) {
           />
         </div>
 
-        <div className="w-2/12 flex justify-end gap-3">
-          <div className="p-2 flex justify-center flex-nowrap items-center cursor-pointer
-            border dark:border-primary-dark/60 dark:hover:bg-primary-dark/80 
-            dark:text-primary-dark/60 dark:hover:text-dark-text rounded-md "
+        <div className="w-2/12 flex justify-end gap-2">
+          <div className="px-2 py-1.5 flex justify-center flex-nowrap items-center 
+            cursor-pointer rounded-md bg-primary hover:bg-primary/80 text-white"
             onClick={() => setIsAddModalOpen(true)}
           >
-            <FaPlus size="1.3rem" />
+            <FaPlus size="1.2rem" />
           </div>
           {isAddModalOpen && (
             <AdminAddModal
@@ -190,11 +187,9 @@ export default function AdminsRoute({ scrollToTop }: AdminsRouteProps) {
             {Object.keys(rowSelection).length != 0 && (
               <button
                 type="button"
-                className="p-2 border rounded-md dark:border-delete-dark/50 
-                dark:hover:bg-delete-dark/50 dark:text-delete-dark/50 
-                dark:hover:text-dark-text cursor-pointer"
+                className="p-2 rounded-md text-white bg-delete hover:bg-delete/70 cursor-pointer"
                 onClick={() => setIsDeleteAllModalOpen(true)}>
-                <FaTrash size="1.3rem" />
+                <FaTrash size="1.2rem" />
               </button>
             )}
             {isDeleteAllModalOpen && (
