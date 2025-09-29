@@ -1072,65 +1072,57 @@ export default class UserController {
   };
 
   updateUser = async (req: Request, res: Response, next: NextFunction) => {
-    const id = String(req.query.id);
-    const editedUserDetails: UserType = req.body;
-
-    if (!id) {
-      sendJsonResponse(res, 400, "no id included");
-      return;
-    }
-
-    if (!mongoose.Types.ObjectId.isValid(id)) {
-      sendJsonResponse(res, 400, "invalid id");
-      return;
-    }
-
-    // TODO: Check email only if body has email
-    // Check username only if body has username
-    
-    // if (editedUserDetails.email) {
-    //   const [usernameExists, emailExists, userExistsErr] = await doesUserExist(
-    //     editedUserDetails.username,
-    //     editedUserDetails.email,
-    //   );
-    //   if (userExistsErr !== null) {
-    //     next(userExistsErr);
-    //     sendJsonResponse(res, 500);
-    //     return;
-    //   }
-    // }
-    //
-    // if (editedUserDetails.username) {
-    //   if (usernameExists) {
-    //     sendJsonResponse(res, 409, "username is already taken");
-    //     return;
-    //   }
-    // }
-    //
-    // if (emailExists) {
-    //   sendJsonResponse(res, 409, "email is already taken");
-    //   return;
-    // }
-
-    const [userIdExists, userIdErr] = await doesUserIdExist(id);
-    if (userIdErr !== null) {
-      console.error(`${this.updateUser.name} doesUserIdExist error`);
-      logError(userIdErr);
-      sendJsonResponse(res, 500);
-      next(userIdErr);
-      return;
-    } else if (!userIdExists) {
-      sendJsonResponse(res, 404, `no user with id ${id}`);
-      return;
-    }
-
     try {
+      const id = String(req.query.id);
+      const editedUserDetails: UserType = req.body;
+
+      if (!id) {
+        sendJsonResponse(res, 400, "no id included");
+        return;
+      }
+
+      if (!mongoose.Types.ObjectId.isValid(id)) {
+        sendJsonResponse(res, 400, "invalid id");
+        return;
+      }
+
+      if (editedUserDetails.email || editedUserDetails.username) {
+        const [usernameExists, emailExists, userExistsErr] =
+          await doesUserExist(
+            editedUserDetails.username,
+            editedUserDetails.email,
+          );
+        if (userExistsErr !== null) {
+          throw userExistsErr;
+        }
+
+        if (editedUserDetails.username) {
+          if (usernameExists) {
+            sendJsonResponse(res, 409, "username is already taken");
+            return;
+          }
+        }
+
+        if (editedUserDetails.email) {
+          if (emailExists) {
+            sendJsonResponse(res, 409, "email is already taken");
+            return;
+          }
+        }
+      }
+
+      const [userIdExists, userIdErr] = await doesUserIdExist(id);
+      if (userIdErr !== null) {
+        throw userIdErr;
+      } else if (!userIdExists) {
+        sendJsonResponse(res, 404, `no user with id ${id}`);
+        return;
+      }
+
       const updatedUser: UserDocument = await User.findByIdAndUpdate(
         id,
         editedUserDetails,
-        {
-          new: true,
-        },
+        { new: true },
       );
       sendJsonResponse(res, 201, {
         _id: String(updatedUser._id),
@@ -1181,8 +1173,7 @@ export default class UserController {
     try {
       const [userIdExists, userIdErr] = await doesUserIdExist(id);
       if (userIdErr !== null) {
-        sendJsonResponse(res, 500);
-        return;
+        throw userIdErr;
       } else if (!userIdExists) {
         sendJsonResponse(res, 404, `no user with id ${id}`);
         return;
@@ -1191,6 +1182,14 @@ export default class UserController {
       console.error(`${this.deleteUser.name} doesUserIdExist error`);
       logError(err);
       sendJsonResponse(res, 500);
+      await SystemLog.create({
+        level: "error",
+        source: "admin-management",
+        category: "user-management",
+        message: "User account deletion failed.",
+        initiated_by: req.user.username,
+        data: { ...err },
+      });
       next(err);
       return;
     }
@@ -1274,11 +1273,7 @@ export default class UserController {
         saltRounds,
         async (error: Error, hashed: string) => {
           if (error) {
-            console.error(`${this.changePassword.name} bcrypt.hash error`);
-            logError(error);
-            sendJsonResponse(res, 500);
-            next(error);
-            return;
+            throw error;
           }
           const result = await User.findByIdAndUpdate(
             userID,
