@@ -25,7 +25,7 @@ export default function NotFoundRoute() {
             404
           </div>
           <div className="w-32 h-32 mx-auto mb-6 relative">
-            <div className="absolute inset-0 bg-gradient-to-br from-accent to-accent rounded-full opacity-20 animate-pulse"></div>
+            <div className="absolute inset-0 bg-gray-300/80 dark:dark-secondary rounded-full"></div>
             <div className="absolute inset-2 bg-gradient-to-br from-primary to-primary rounded-full flex items-center justify-center">
               <svg 
                 className="w-16 h-16 text-white" 
