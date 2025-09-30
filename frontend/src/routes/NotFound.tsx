@@ -21,12 +21,12 @@ export default function NotFoundRoute() {
       <div className="text-center max-w-md mx-auto">
         {/* 404 Illustration */}
         <div className="mb-8">
-          <div className="text-8xl font-bold text-blue-500 dark:text-blue-400 mb-4">
+          <div className="text-8xl font-bold text-primary dark:text-dark-primary mb-4">
             404
           </div>
           <div className="w-32 h-32 mx-auto mb-6 relative">
-            <div className="absolute inset-0 bg-gradient-to-br from-blue-400 to-purple-500 rounded-full opacity-20 animate-pulse"></div>
-            <div className="absolute inset-2 bg-gradient-to-br from-blue-500 to-purple-600 rounded-full flex items-center justify-center">
+            <div className="absolute inset-0 bg-gradient-to-br from-accent to-accent rounded-full opacity-20 animate-pulse"></div>
+            <div className="absolute inset-2 bg-gradient-to-br from-primary to-primary rounded-full flex items-center justify-center">
               <svg 
                 className="w-16 h-16 text-white" 
                 fill="none" 
@@ -57,7 +57,7 @@ export default function NotFoundRoute() {
         <div className="flex flex-col sm:flex-row gap-4 justify-center">
           <button
             onClick={handleGoHome}
-            className="px-6 py-3 bg-blue-500 hover:bg-blue-600 text-white font-medium rounded-lg transition-colors duration-200 flex items-center justify-center gap-2"
+            className="px-6 py-3 bg-primary hover:bg-primary/80 text-white font-medium rounded-lg flex items-center justify-center gap-2 cursor-pointer"
           >
             <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
               <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M3 12l2-2m0 0l7-7 7 7M5 10v10a1 1 0 001 1h3m10-11l2 2m-2-2v10a1 1 0 01-1 1h-3m-6 0a1 1 0 001-1v-4a1 1 0 011-1h2a1 1 0 011 1v4a1 1 0 001 1m-6 0h6" />
@@ -66,7 +66,7 @@ export default function NotFoundRoute() {
           </button>
           <button
             onClick={handleGoBack}
-            className="px-6 py-3 border border-gray-300 dark:border-gray-600 hover:bg-gray-50 dark:hover:bg-gray-800 text-gray-700 dark:text-gray-300 font-medium rounded-lg transition-colors duration-200 flex items-center justify-center gap-2"
+            className="px-6 py-3 border border-gray-300 dark:border-gray-600 hover:bg-gray-50 dark:hover:bg-gray-800 text-gray-700 dark:text-gray-300 font-medium rounded-lg flex items-center justify-center gap-2 cursor-pointer"
           >
             <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
               <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M10 19l-7-7m0 0l7-7m-7 7h18" />

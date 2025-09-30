@@ -143,12 +143,13 @@ export default class UserController {
           // WARN: This is not the correct implementation. The link should be a frontend route,
           // not the API route. The frontend route will call the API route. Use only for testing if this function works
 
+          const baseUrl = process.env.BASE_URL || "localhost:3000";
           sendEmail({
             from: FROM_EMAIL,
             to: result.email,
             subject: "Account Verification - MedTalk",
-            text: `Thank you for signing up at MedTalk! Click the link to verify your account. https://medtalk-webapp-122bcbf0f96e.herokuapp.com/verify-account/?id=${result._id}`,
-            html: `<p>Thank you for signing up at MedTalk! Click <a href="https://medtalk-webapp-122bcbf0f96e.herokuapp.com/verify-account/?id=${result._id}">here</a> to verify your account.</p>`,
+            text: `Thank you for signing up at MedTalk! Click the link to verify your account. https://${baseUrl}/verify-account/?id=${result._id}`,
+            html: `<p>Thank you for signing up at MedTalk! Click <a href="https://${baseUrl}/verify-account/?id=${result._id}">here</a> to verify your account.</p>`,
           });
 
           await SystemLog.create({
@@ -1037,7 +1038,7 @@ export default class UserController {
             to: result.email,
             subject: "Account Created - MedTalk",
             text: `An account has been created on your email. Here are your credentials when logging in:\nEmail: ${result.email}\nPassword: ${generatedPassword}\nDo not forget to change your password after first log in.`,
-            html: `<p>An account has been created on your email. Here are your credentials when logging in:<br><br>Email: ${result.email}<br>Password: ${generatedPassword}<br><br>Do not forget to change your password after first log in.</p>`,
+            html: `<p>An account has been created on your email. Here are your credentials when logging in:<br><br>Email: ${result.email}<br>Password: ${generatedPassword}<br><br>Do not forget to change your password after your first log in.</p>`,
           });
 
           await SystemLog.create({
@@ -1340,7 +1341,7 @@ export default class UserController {
         used: false,
       });
 
-      const baseUrl = process.env.FRONTEND_BASE_URL || "http://localhost:5173";
+      const baseUrl = process.env.BASE_URL || "http://localhost:5173";
       const resetLink = `${baseUrl}/reset-password?token=${token}`;
 
       await sendEmail({
