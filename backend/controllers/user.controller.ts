@@ -145,7 +145,7 @@ export default class UserController {
             from: FROM_EMAIL,
             to: result.email,
             subject: "Account Verification - MedTalk",
-            text: `Thank you for signing up at MedTalk! Click the link to verify your account. https://${baseUrl}/verify-account/?id=${result._id}`,
+            text: `Thank you for signing up at MedTalk! Click the link to verify your account. ${baseUrl}/verify-account/?id=${result._id}`,
             html: `<p>Thank you for signing up at MedTalk! Click <a href="${baseUrl}/verify-account/?id=${result._id}">here</a> to verify your account.</p>`,
           });
 
