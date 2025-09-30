@@ -53,6 +53,11 @@ export default class ScheduleController {
   ) => {
     try {
       const schedules: Array<ScheduleType> = req.body.schedules;
+      console.log("\n");
+      console.log("schedule value:");
+      console.log(schedules);
+      console.log("\n");
+      sendJsonResponse(res, 400, "provide all fields");
 
       if (
         !schedules[0].userID ||
