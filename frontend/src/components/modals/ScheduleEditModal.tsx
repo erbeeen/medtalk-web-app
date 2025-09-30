@@ -10,7 +10,7 @@ type EditUserModalProps = {
   setSchedules: Dispatch<SetStateAction<Array<ScheduleType>>>;
 }
 
-export default function ScheduleEditModal({ onClose, data, setSchedules }: EditUserModalProps) {
+export default function ScheduleEditModal({ onClose, data }: EditUserModalProps) {
   const originalDate = new Date(data.date);
   const originalYear = originalDate.getFullYear();
   const originalMonth = String(originalDate.getMonth() + 1).padStart(2, "0");
