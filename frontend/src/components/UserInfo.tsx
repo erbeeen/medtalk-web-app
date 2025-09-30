@@ -27,13 +27,15 @@ export default function UserInfo() {
           </div>
         </Link>
         <div className="w-8/12 hidden md:flex lg:flex xl:flex flex-col">
-          <h1 className="mb-0.5 font-medium">{user?.username}</h1>
+          <h1 className="mb-0.5 font-medium">{user?.username ? user.username : ""}</h1>
           <div className="flex flex-row text-[11px]">
-            <h3>{role}</h3>
+            <h3>{user?.role ? user.role : ""}</h3>
             <span className="px-0.5">|</span>
-            <Link to={"/account"}>
-              View Profile
-            </Link>
+            {user && (
+              <Link to={"/account"}>
+                View Profile
+              </Link>
+            )}
           </div>
         </div>
       </div>

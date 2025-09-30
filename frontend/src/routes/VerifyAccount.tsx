@@ -19,7 +19,7 @@ export default function VerifyAccountRoute() {
           throw new Error("No user ID provided in the verification link.");
         }
 
-        const res = await fetch(`/api/verify/?id=${userID}`, {
+        const res = await fetch(`/api/users/verify/?id=${userID}`, {
           mode: "cors",
           method: "GET",
         });
@@ -36,7 +36,8 @@ export default function VerifyAccountRoute() {
         }, 2000);
 
       } catch (err: any) {
-        setError(err.message || "Failed to verify account. Please try again.");
+        // setError(err.message || "Failed to verify account. Please try again.");
+        setError(err.message);
       } finally {
         setIsLoading(false);
       }
