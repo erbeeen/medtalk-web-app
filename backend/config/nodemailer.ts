@@ -26,6 +26,17 @@ type sendEmailType = {
   html: string;
 };
 
+declare module "nodemailer" {
+  interface TransportOptions {
+    component?: string | undefined;
+    host?: string | undefined;
+    port?: string | number | undefined;
+    service?: string | undefined;
+    auth?: object | string | undefined;
+    secure?: boolean | undefined;
+  }
+}
+
 export default async function sendEmail(mailOptions: sendEmailType) {
   try {
     const accessToken = await oAuth2Client.getAccessToken();
