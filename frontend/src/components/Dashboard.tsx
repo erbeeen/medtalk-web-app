@@ -402,6 +402,7 @@ export default function Dashboard() {
                     cursor={!isDarkMode ? { fill: "rgba(0, 0, 0, 0.05)" } : { fill: "rgba(255, 255, 255, 0.2)" }}
                     contentStyle={{ borderRadius: "8px", boxShadow: "0 2px 4px rgba(0, 0, 0, 0.1)" }}
                     labelStyle={{ color: "#040316" }}
+                    itemStyle={{ color: "#000" }}
                   />
                   <Legend wrapperStyle={{ paddingTop: "10px" }} />
                   <Bar
@@ -457,6 +458,7 @@ export default function Dashboard() {
                     cursor={!isDarkMode ? { fill: "rgba(0, 0, 0, 0.05)" } : { fill: "rgba(255, 255, 255, 0.2)" }}
                     contentStyle={{ borderRadius: "8px", boxShadow: "0 2px 4px rgba(0, 0, 0, 0.1)" }}
                     labelStyle={{ color: "#040316" }}
+                    itemStyle={{ color: "#000" }}
                   />
                   <Legend wrapperStyle={{ paddingTop: "10px" }} />
                   <Bar
@@ -511,6 +513,7 @@ export default function Dashboard() {
                   cursor={!isDarkMode ? { fill: "rgba(0, 0, 0, 0.05)" } : { fill: "rgba(255, 255, 255, 0.2)" }}
                   contentStyle={{ borderRadius: "8px", boxShadow: "0 2px 4px rgba(0, 0, 0, 0.1)" }}
                   labelStyle={{ color: "#040316" }}
+                  itemStyle={{ color: "#000" }}
                 />
                 <Legend wrapperStyle={{ paddingTop: "10px" }} />
                 <Bar

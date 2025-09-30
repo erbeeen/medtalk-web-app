@@ -9,7 +9,9 @@ export default function ProtectedRoute() {
   let refreshIntervalId: NodeJS.Timeout | null = null;
 
   const callAuthenticate = async () => {
+    setIsLoading(true);
     await authenticateUser();
+    setIsLoading(false);
   }
 
   const refreshAccesToken = async () => {
@@ -65,9 +67,7 @@ export default function ProtectedRoute() {
   }
 
   useEffect(() => {
-    setIsLoading(true);
     callAuthenticate();
-    setIsLoading(false);
 
     if (!refreshIntervalId) {
       refreshIntervalId = setInterval(() => {

@@ -149,7 +149,7 @@ export default function PdfTemplate({ reportRef, currentDate, dailyDate, dailyDa
                   type="category"
                   dataKey="name"
                   stroke="#000"
-                  angle={monthlyData.find((data) => data.name.length > 15) ? 5 : 0}
+                  angle={monthlyData.find((data) => data.name.length > 15) ? 10 : 0}
                   height={30}
                   tickMargin={10}
                   className="text-xs fill-gray-300"

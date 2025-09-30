@@ -13,7 +13,7 @@
   }
 
   .base-layout {
-    @apply px-0 pt-12 md:px-6 lg:px-8 flex flex-col items-center gap-4;
+    @apply h-screen px-0 pt-12 md:px-6 lg:px-8 flex flex-col items-center gap-4;
   }
 
   .sidebar {

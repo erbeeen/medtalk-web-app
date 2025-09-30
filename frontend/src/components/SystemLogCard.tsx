@@ -28,7 +28,7 @@ export default function SystemLogCard({ log }: { log: SystemLogType }) {
           </div>
           {log.data ? (
             <div className="w-2/12 flex flex-row justify-center items-center gap-1">
-              <span className="text-sm">{detailsText}</span>
+              <span className="text-xs">{detailsText}</span>
               {showMore ? <BsChevronUp /> : <BsChevronDown />}
 
             </div>

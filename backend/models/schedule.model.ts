@@ -86,6 +86,7 @@ export type ScheduleType = {
   intakeInstruction?: string;
   isTaken: boolean;
   date: Date;
+  assignedBy: string;
 };
 
 const scheduleSchema = new mongoose.Schema({
@@ -115,6 +116,10 @@ const scheduleSchema = new mongoose.Schema({
   },
   date: {
     type: Date,
+    required: true,
+  },
+  assignedBy: {
+    type: String,
     required: true,
   },
 });

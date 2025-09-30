@@ -9,4 +9,5 @@ export type ScheduleType = {
   isTaken: string;
   date: Date | string;
   actions?: string
+  assignedBy: string;
 };

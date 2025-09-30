@@ -14,7 +14,7 @@ type UsersRouteProps = {
 }
 
 // FIX: 
-// checkbox selects data even outside the page
+// select all checkbox selects data even outside the page
 
 export default function UsersRoute({ scrollToTop }: UsersRouteProps) {
   const [isLoading, setIsLoading] = useState(false);
@@ -30,7 +30,7 @@ export default function UsersRoute({ scrollToTop }: UsersRouteProps) {
 
     const fetchData = async () => {
       try {
-        const response = await fetch("/api/users/", {
+        const response = await fetch("/api/users/doctor", {
           mode: "cors",
           method: "GET",
           credentials: "include"
@@ -43,6 +43,7 @@ export default function UsersRoute({ scrollToTop }: UsersRouteProps) {
         }
 
         const data = await response.json();
+
         setUsers(data.data);
       } catch (err) {
         console.error("loading medicine data failed: ", err);
@@ -113,14 +114,14 @@ export default function UsersRoute({ scrollToTop }: UsersRouteProps) {
       cell: props => <ScrollTableData props={props} />,
       size: 100,
     }),
-    userColumnHelper.accessor("verified", {
-      header: "Verified",
-      // cell: props => <ScrollTableData props={props} />,
-      cell: props => <ScrollTableData props={props} value={String(props.getValue())} />,
-      enableGlobalFilter: false,
-      size: 75,
-      // minSize: 150,
-    }),
+    // userColumnHelper.accessor("verified", {
+    //   header: "Verified",
+    // cell: props => <ScrollTableData props={props} />,
+    // cell: props => <ScrollTableData props={props} value={String(props.getValue())} />,
+    // enableGlobalFilter: false,
+    // size: 75,
+    // minSize: 150,
+    // }),
     userColumnHelper.accessor("actions", {
       header: "",
       size: 100,
@@ -173,67 +174,72 @@ export default function UsersRoute({ scrollToTop }: UsersRouteProps) {
           <h1 className="text-2xl font-bold">User Management</h1>
         </div>
 
-        <div className="h-10 w-full mb-2 self-start flex items-center gap-5">
-          <div className="w-10/12">
-            <SearchBar
-              onChange={(value: string) => setSearchText(value)}
-              searchFn={() => setGlobalFilter(searchText)}
-              clearFn={() => {
-                setSearchText("");
-                setGlobalFilter([]);
-              }}
-              value={searchText}
-            />
+        {isLoading ?
+          <div className="w-full h-full flex justify-center items-center">
+            <div className="spinner size-10 border-5"></div>
           </div>
+          :
+          <>
+            <div className="h-10 w-full mb-2 self-start flex items-center gap-5">
+              <div className="w-10/12">
+                <SearchBar
+                  onChange={(value: string) => setSearchText(value)}
+                  searchFn={() => setGlobalFilter(searchText)}
+                  clearFn={() => {
+                    setSearchText("");
+                    setGlobalFilter([]);
+                  }}
+                  value={searchText}
+                />
+              </div>
 
-          <div className="w-2/12 flex justify-end gap-2">
-            <div className="px-2 py-1.5 flex justify-center flex-nowrap items-center 
+              <div className="w-2/12 flex justify-end gap-2">
+                <div className="px-2 py-1.5 flex justify-center flex-nowrap items-center 
             cursor-pointer rounded-md bg-primary hover:bg-primary/80 text-white"
 
-              onClick={() => setIsAddModalOpen(true)}
-            >
-              <FaPlus size="1.2rem" className="text-current" />
-            </div>
-            {isAddModalOpen && (
-              <UserAddModal
-                onClose={() => setIsAddModalOpen(false)}
-                setUsers={setUsers}
-              />
-            )}
-            <div>
-              {Object.keys(rowSelection).length != 0 && (
-                <button
-                  type="button"
-                  className="p-2 rounded-md text-white bg-delete hover:bg-delete/70 cursor-pointer"
-                  onClick={() => setIsDeleteAllModalOpen(true)}>
-                  <FaTrash size="1.2rem" />
-                </button>
-              )}
-              {isDeleteAllModalOpen && (
-                <UserDeleteModal
-                  onClose={() => {
-                    setIsDeleteAllModalOpen(false);
-                    setRowSelection({});
-                  }}
-                  data={rowSelection}
-                  setUsers={setUsers} />
-              )}
-            </div>
-          </div>
+                  onClick={() => setIsAddModalOpen(true)}
+                >
+                  <FaPlus size="1.2rem" className="text-current" />
+                </div>
+                {isAddModalOpen && (
+                  <UserAddModal
+                    onClose={() => setIsAddModalOpen(false)}
+                    setUsers={setUsers}
+                  />
+                )}
+                <div>
+                  {Object.keys(rowSelection).length != 0 && (
+                    <button
+                      type="button"
+                      className="p-2 rounded-md text-white bg-delete hover:bg-delete/70 cursor-pointer"
+                      onClick={() => setIsDeleteAllModalOpen(true)}>
+                      <FaTrash size="1.2rem" />
+                    </button>
+                  )}
+                  {isDeleteAllModalOpen && (
+                    <UserDeleteModal
+                      onClose={() => {
+                        setIsDeleteAllModalOpen(false);
+                        setRowSelection({});
+                      }}
+                      data={rowSelection}
+                      setUsers={setUsers} />
+                  )}
+                </div>
+              </div>
 
-        </div>
-        {isLoading ?
-          <div className="spinner size-10 border-5"></div>
-          :
-          <Table
-            columns={userColumns}
-            content={users}
-            rowSelection={rowSelection}
-            onRowSelectionChange={setRowSelection}
-            globalFilter={globalFilter}
-            setGlobalFilter={setGlobalFilter}
-            scrollToTop={scrollToTop}
-          />
+            </div>
+            <Table
+              columns={userColumns}
+              content={users}
+              rowSelection={rowSelection}
+              onRowSelectionChange={setRowSelection}
+              globalFilter={globalFilter}
+              setGlobalFilter={setGlobalFilter}
+              scrollToTop={scrollToTop}
+
+            />
+          </>
         }
       </div>
 

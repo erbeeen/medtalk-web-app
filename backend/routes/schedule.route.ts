@@ -16,6 +16,7 @@ scheduleRouter.use(cors({
 
 scheduleRouter.get("/user", authenticateJwt, sc.getSchedulesByUserID);
 scheduleRouter.get("/all", authenticateJwt, sc.getAllSchedule);
+scheduleRouter.get("/format", authenticateJwt, sc.getFormattedSchedulesByID);
 scheduleRouter.delete("/batch", authenticateJwt, sc.deleteSchedules);
 scheduleRouter.post("/", authenticateJwt, sc.addBatchSchedule);
 scheduleRouter.get("/", authenticateJwt, sc.getSchedule);

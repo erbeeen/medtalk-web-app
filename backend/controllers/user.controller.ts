@@ -484,19 +484,12 @@ export default class UserController {
       }
 
       try {
-        const user = await User.findById(id);
+        const user = await User.findById(id, { password: 0 });
 
         if (user === null) {
           sendJsonResponse(res, 404, `no user with id ${id}`);
         } else {
-          sendJsonResponse(res, 200, {
-            _id: user._id,
-            role: user.role,
-            email: user.email,
-            username: user.username,
-            firstName: user.firstName,
-            lastName: user.lastName,
-          });
+          sendJsonResponse(res, 200, user);
         }
       } catch (err) {
         console.error(`${this.getUsers.name} User.findByID error:`);
@@ -508,21 +501,11 @@ export default class UserController {
       }
     }
     try {
-      const userDocuments: Array<UserDocument> = await User.find({
-        role: { $in: ["user"] },
-      });
-      let users: Array<UserType> = [];
-      userDocuments.map((user) =>
-        users.push({
-          _id: String(user._id),
-          verified: user.verified,
-          role: user.role,
-          email: user.email,
-          username: user.username,
-          firstName: user.firstName,
-          lastName: user.lastName,
-        }),
+      const users = await User.find(
+        { role: "user", verified: true },
+        { password: 0 },
       );
+      
       sendJsonResponse(res, 200, users);
     } catch (err) {
       console.error(`${this.getUsers.name} User.find error:`);
@@ -959,14 +942,33 @@ export default class UserController {
     }
   };
 
-  // TODO: Finish getting doctors
-  getDoctors = async(req: Request, res: Response, next: NextFunction) => {
+  getDoctors = async (req: Request, res: Response, next: NextFunction) => {
     try {
-      
+      if (req.user.role !== "super admin" && req.user.role !== "admin") {
+        res.sendStatus(403);
+        return;
+      }
+      const doctors = await User.find(
+        { role: "doctor" },
+        { password: 0, verified: 0 },
+      );
+      sendJsonResponse(res, 200, doctors);
     } catch (err) {
-      
+      logError(err);
+      sendJsonResponse(res, 500);
+      await SystemLog.create({
+        level: "error",
+        source: "doctors-panel",
+        category: "user-management",
+        message: "Fetch doctors failed",
+        initiated_by: req.user.username,
+        data: {
+          error: err,
+        },
+      });
+      next(err);
     }
-  }
+  };
 
   // NOTE: For creating a doctor account in web app
   createDoctor = async (req: Request, res: Response, next: NextFunction) => {

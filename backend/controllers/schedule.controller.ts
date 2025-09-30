@@ -8,6 +8,17 @@ import Schedule, {
 } from "../models/schedule.model.js";
 import sendJsonResponse from "../utils/httpResponder.js";
 import SystemLog from "../models/system-logs.model.js";
+import User from "../models/user.model.js";
+
+type FormattedSchedule = {
+  batchId: string;
+  medicineName: string;
+  measurement: string;
+  startDate: Date;
+  endDate: Date;
+  intakeTimes: string[];
+  assignedBy: string;
+};
 
 export default class ScheduleController {
   constructor() {}
@@ -67,11 +78,18 @@ export default class ScheduleController {
 
       const batchId = uuidv4();
 
-      schedules.map((schedule) => (schedule.batchId = batchId));
+      schedules.map((schedule) => { 
+        if (!schedule.assignedBy) {
+          schedule.assignedBy = "Self";
+        }
+        schedule.batchId = batchId;
+      });
+
 
       const result = await Schedule.insertMany(schedules);
       sendJsonResponse(res, 201, result);
 
+      const user = await User.findById(schedules[0].userID);
       await SystemLog.create({
         level: "info",
         source: "schedule-panel",
@@ -81,7 +99,7 @@ export default class ScheduleController {
         data: {
           batchId: batchId,
           medicine: schedules[0].medicineName,
-          target: schedules[0].userID,
+          target: `${user.firstName} ${user.lastName}`,
         },
       });
     } catch (err) {
@@ -157,6 +175,122 @@ export default class ScheduleController {
       next(err);
     } finally {
       return;
+    }
+  };
+
+  getFormattedSchedulesByID = async (
+    req: Request,
+    res: Response,
+    next: NextFunction,
+  ) => {
+    try {
+      if (req.user.role !== "super admin" && req.user.role !== "doctor") {
+        res.sendStatus(409);
+        return;
+      }
+
+      const userID = String(req.query.id);
+      if (!userID) {
+        sendJsonResponse(res, 400, "No user id provided.");
+        return;
+      }
+
+      if (!mongoose.Types.ObjectId.isValid(userID)) {
+        sendJsonResponse(res, 400, "invalid user id");
+        return;
+      }
+
+      const userRawSchedules = await Schedule.find({ userID: userID });
+
+      const groupedSchedules = userRawSchedules.reduce(
+        (acc, schedule) => {
+          const key = schedule.batchId;
+
+          if (!acc[key]) {
+            acc[key] = [];
+          }
+
+          acc[key].push(schedule);
+
+          return acc;
+        },
+        {} as Record<string, ScheduleDocument[]>,
+      );
+
+      const formattedSchedules: FormattedSchedule[] = Object.entries(
+        groupedSchedules,
+      ).map(([batchId, records]) => {
+        let startDate = records[0].date;
+        let endDate = records[0].date;
+        const assignedBy = records[0].assignedBy;
+        const intakeTimes = new Set<string>();
+
+        const medicineName = records[0].medicineName;
+        const measurement = records[0].measurement;
+
+        for (const record of records) {
+          const recordDate = record.date;
+          const instruction = record.intakeInstruction;
+
+          if (recordDate < startDate) {
+            startDate = recordDate;
+          }
+          if (recordDate > endDate) {
+            endDate = recordDate;
+          }
+
+          const timeMatch = instruction.match(/(\d{2}:\d{2})/);
+          if (timeMatch) {
+            // NOTE: Extract the 'HH:MM' part (e.g., '20:49')
+            const time = timeMatch[0];
+
+            // NOTE: Convert 24-hour time (HH:MM) to a more readable format (e.g., 8:49 pm)
+            const [hour, minute] = time.split(":").map(Number);
+            const period = hour >= 12 ? "pm" : "am";
+            const displayHour = hour % 12 || 12; // Converts 0 to 12 for 12 am, and 13 to 1 for 1 pm
+            const displayTime = `${displayHour}:${minute.toString().padStart(2, "0")} ${period}`;
+
+            intakeTimes.add(displayTime);
+          }
+        }
+
+        return {
+          batchId,
+          medicineName,
+          measurement,
+          startDate,
+          endDate,
+          intakeTimes: Array.from(intakeTimes),
+          assignedBy
+        };
+      }); 
+
+      sendJsonResponse(res, 200, formattedSchedules);
+      const user = await User.findById(userID);
+      await SystemLog.create({
+        level: "info",
+        source: "schedule-panel",
+        category: "schedule-management",
+        message: "Doctor fetching user schedules successful",
+        initiated_by: req.user.username,
+        data: {
+          "User selected": `${user.firstName} ${user.lastName}`
+        },
+      });
+    } catch (err) {
+      logError(err);
+      sendJsonResponse(res, 500);
+      await SystemLog.create({
+        level: "error",
+        source: "schedule-panel",
+        category: "schedule-management",
+        message: "Doctor fetching user schedules failed",
+        initiated_by: req.user.username,
+        data: {
+          error: err
+        },
+      });
+      next(err);
     }
   };
 

@@ -186,67 +186,71 @@ export default function MedicineRoute({ scrollToTop }: MedicineRouteProps) {
         <h1 className="text-2xl font-bold">Medicine Management</h1>
       </div>
 
-      <div className="h-10 w-full mb-2 self-start flex items-center gap-5">
-        <div className="w-10/12">
-          <SearchBar
-            onChange={(value: string) => setSearchText(value)}
-            searchFn={() => setGlobalFilter(searchText)}
-            clearFn={() => {
-              setSearchText("");
-              setGlobalFilter([]);
-            }}
-            value={searchText}
-          />
-        </div>
-
-        <div className="w-2/12 flex justify-end gap-2">
-          <div className="px-2 py-1.5 flex justify-center flex-nowrap items-center 
-            cursor-pointer rounded-md bg-primary hover:bg-primary/80 text-white"
-            onClick={() => setIsAddModalOpen(true)}
-          >
-            <FaPlus size="1.2rem" />
-          </div>
-          {isAddModalOpen && (
-            <MedicineAddModal
-              onClose={() => setIsAddModalOpen(false)}
-              setMedicines={setMedicines}
-            />
-          )}
-          <div>
-            {Object.keys(rowSelection).length != 0 && (
-              <button
-                type="button"
-                className="p-2 rounded-md text-white bg-delete hover:bg-delete/70 cursor-pointer"
-                onClick={() => setIsDeleteAllModalOpen(true)}>
-                <FaTrash size="1.2rem" />
-              </button>
-            )}
-            {isDeleteAllModalOpen && (
-              <MedicineDeleteModal
-                onClose={() => {
-                  setIsDeleteAllModalOpen(false);
-                  setRowSelection({});
-                }}
-                data={rowSelection}
-                setMedicines={setMedicines} />
-            )}
-          </div>
-        </div>
-
-      </div>
       {isLoading ?
-        <div className="spinner size-10 border-5"></div>
+        <div className="w-full h-full flex justify-center items-center">
+          <div className="spinner size-10 border-5"></div>
+        </div>
         :
-        <Table
-          columns={medicineColumns}
-          content={medicines}
-          rowSelection={rowSelection}
-          onRowSelectionChange={setRowSelection}
-          globalFilter={globalFilter}
-          setGlobalFilter={setGlobalFilter}
-          scrollToTop={scrollToTop}
-        />
+        <>
+          <div className="h-10 w-full mb-2 self-start flex items-center gap-5">
+            <div className="w-10/12">
+              <SearchBar
+                onChange={(value: string) => setSearchText(value)}
+                searchFn={() => setGlobalFilter(searchText)}
+                clearFn={() => {
+                  setSearchText("");
+                  setGlobalFilter([]);
+                }}
+                value={searchText}
+              />
+            </div>
+
+            <div className="w-2/12 flex justify-end gap-2">
+              <div className="px-2 py-1.5 flex justify-center flex-nowrap items-center 
+            cursor-pointer rounded-md bg-primary hover:bg-primary/80 text-white"
+                onClick={() => setIsAddModalOpen(true)}
+              >
+                <FaPlus size="1.2rem" />
+              </div>
+              {isAddModalOpen && (
+                <MedicineAddModal
+                  onClose={() => setIsAddModalOpen(false)}
+                  setMedicines={setMedicines}
+                />
+              )}
+              <div>
+                {Object.keys(rowSelection).length != 0 && (
+                  <button
+                    type="button"
+                    className="p-2 rounded-md text-white bg-delete hover:bg-delete/70 cursor-pointer"
+                    onClick={() => setIsDeleteAllModalOpen(true)}>
+                    <FaTrash size="1.2rem" />
+                  </button>
+                )}
+                {isDeleteAllModalOpen && (
+                  <MedicineDeleteModal
+                    onClose={() => {
+                      setIsDeleteAllModalOpen(false);
+                      setRowSelection({});
+                    }}
+                    data={rowSelection}
+                    setMedicines={setMedicines} />
+                )}
+              </div>
+            </div>
+
+          </div>
+          <Table
+            columns={medicineColumns}
+            content={medicines}
+            rowSelection={rowSelection}
+            onRowSelectionChange={setRowSelection}
+            globalFilter={globalFilter}
+            setGlobalFilter={setGlobalFilter}
+            scrollToTop={scrollToTop}
+          />
+        </>
       }
-    </div>
+    </div >
   );
 }
