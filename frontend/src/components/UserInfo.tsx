@@ -29,7 +29,7 @@ export default function UserInfo() {
         <div className="w-8/12 hidden md:flex lg:flex xl:flex flex-col">
           <h1 className="mb-0.5 font-medium">{user?.username ? user.username : ""}</h1>
           <div className="flex flex-row text-[11px]">
-            <h3>{user?.role ? user.role : ""}</h3>
+            <h3>{role ? role : ""}</h3>
             <span className="px-0.5">|</span>
             {user && (
               <Link to={"/account"}>
