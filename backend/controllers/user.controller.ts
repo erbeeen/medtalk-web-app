@@ -140,16 +140,13 @@ export default class UserController {
           });
           sendJsonResponse(res, 201);
 
-          // WARN: This is not the correct implementation. The link should be a frontend route,
-          // not the API route. The frontend route will call the API route. Use only for testing if this function works
-
           const baseUrl = process.env.BASE_URL || "localhost:3000";
           sendEmail({
             from: FROM_EMAIL,
             to: result.email,
             subject: "Account Verification - MedTalk",
             text: `Thank you for signing up at MedTalk! Click the link to verify your account. https://${baseUrl}/verify-account/?id=${result._id}`,
-            html: `<p>Thank you for signing up at MedTalk! Click <a href="https://${baseUrl}/verify-account/?id=${result._id}">here</a> to verify your account.</p>`,
+            html: `<p>Thank you for signing up at MedTalk! Click <a href="${baseUrl}/verify-account/?id=${result._id}">here</a> to verify your account.</p>`,
           });
 
           await SystemLog.create({
@@ -961,6 +958,15 @@ export default class UserController {
       next(err);
     }
   };
+
+  // TODO: Finish getting doctors
+  getDoctors = async(req: Request, res: Response, next: NextFunction) => {
+    try {
+      
+    } catch (err) {
+      
+    }
+  }
 
   // NOTE: For creating a doctor account in web app
   createDoctor = async (req: Request, res: Response, next: NextFunction) => {
