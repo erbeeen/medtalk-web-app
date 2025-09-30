@@ -9,7 +9,7 @@ export default function DeleteButton({ isLoading, children }: DeleteButtonProps)
   return (
     <button
       type="submit"
-      className={"button-layout dark:border-delete-dark/50 dark:hover:bg-delete-dark/70"}
+      className={"button-layout bg-delete hover:bg-delete/70 text-white"}
       disabled={isLoading}
     >
       {isLoading ? <div className="spinner"></div> : children }

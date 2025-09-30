@@ -90,7 +90,7 @@
     ::-webkit-scrollbar,
     ::-webkit-scrollbar-corner {
       background: transparent;
-      height: 3px;
+      height: 2px;
       width: 1px;
     }
 

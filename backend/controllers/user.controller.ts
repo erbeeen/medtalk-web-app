@@ -962,8 +962,8 @@ export default class UserController {
     }
   };
 
-  // NOTE: For creating a user in web app
-  createUser = async (req: Request, res: Response, next: NextFunction) => {
+  // NOTE: For creating a doctor account in web app
+  createDoctor = async (req: Request, res: Response, next: NextFunction) => {
     if (req.user.role !== "super admin" && req.user.role !== "admin") {
       res.sendStatus(403);
       return;
@@ -1012,14 +1012,14 @@ export default class UserController {
       saltRounds,
       async (error: Error, hashed: string) => {
         if (error) {
-          console.error(`${this.createUser.name} bcrypt.hash error`);
+          console.error(`${this.createDoctor.name} bcrypt.hash error`);
           logError(error);
           sendJsonResponse(res, 500);
           next(error);
           return;
         }
         const newUser: UserDocument = new User({
-          verified: false,
+          verified: true,
           role: DOCTOR_ROLE,
           email: user.email,
           username: user.username,
@@ -1053,7 +1053,7 @@ export default class UserController {
             },
           });
         } catch (err) {
-          console.error(`${this.createUser.name} newUser.save error`);
+          console.error(`${this.createDoctor.name} newUser.save error`);
           logError(err);
           sendJsonResponse(res, 500);
           await SystemLog.create({
