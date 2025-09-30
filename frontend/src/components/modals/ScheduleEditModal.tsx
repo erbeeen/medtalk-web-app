@@ -48,49 +48,49 @@ export default function ScheduleEditModal({ onClose, data, setSchedules }: EditU
       return;
     }
 
-    const datetimeString = `${date}T${time}:00`;
-    const dateObject = new Date(datetimeString);
-    const finalDate = dateObject.toISOString().replace("Z", "+00:00");
+    // const datetimeString = `${date}T${time}:00`;
+    // const dateObject = new Date(datetimeString);
+    // const finalDate = dateObject.toISOString().replace("Z", "+00:00");
 
-    const updatedData: ScheduleType = {
-      userID: data.userID,
-      medicineName: medicineName,
-      measurement: measurement,
-      intakeInstruction: intakeInstruction,
-      isTaken: String(isTaken),
-      date: finalDate
-    };
+    // const updatedData: ScheduleType = {
+    //   userID: data.userID,
+    //   medicineName: medicineName,
+    //   measurement: measurement,
+    //   intakeInstruction: intakeInstruction,
+    //   isTaken: String(isTaken),
+    //   date: finalDate
+    // };
 
-    try {
-      const body = JSON.stringify(updatedData);
-      const response = await fetch(`/api/schedule/?id=${data._id}`, {
-        mode: "cors",
-        method: "PUT",
-        headers: {
-          "Content-Type": "application/json",
-        },
-        body: body,
-        credentials: "include",
-      });
-      const result = await response.json();
-
-      if (!result.success) {
-        setErrMessage(`${result.data}.`);
-        setIsLoading(false);
-        return;
-      }
-
-      setSchedules(prevData =>
-        prevData.map((schedule) =>
-          schedule._id === result.data._id ? { ...schedule, ...updatedData } : schedule
-        )
-      );
-      onClose();
-    } catch (err) {
-      console.error("update schedule error: ", err);
-      setErrMessage("Server error. Try again later.")
-      setIsLoading(false);
-    }
+    // try {
+    //   const body = JSON.stringify(updatedData);
+    //   const response = await fetch(`/api/schedule/?id=${data._id}`, {
+    //     mode: "cors",
+    //     method: "PUT",
+    //     headers: {
+    //       "Content-Type": "application/json",
+    //     },
+    //     body: body,
+    //     credentials: "include",
+    //   });
+    //   const result = await response.json();
+    //
+    //   if (!result.success) {
+    //     setErrMessage(`${result.data}.`);
+    //     setIsLoading(false);
+    //     return;
+    //   }
+    //
+    //   setSchedules(prevData =>
+    //     prevData.map((schedule) =>
+    //       schedule._id === result.data._id ? { ...schedule, ...updatedData } : schedule
+    //     )
+    //   );
+    //   onClose();
+    // } catch (err) {
+    //   console.error("update schedule error: ", err);
+    //   setErrMessage("Server error. Try again later.")
+    //   setIsLoading(false);
+    // }
   }
 
   return (
