@@ -42,11 +42,17 @@ export default function MedicineRoute({ scrollToTop }: MedicineRouteProps) {
     }
 
     const loadData = async () => {
-      await fetchData();
-      setIsLoading(false);
+      try {
+        setIsLoading(true);
+        await fetchData();
+        setIsLoading(false);
+      } catch (err) {
+        console.error("error fetching data: ", err);
+        alert(`error fetching data: ${err}`);
+        setIsLoading(false);
+      }
     }
 
-    setIsLoading(true);
     loadData();
 
   }, []);
@@ -228,7 +234,9 @@ export default function MedicineRoute({ scrollToTop }: MedicineRouteProps) {
         </div>
 
       </div>
-      {!isLoading &&
+      {isLoading ?
+        <div className="spinner size-10 border-5"></div>
+        :
         <Table
           columns={medicineColumns}
           content={medicines}

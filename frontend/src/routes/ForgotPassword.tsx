@@ -1,6 +1,8 @@
 import { useEffect, useState, type FormEvent } from "react";
 import SubmitButton from "../components/buttons/SubmitButton";
-import medtalkDarkLogo from "../assets/medtalk-dark-logo.png";
+import medtalkLogo from "../assets/light-logo-with-name.svg"
+import medtalkDarkLogo from "../assets/dark-logo-with-name.svg";
+import userPrefersDarkMode from "../contexts/DarkModeContext";
 
 export default function ForgotPasswordRoute() {
   useEffect(() => {
@@ -10,6 +12,7 @@ export default function ForgotPasswordRoute() {
   const [email, setEmail] = useState("");
   const [isLoading, setIsLoading] = useState(false);
   const [message, setMessage] = useState("");
+  const isDarkMode = userPrefersDarkMode();
 
   const handleSubmit = async (e: FormEvent<HTMLFormElement>) => {
     e.preventDefault();
@@ -32,9 +35,9 @@ export default function ForgotPasswordRoute() {
 
   return (
     <div className="h-screen w-full flex justify-center items-center">
-      <div className="p-6 flex justify-center items-center dark:bg-gray-800/50 border border-gray-700 rounded-4xl">
+      <div className="p-6 flex justify-center items-center rounded-4xl">
         <div className="h-full flex flex-col justify-center items-center">
-          <img src={medtalkDarkLogo} alt="medtalk logo" className="size-44 lg:size-96 self-center" />
+          <img src={!isDarkMode ? medtalkLogo : medtalkDarkLogo} alt="medtalk logo" className="size-44 lg:size-96 self-center" />
         </div>
         <form onSubmit={handleSubmit}>
           <div className="h-full px-10 flex flex-col justify-center gap-5 ">

@@ -11,10 +11,8 @@ export default function userPrefersDarkMode(): boolean {
       setIsDarkMode(e.matches);
     };
 
-    // Add event listener
     mediaQuery.addEventListener('change', handleChange);
 
-    // Cleanup
     return () => mediaQuery.removeEventListener('change', handleChange);
   }, []);
 

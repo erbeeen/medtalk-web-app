@@ -50,11 +50,17 @@ export default function UsersRoute({ scrollToTop }: UsersRouteProps) {
     }
 
     const loadData = async () => {
-      await fetchData();
-      setIsLoading(false);
+      try {
+        setIsLoading(true);
+        await fetchData();
+        setIsLoading(false);
+      } catch (err) {
+        console.error("error fetching data: ", err);
+        alert(`error fetching data: ${err}`);
+        setIsLoading(false);
+      }
     }
 
-    setIsLoading(true);
     loadData();
   }, []);
 
@@ -160,72 +166,77 @@ export default function UsersRoute({ scrollToTop }: UsersRouteProps) {
   ];
 
   return (
-    <div className="base-layout flex flex-col items-center gap-4">
+    <>
+      <div className="base-layout flex flex-col items-center gap-4">
 
-      <div className="self-start">
-        <h1 className="text-2xl font-bold">User Management</h1>
-      </div>
-
-      <div className="h-10 w-full mb-2 self-start flex items-center gap-5">
-        <div className="w-10/12">
-          <SearchBar
-            onChange={(value: string) => setSearchText(value)}
-            searchFn={() => setGlobalFilter(searchText)}
-            clearFn={() => {
-              setSearchText("");
-              setGlobalFilter([]);
-            }}
-            value={searchText}
-          />
+        <div className="self-start">
+          <h1 className="text-2xl font-bold">User Management</h1>
         </div>
 
-        <div className="w-2/12 flex justify-end gap-2">
-          <div className="px-2 py-1.5 flex justify-center flex-nowrap items-center 
+        <div className="h-10 w-full mb-2 self-start flex items-center gap-5">
+          <div className="w-10/12">
+            <SearchBar
+              onChange={(value: string) => setSearchText(value)}
+              searchFn={() => setGlobalFilter(searchText)}
+              clearFn={() => {
+                setSearchText("");
+                setGlobalFilter([]);
+              }}
+              value={searchText}
+            />
+          </div>
+
+          <div className="w-2/12 flex justify-end gap-2">
+            <div className="px-2 py-1.5 flex justify-center flex-nowrap items-center 
             cursor-pointer rounded-md bg-primary hover:bg-primary/80 text-white"
 
-            onClick={() => setIsAddModalOpen(true)}
-          >
-            <FaPlus size="1.2rem" className="text-current" />
-          </div>
-          {isAddModalOpen && (
-            <UserAddModal
-              onClose={() => setIsAddModalOpen(false)}
-              setUsers={setUsers}
-            />
-          )}
-          <div>
-            {Object.keys(rowSelection).length != 0 && (
-              <button
-                type="button"
-                className="p-2 rounded-md text-white bg-delete hover:bg-delete/70 cursor-pointer"
-                onClick={() => setIsDeleteAllModalOpen(true)}>
-                <FaTrash size="1.2rem" />
-              </button>
+              onClick={() => setIsAddModalOpen(true)}
+            >
+              <FaPlus size="1.2rem" className="text-current" />
+            </div>
+            {isAddModalOpen && (
+              <UserAddModal
+                onClose={() => setIsAddModalOpen(false)}
+                setUsers={setUsers}
+              />
             )}
-            {isDeleteAllModalOpen && (
-              <UserDeleteModal
-                onClose={() => {
-                  setIsDeleteAllModalOpen(false);
-                  setRowSelection({});
-                }}
-                data={rowSelection}
-                setUsers={setUsers} />
-            )}
+            <div>
+              {Object.keys(rowSelection).length != 0 && (
+                <button
+                  type="button"
+                  className="p-2 rounded-md text-white bg-delete hover:bg-delete/70 cursor-pointer"
+                  onClick={() => setIsDeleteAllModalOpen(true)}>
+                  <FaTrash size="1.2rem" />
+                </button>
+              )}
+              {isDeleteAllModalOpen && (
+                <UserDeleteModal
+                  onClose={() => {
+                    setIsDeleteAllModalOpen(false);
+                    setRowSelection({});
+                  }}
+                  data={rowSelection}
+                  setUsers={setUsers} />
+              )}
+            </div>
           </div>
-        </div>
 
+        </div>
+        {isLoading ?
+          <div className="spinner size-10 border-5"></div>
+          :
+          <Table
+            columns={userColumns}
+            content={users}
+            rowSelection={rowSelection}
+            onRowSelectionChange={setRowSelection}
+            globalFilter={globalFilter}
+            setGlobalFilter={setGlobalFilter}
+            scrollToTop={scrollToTop}
+          />
+        }
       </div>
-      {!isLoading &&
-        <Table
-          columns={userColumns}
-          content={users}
-          rowSelection={rowSelection}
-          onRowSelectionChange={setRowSelection}
-          globalFilter={globalFilter}
-          setGlobalFilter={setGlobalFilter}
-          scrollToTop={scrollToTop}
-        />
-      }
-    </div>
+
+    </>
   );
 }

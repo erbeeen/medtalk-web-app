@@ -21,9 +21,6 @@ import AccountSettingsRoute from './routes/AccountSettings';
 import ForgotPasswordRoute from './routes/ForgotPassword';
 import ResetPasswordRoute from './routes/ResetPassword';
 
-// TODO: 
-// - Create switch for light and dark mode
-
 function App() {
   const [isLoading, _setIsLoading] = useState(false);
   const mainContentRef = useRef<HTMLDivElement>(null);

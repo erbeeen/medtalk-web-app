@@ -90,7 +90,7 @@ export default class ScheduleController {
       await SystemLog.create({
         level: "error",
         source: "schedule-panel",
-        kategory: "schedule-management",
+        category: "schedule-management",
         message: "User schedule creation failed.",
         initiated_by: req.user.username,
         data: {
@@ -113,7 +113,6 @@ export default class ScheduleController {
   };
 
   getSchedule = async (req: Request, res: Response, next: NextFunction) => {
-    // TODO: Test Functionality
     const scheduleID = String(req.query.id);
 
     if (!mongoose.Types.ObjectId.isValid(scheduleID)) {
