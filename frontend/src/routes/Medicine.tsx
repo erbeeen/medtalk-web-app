@@ -89,7 +89,7 @@ export default function MedicineRoute({ scrollToTop }: MedicineRouteProps) {
     medicineColumnHelper.accessor("Molecule", {
       header: "Molecule",
       cell: props => <ScrollTableData props={props} />,
-      enableGlobalFilter: false,
+      // enableGlobalFilter: false,
       size: 200,
       minSize: 150,
     }),
