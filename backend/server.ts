@@ -25,7 +25,7 @@ const corsOrigin = isProduction
     ]
   : ["http://localhost:5173", "http://localhost:3000"];
 
-// app.use(helmet());
+app.use(helmet());
 if (!isProduction) {
   app.use(
     cors({
@@ -37,25 +37,25 @@ if (!isProduction) {
   );
 }
 
-// app.use(
-//   helmet.contentSecurityPolicy({
-//     directives: {
-//       defaultSrc: ["'self'"],
-//       scriptSrc: ["'self'"],
-//       imgSrc: ["'self'"],
-//       objectSrc: ["'none'"],
-//       styleSrc: ["'self'", "https://fonts.googleapis.com"],
-//       fontSrc: ["'self'", "https://fonts.gstatic.com"],
-//     },
-//   }),
-// );
+app.use(
+  helmet.contentSecurityPolicy({
+    directives: {
+      defaultSrc: ["'self'"],
+      scriptSrc: ["'self'"],
+      imgSrc: ["'self'"],
+      objectSrc: ["'none'"],
+      styleSrc: ["'self'", "https://fonts.googleapis.com"],
+      fontSrc: ["'self'", "https://fonts.gstatic.com"],
+    },
+  }),
+);
 
-// app.use(
-//   helmet.hsts({
-//     maxAge: 31536000,
-//     includeSubDomains: true,
-//   }),
-// );
+app.use(
+  helmet.hsts({
+    maxAge: 31536000,
+    includeSubDomains: true,
+  }),
+);
 
 app.use(helmet.xContentTypeOptions());
 
