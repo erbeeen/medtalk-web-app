@@ -1,4 +1,5 @@
 import cors from "cors";
+import helmet from "helmet";
 import dotenv from "dotenv";
 dotenv.config();
 import dbConnect from "./config/db.js";
@@ -17,6 +18,7 @@ const app = express();
 const __dirname = path.dirname(fileURLToPath(import.meta.url));
 const PORT = process.env.PORT || 3000;
 
+app.use(helmet());
 app.use(
   cors({
     origin: "http://localhost:5173",
