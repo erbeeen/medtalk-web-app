@@ -14,7 +14,7 @@ export default function ProtectedRoute() {
     setIsLoading(false);
   }
 
-  const refreshAccesToken = async () => {
+  const refreshAccesToken = async (): Promise<boolean> => {
     try {
       const res = await fetch("/api/auth/refresh-token", {
         mode: "cors",
@@ -22,21 +22,20 @@ export default function ProtectedRoute() {
         credentials: "include",
       });
 
-      if (res.status == 201) {
-        const result = await res.json();
-        setUser({ id: result.data.id, username: result.data.username, role: result.data.role });
-      }
-
       if (res.status === 401 || res.status === 403) {
         navigate("/login");
-        return;
-      }
-
-      if (res.status === 500) {
+        return false;
+      } else if (res.status === 500) {
         alert("Refresh token server error, check out the error on the server.");
+        return false;
+      } else {
+        const result = await res.json();
+        setUser({ id: result.data.id, username: result.data.username, role: result.data.role });
+        return true;
       }
     } catch (err: any) {
       console.error("ProtectedRoute component refreshAccessToken error: ", err.stack);
+      return false;
     }
   }
 
@@ -58,7 +57,9 @@ export default function ProtectedRoute() {
       }
 
       if (response.status === 401) {
-        await refreshAccesToken();
+        const result = await refreshAccesToken();
+        if (result) 
+          window.location.reload();
       }
     } catch (err: any) {
       console.error("ProtectedRoute component authentication call error: ", err.stack);
