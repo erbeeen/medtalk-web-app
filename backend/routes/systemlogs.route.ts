@@ -14,12 +14,16 @@ const corsOrigin = isProduction
     ]
   : ["http://localhost:5173", "http://localhost:3000"];
 systemLogsRouter.use(cookieParser());
-systemLogsRouter.use(cors({
-  origin: corsOrigin,
-  credentials: true,
-  methods: ["GET", "POST", "PUT", "DELETE", "OPTIONS"],
-  allowedHeaders: ["Content-Type", "Authorization"],
-}));
+if (!isProduction) {
+  systemLogsRouter.use(
+    cors({
+      origin: corsOrigin,
+      credentials: true,
+      methods: ["GET", "POST", "PUT", "DELETE", "OPTIONS"],
+      allowedHeaders: ["Content-Type", "Authorization"],
+    }),
+  );
+}
 
 systemLogsRouter.get("/", authenticateJwt, slc.getLogs);
 

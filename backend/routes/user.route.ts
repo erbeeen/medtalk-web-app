@@ -14,12 +14,16 @@ const corsOrigin = isProduction
     ]
   : ["http://localhost:5173", "http://localhost:3000"];
 userRouter.use(cookieParser());
-userRouter.use(cors({
-  origin: corsOrigin,
-  credentials: true,
-  methods: ["GET", "POST", "PUT", "DELETE", "OPTIONS"],
-  allowedHeaders: ["Content-Type", "Authorization"],
-}));
+if (!isProduction) {
+  userRouter.use(
+    cors({
+      origin: corsOrigin,
+      credentials: true,
+      methods: ["GET", "POST", "PUT", "DELETE", "OPTIONS"],
+      allowedHeaders: ["Content-Type", "Authorization"],
+    }),
+  );
+}
 
 userRouter.post("/admin/register", authenticateJwt, uc.registerAdmin);
 userRouter.post("/admin/login", authenticateJwt, uc.loginAdmin);
