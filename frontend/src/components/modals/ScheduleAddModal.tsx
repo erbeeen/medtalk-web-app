@@ -247,7 +247,7 @@ export default function ScheduleAddModal({ onClose, setSchedules, userID, doctor
             </button>
           </div>
 
-          <div className="max-w-8/12 ml-auto text-center dark:text-delete-dark/70">
+          <div className="max-w-8/12 ml-auto text-center text-delete">
             {errMessage}
           </div>
 

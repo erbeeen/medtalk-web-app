@@ -52,6 +52,13 @@ export default function LoginRoute() {
           credentials: "include",
         });
 
+      if (response.status === 400 || response.status === 401) {
+        const errResult = await response.json();
+        setErrMessage(`*${errResult.data}`);
+        setIsLoading(false);
+        return;
+      }
+
       const result = await response.json();
 
       if (!result.success) {
@@ -124,7 +131,7 @@ export default function LoginRoute() {
               />
             </div>
 
-            <div className="flex justify-center items-center dark:text-delete-dark/90">
+            <div className="flex justify-center items-center text-delete">
               {errMessage}
             </div>
 

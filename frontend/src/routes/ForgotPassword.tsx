@@ -54,7 +54,7 @@ export default function ForgotPasswordRoute() {
                 required
               />
             </div>
-            <div className="flex justify-center items-center dark:text-delete-dark/90 text-sm">
+            <div className="flex justify-center items-center text-delete text-sm">
               {message}
             </div>
             <SubmitButton isLoading={isLoading}>Send reset link</SubmitButton>

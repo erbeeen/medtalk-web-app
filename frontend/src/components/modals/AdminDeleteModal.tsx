@@ -124,7 +124,7 @@ export default function AdminDeleteModal({ onClose, data, setAdmins }: DeleteUse
         <form onSubmit={handleDelete}>
           <h1 className="self-center">{isAdminUserType(data) ? "Confirm deletion?" : "Delete selected?"}</h1>
 
-          <div className="max-w-8/12 ml-auto text-center dark:text-delete-dark/70">
+          <div className="max-w-8/12 ml-auto text-center text-delete">
             {errMessage}
           </div>
           <div className="w-full mt-5 flex justify-between items-center cursor-pointer">

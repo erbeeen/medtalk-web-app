@@ -81,7 +81,7 @@ export default function ResetPasswordRoute() {
                 minLength={8}
               />
             </div>
-            <div className="flex justify-center items-center dark:text-delete-dark/90 text-sm">
+            <div className="flex justify-center items-center text-delete text-sm">
               {message}
             </div>
             <SubmitButton isLoading={isLoading}>Reset password</SubmitButton>

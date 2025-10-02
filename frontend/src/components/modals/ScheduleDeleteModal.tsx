@@ -125,7 +125,7 @@ export default function ScheduleDeleteModal({ onClose, data, setSchedules }: Del
         <form onSubmit={handleDelete}>
           <h1 className="self-center">{isScheduleType(data) ? "Confirm deletion?" : "Delete selected?"}</h1>
 
-          <div className="max-w-8/12 ml-auto text-center dark:text-delete-dark/70">
+          <div className="max-w-8/12 ml-auto text-center text-delete">
             {errMessage}
           </div>
 

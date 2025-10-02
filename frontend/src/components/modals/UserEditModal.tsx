@@ -150,7 +150,7 @@ export default function UserEditModal({ onClose, data, setUsers }: EditUserModal
             />
           </div>
 
-          <div className="max-w-8/12 ml-auto text-center dark:text-delete-dark/70">
+          <div className="max-w-8/12 ml-auto text-center text-delete">
             {errMessage}
           </div>
 

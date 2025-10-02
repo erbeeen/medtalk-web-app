@@ -123,7 +123,7 @@ export default function UserDeleteModal({ onClose, data, setUsers }: DeleteUserM
         <form onSubmit={handleDelete}>
           <h1 className="self-center">{isUserType(data) ? "Confirm deletion?" : "Delete selected?"}</h1>
 
-          <div className="max-w-8/12 ml-auto text-center dark:text-delete-dark/70">
+          <div className="max-w-8/12 ml-auto text-center text-delete">
             {errMessage}
           </div>
 

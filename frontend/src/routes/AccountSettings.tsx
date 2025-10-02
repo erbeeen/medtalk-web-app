@@ -179,7 +179,7 @@ export default function AccountSettingsRoute() {
                 <label htmlFor="username" className="pl-1">Username</label>
                 <input id="username" className="modal-input" value={username} onChange={(e) => setUsername(e.target.value)} required />
               </div>
-              <div className="flex justify-center items-center dark:text-delete-dark/90 text-sm min-h-5">
+              <div className="flex justify-center items-center text-delete text-sm min-h-5">
                 {updateProfileMessage}
               </div>
               <SubmitButton isLoading={isUpdateProfileLoading}>Update</SubmitButton>
@@ -215,7 +215,7 @@ export default function AccountSettingsRoute() {
                   minLength={8}
                 />
               </div>
-              <div className="flex justify-center items-center dark:text-delete-dark/90 text-sm min-h-5">
+              <div className="flex justify-center items-center text-delete text-sm min-h-5">
                 {updatePasswordMessage}
               </div>
               <SubmitButton isLoading={isUpdatePasswordLoading}>Update password</SubmitButton>
