@@ -57,6 +57,8 @@ app.use(
   }),
 );
 
+app.use(helmet.xContentTypeOptions());
+
 app.use(express.json());
 app.use(logger);
 app.use("/api/users", userRouter);
