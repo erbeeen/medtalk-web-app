@@ -3,7 +3,7 @@ import { useNavigate, Outlet } from "react-router-dom";
 import { useUser } from "../contexts/UserContext";
 
 export default function ProtectedRoute() {
-  const [isLoading, setIsLoading] = useState(false);
+  const [isLoading, setIsLoading] = useState(true);
   const { setUser } = useUser();
   const navigate = useNavigate();
   let refreshIntervalId: NodeJS.Timeout | null = null;

@@ -12,7 +12,7 @@ export default function Sidebar() {
   return (
     <div className="sidebar dark:bg-[#053143] ">
       <UserInfo />
-      <hr className="w-3/4 mx-auto my-4 text-gray-300"/>
+      <hr className="w-3/4 mx-auto my-4 text-gray-300" />
       {(user?.role === "super admin" || user?.role === "doctor") &&
         <Link to="/" className="sidebar-link hover:bg-gray-200 hover:text-black dark:hover:bg-primary-dark/50">
           <div className="sidebar-icon text-current">
@@ -62,29 +62,33 @@ export default function Sidebar() {
           </Link>
         </>
       )}
-      <div
-        className="sidebar-link mt-auto mb-5 hover:bg-gray-200 hover:text-black dark:hover:bg-primary-dark/50 cursor-pointer"
-        onClick={async () => {
-          try {
-            const response = await fetch("/api/auth/logout", {
-              mode: "cors",
-              method: "POST",
-              credentials: "include",
-            });
 
-            if (response.status === 200) {
-              navigate("/login");
+      {user && (
+        <div
+          className="sidebar-link mt-auto mb-5 hover:bg-gray-200 hover:text-black dark:hover:bg-primary-dark/50 cursor-pointer"
+          onClick={async () => {
+            try {
+              const response = await fetch("/api/auth/logout", {
+                mode: "cors",
+                method: "POST",
+                credentials: "include",
+              });
+
+              if (response.status === 200) {
+                navigate("/login");
+              }
+            } catch (err) {
+              console.error("error while logging out: ", err);
             }
-          } catch (err) {
-            console.error("error while logging out: ", err);
-          }
-        }}
-      >
-        <div className="sidebar-icon text-current">
-          <MdLogout size="1.2rem" />
+          }}
+        >
+          <div className="sidebar-icon text-current">
+            <MdLogout size="1.2rem" />
+          </div>
+          <span className="w-8/12 sidebar-label text-current">Logout</span>
         </div>
-        <span className="w-8/12 sidebar-label text-current">Logout</span>
-      </div>
+
+      )}
     </div>
   );
 }
