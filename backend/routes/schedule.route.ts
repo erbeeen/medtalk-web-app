@@ -6,9 +6,16 @@ import cookieParser from "cookie-parser";
 
 const scheduleRouter = Router();
 const sc = new ScheduleController();
+const isProduction = process.env.NODE_ENV === "production";
+const corsOrigin = isProduction
+  ? [
+      "https://medtalk.tech",
+      "https://medtalk-webapp-122bcbf0f96e.herokuapp.com",
+    ]
+  : ["http://localhost:5173", "http://localhost:3000"];
 scheduleRouter.use(cookieParser());
 scheduleRouter.use(cors({
-  origin: ["http://localhost:5173", "http://localhost:3000"],
+  origin: corsOrigin,
   credentials: true,
   methods: ["GET", "POST", "PUT", "DELETE", "OPTIONS"],
   allowedHeaders: ["Content-Type", "Authorization"],

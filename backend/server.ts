@@ -17,16 +17,44 @@ import analyticsRouter from "./routes/analytics.route.js";
 const app = express();
 const __dirname = path.dirname(fileURLToPath(import.meta.url));
 const PORT = process.env.PORT || 3000;
+const isProduction = process.env.NODE_ENV === "production";
+const corsOrigin = isProduction
+  ? [
+      "https://medtalk.tech",
+      "https://medtalk-webapp-122bcbf0f96e.herokuapp.com",
+    ]
+  : ["http://localhost:5173", "http://localhost:3000"];
 
 app.use(helmet());
 app.use(
   cors({
-    origin: "http://localhost:5173",
+    origin: corsOrigin,
     credentials: true,
     methods: ["GET", "POST", "PUT", "DELETE", "OPTIONS"],
     allowedHeaders: ["Content-Type", "Authorization"],
   }),
 );
+
+app.use(
+  helmet.contentSecurityPolicy({
+    directives: {
+      defaultSrc: ["'self'"],
+      scriptSrc: ["'self'"],
+      imgSrc: ["'self'"],
+      objectSrc: ["'none'"],
+      styleSrc: ["'self'", "https://fonts.googleapis.com"],
+      fontSrc: ["'self'", "https://fonts.gstatic.com"],
+    },
+  }),
+);
+
+app.use(
+  helmet.hsts({
+    maxAge: 31536000,
+    includeSubDomains: true,
+  }),
+);
+
 app.use(express.json());
 app.use(logger);
 app.use("/api/users", userRouter);
