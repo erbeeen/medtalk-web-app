@@ -9,7 +9,7 @@
     "buildserver": "tsc --project ./backend/tsconfig.json",
     "build": "npm i --production=false && npm i --prefix frontend --production=false && npm run buildserver && npm run build --prefix frontend",
     "heroku-postbuild": "npm i --production=false && npm i --prefix frontend --production=false && npm run buildserver && npm run build --prefix frontend",
-    "heroku-cleanup": "npm prune --production"
+    "heroku-cleanup": "npm prune --production",
     "start": "node dist/server.js",
     "test": "jest"
   },
