@@ -1,6 +1,7 @@
 export type UserType = {
   status?: string;
   _id?: string;
+  role?: string;
   username: string;
   firstName: string;
   lastName: string;

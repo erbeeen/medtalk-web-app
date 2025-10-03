@@ -126,9 +126,9 @@ export default function AdminAddModal({ onClose, setAdmins }: NewUserModalProps)
                 setRole(e.target.value)
               }}
             >
-              <option value="" className="text-black">Select an option</option>
-              <option value="admin" className="text-black">Admin</option>
-              <option value="super admin" className="text-black">Super Admin</option>
+              <option value="">Select an option</option>
+              <option value="admin">Admin</option>
+              <option value="super admin">Super Admin</option>
             </select>
           </div>
 

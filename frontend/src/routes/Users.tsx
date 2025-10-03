@@ -30,7 +30,7 @@ export default function UsersRoute({ scrollToTop }: UsersRouteProps) {
 
     const fetchData = async () => {
       try {
-        const response = await fetch("/api/users/doctor", {
+        const response = await fetch("/api/users/", {
           mode: "cors",
           method: "GET",
           credentials: "include"
@@ -93,6 +93,11 @@ export default function UsersRoute({ scrollToTop }: UsersRouteProps) {
     //   size: 100,
     //   minSize: 100,
     // }),
+    userColumnHelper.accessor("role", {
+      header: "Role",
+      cell: props => <ScrollTableData props={props} />,
+      size: 100,
+    }),
     userColumnHelper.accessor("username", {
       header: "Username",
       cell: props => <ScrollTableData props={props} />,
@@ -114,14 +119,13 @@ export default function UsersRoute({ scrollToTop }: UsersRouteProps) {
       cell: props => <ScrollTableData props={props} />,
       size: 100,
     }),
-    // userColumnHelper.accessor("verified", {
-    //   header: "Verified",
-    // cell: props => <ScrollTableData props={props} />,
-    // cell: props => <ScrollTableData props={props} value={String(props.getValue())} />,
-    // enableGlobalFilter: false,
-    // size: 75,
-    // minSize: 150,
-    // }),
+    userColumnHelper.accessor("verified", {
+      header: "Verified",
+      cell: props => <ScrollTableData props={props} value={String(props.getValue())} />,
+      enableGlobalFilter: false,
+      size: 75,
+      minSize: 150,
+    }),
     userColumnHelper.accessor("actions", {
       header: "",
       size: 100,

@@ -502,10 +502,10 @@ export default class UserController {
     }
     try {
       const users = await User.find(
-        { role: "user", verified: true },
+        { role: { $in: ["user", "doctor"] } },
         { password: 0 },
       );
-      
+
       sendJsonResponse(res, 200, users);
     } catch (err) {
       console.error(`${this.getUsers.name} User.find error:`);
@@ -970,8 +970,8 @@ export default class UserController {
     }
   };
 
-  // NOTE: For creating a doctor account in web app
-  createDoctor = async (req: Request, res: Response, next: NextFunction) => {
+  // NOTE: For creating a user/doctor account in web app
+  adminCreateUser = async (req: Request, res: Response, next: NextFunction) => {
     if (req.user.role !== "super admin" && req.user.role !== "admin") {
       res.sendStatus(403);
       return;
@@ -984,7 +984,7 @@ export default class UserController {
 
     const user: UserType = req.body;
     const saltRounds = 10;
-    if (!user.email || !user.username || !user.firstName || !user.lastName) {
+    if (!user.role || !user.email || !user.username || !user.firstName || !user.lastName) {
       sendJsonResponse(res, 400, "provide all fields");
       return;
     }
@@ -1020,7 +1020,7 @@ export default class UserController {
       saltRounds,
       async (error: Error, hashed: string) => {
         if (error) {
-          console.error(`${this.createDoctor.name} bcrypt.hash error`);
+          console.error(`${this.adminCreateUser.name} bcrypt.hash error`);
           logError(error);
           sendJsonResponse(res, 500);
           next(error);
@@ -1028,7 +1028,7 @@ export default class UserController {
         }
         const newUser: UserDocument = new User({
           verified: true,
-          role: DOCTOR_ROLE,
+          role: user.role,
           email: user.email,
           username: user.username,
           firstName: user.firstName,
@@ -1061,7 +1061,7 @@ export default class UserController {
             },
           });
         } catch (err) {
-          console.error(`${this.createDoctor.name} newUser.save error`);
+          console.error(`${this.adminCreateUser.name} newUser.save error`);
           logError(err);
           sendJsonResponse(res, 500);
           await SystemLog.create({

@@ -29,7 +29,7 @@ userRouter.post("/admin/register", authenticateJwt, uc.registerAdmin);
 userRouter.post("/admin/login", authenticateJwt, uc.loginAdmin);
 userRouter.get("/admins", authenticateJwt, uc.getAdminUsers);
 userRouter.get("/doctor", authenticateJwt, uc.getDoctors);
-userRouter.post("/admin", authenticateJwt, uc.createDoctor);
+userRouter.post("/admin", authenticateJwt, uc.adminCreateUser);
 userRouter.put("/admin", authenticateJwt, uc.updateAdmin);
 userRouter.delete("/delete/batch", authenticateJwt, uc.deleteUsers);
 userRouter.post("/register", authenticateJwt, uc.registerUser);

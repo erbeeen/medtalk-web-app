@@ -11,6 +11,7 @@ type NewUserModalProps = {
 }
 
 export default function UserAddModal({ onClose, setUsers }: NewUserModalProps) {
+  const [role, setRole] = useState("");
   const [username, setUsername] = useState("");
   const [email, setEmail] = useState("");
   const [firstName, setFirstName] = useState("");
@@ -24,6 +25,7 @@ export default function UserAddModal({ onClose, setUsers }: NewUserModalProps) {
     setErrMessage("");
     e.preventDefault();
     if (
+      role === "" ||
       !username ||
       !email ||
       !firstName ||
@@ -41,6 +43,7 @@ export default function UserAddModal({ onClose, setUsers }: NewUserModalProps) {
     }
 
     const newUser: UserType = {
+      role: role,
       email: email,
       username: username,
       firstName: firstName,
@@ -93,6 +96,23 @@ export default function UserAddModal({ onClose, setUsers }: NewUserModalProps) {
         </div>
 
         <form onSubmit={handleSubmit}>
+          <div className="modal-input-container">
+            <label htmlFor="role" className="w-8/12">Role</label>
+            <select
+              name="role"
+              id="role"
+              className="modal-input dark:text-white"
+              value={role}
+              onChange={(e) => {
+                setRole(e.target.value)
+              }}
+            >
+              <option value="">Select an option</option>
+              <option value="user">User</option>
+              <option value="doctor">Doctor</option>
+            </select>
+          </div>
+
           <div className="modal-input-container">
             <label htmlFor="username" className="w-8/12">Username</label>
             <input
