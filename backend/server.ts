@@ -1,5 +1,6 @@
 import cors from "cors";
 import helmet from "helmet";
+import compression from "compression";
 import dotenv from "dotenv";
 dotenv.config();
 import dbConnect from "./config/db.js";
@@ -58,6 +59,8 @@ app.use(
 );
 
 app.use(helmet.xContentTypeOptions());
+
+app.use(compression());
 
 app.use(express.json());
 app.use(logger);
