@@ -1,6 +1,6 @@
 import cors from "cors";
 import helmet from "helmet";
-// import compression from "compression";
+import compression from "compression";
 import dotenv from "dotenv";
 dotenv.config();
 import dbConnect from "./config/db.js";
@@ -43,7 +43,6 @@ app.use(
     directives: {
       defaultSrc: ["'self'"],
       scriptSrc: ["'self'"],
-      imgSrc: ["'self'"],
       objectSrc: ["'none'"],
       styleSrc: ["'self'", "https://fonts.googleapis.com"],
       fontSrc: ["'self'", "https://fonts.gstatic.com"],
@@ -60,7 +59,7 @@ app.use(
 
 app.use(helmet.xContentTypeOptions());
 
-// app.use(compression());
+app.use(compression());
 
 app.use(express.json());
 app.use(logger);
