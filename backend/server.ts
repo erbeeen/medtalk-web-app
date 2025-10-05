@@ -46,7 +46,7 @@ app.use(
       imgSrc: ["'self'", "data:", "blob:"],
       connectSrc: ["'self'", "blob:"],
       objectSrc: ["'none'"],
-      styleSrc: ["'self'", "https://fonts.googleapis.com"],
+      styleSrc: ["'self'", "'unsafe-inline'", "https://fonts.googleapis.com"],
       fontSrc: ["'self'", "https://fonts.gstatic.com"],
     },
   }),
