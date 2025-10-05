@@ -2,6 +2,7 @@ import { useEffect, useState, type FormEvent } from "react";
 import SubmitButton from "../components/buttons/SubmitButton";
 import { useUser } from "../contexts/UserContext";
 import { FaUserCircle } from "react-icons/fa";
+import { useToast } from "../contexts/ToastProvider";
 
 type UserProfile = {
   firstName?: string | undefined;
@@ -27,12 +28,13 @@ export default function AccountSettingsRoute() {
   const [updateProfileMessage, setUpdateProfileMessage] = useState<string | null>(null);
   const [updatePasswordMessage, setUpdatePasswordMessage] = useState<string | null>(null);
   const [referenceProfile, setReferenceProfile] = useState<UserProfile>({});
+  const { addToast } = useToast();
 
   useEffect(() => {
     const fetchProfile = async () => {
       if (!user?.id) return;
       try {
-        const res = await fetch(`/api/users/?id=${user.id}`, {
+        const res = await fetch(`/api/users/?id=${user?.id}`, {
           mode: "cors",
           method: "GET",
           credentials: "include",
@@ -52,6 +54,7 @@ export default function AccountSettingsRoute() {
           setUsername(result.data.username ?? "");
         }
       } catch {
+        addToast("Failed to get user data. Try again later", { type: "error" });
         // no-op
       }
     };
@@ -60,7 +63,7 @@ export default function AccountSettingsRoute() {
 
   const handleUpdateProfile = async (e: FormEvent<HTMLFormElement>) => {
     console.log('update profile called');
-    
+
     e.preventDefault();
     if (!user?.id) return;
     setIsUpdateProfileLoading(true);
@@ -90,12 +93,9 @@ export default function AccountSettingsRoute() {
         body,
       });
       const result = await response.json();
-      console.log('result:');
-      console.log(result);
       if (!result.success) {
-        setUpdateProfileMessage("Failed to update profile.");
+        addToast("Failed to update profile.", { type: "error" });
       } else {
-        setUpdateProfileMessage("Profile updated successfully.");
         setReferenceProfile({
           firstName: result.data.firstName,
           lastName: result.data.lastName,
@@ -106,10 +106,12 @@ export default function AccountSettingsRoute() {
         setLastName(result.data.lastName ?? "");
         setEmail(result.data.email ?? "");
         setUsername(result.data.username ?? "");
-        setUser({id: result.data._id, username: result.data.username, role: result.data.role});
+        setUser({ id: result.data._id, username: result.data.username, role: result.data.role });
+        addToast("Profile updated.");
       }
     } catch {
       setUpdateProfileMessage("Server error. Try again later.");
+      addToast("Failed to update profile.", { type: "error" });
     } finally {
       setIsUpdateProfileLoading(false);
     }
@@ -119,6 +121,7 @@ export default function AccountSettingsRoute() {
     e.preventDefault();
     if (password !== confirmPassword) {
       setUpdatePasswordMessage("Passwords do not match");
+      addToast("Failed to update password.", { type: "error" });
       return;
     }
     setIsUpdatePasswordLoading(true);
@@ -133,14 +136,16 @@ export default function AccountSettingsRoute() {
       const result = await response.json();
       if (!result.success) {
         setUpdatePasswordMessage(result.data);
+        addToast("Failed to update password.", { type: "error" });
         setIsUpdateProfileLoading(false);
         return;
       }
-      setUpdatePasswordMessage("Password changed successfully.");
+      addToast("Password changed.");
       setPassword("");
       setConfirmPassword("");
     } catch {
       setUpdatePasswordMessage("Server error. Try again later.");
+      addToast("Failed to update password.", { type: "error" });
     } finally {
       setIsUpdatePasswordLoading(false);
     }

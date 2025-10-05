@@ -56,7 +56,6 @@ export default function UsersRoute({ scrollToTop }: UsersRouteProps) {
       try {
         setIsLoading(true);
         await fetchData();
-        addToast("Users Loaded.");
         setIsLoading(false);
       } catch (err) {
         console.error("error fetching data: ", err);

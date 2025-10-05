@@ -8,6 +8,7 @@ export default function SystemLogsRoute() {
   const [logs, setLogs] = useState<Array<SystemLogType>>([]);
   const [filteredLogs, setFilteredLogs] = useState<Array<SystemLogType>>([]);
   const [filters, setFilters] = useState<Array<String>>([]);
+  const [isErrorFilterOn, setIsErrorFilterOn] = useState(false);
 
   const updateFilters = (filterName: string, isActive: Boolean) => {
     if (isActive) {
@@ -19,14 +20,39 @@ export default function SystemLogsRoute() {
   };
 
   useEffect(() => {
-    if (filters.length === 0) {
+    if (isErrorFilterOn) {
+      const updatedLogs = logs.filter((log) => {
+        if (filters.length === 0) {
+          return log.level === "error";
+        } else {
+          return filters.some((filter) => {
+            if (isErrorFilterOn)
+              return log.level === "error" && log.category == filter;
+          });
+        }
+      });
+      setFilteredLogs(updatedLogs);
+    }
+  }, [isErrorFilterOn]);
+
+  useEffect(() => {
+    if (filters.length === 0 && !isErrorFilterOn) {
       setFilteredLogs(logs);
       return;
+    } 
+
+    if (filters.length === 0 && isErrorFilterOn) {
+      const updatedLogs = logs.filter((log) => {
+        return log.level === "error";
+      })
+      setFilteredLogs(updatedLogs);
+      return;
     }
+
     const updatedLogs = logs.filter((log) => {
       return filters.some((filter) => {
-        if (filter === "error") {
-          return log.level == filter
+        if (isErrorFilterOn) {
+          return log.level === "error" && log.category == filter;
         }
         return log.category == filter
       });
@@ -86,7 +112,7 @@ export default function SystemLogsRoute() {
             <LogsCategoryButton label="admin-management" updateFilters={updateFilters} />
             <LogsCategoryButton label="medicine-management" updateFilters={updateFilters} />
             <LogsCategoryButton label="schedule-management" updateFilters={updateFilters} />
-            <LogsCategoryButton label="error" updateFilters={updateFilters} />
+            <LogsCategoryButton label="error" setIsError={setIsErrorFilterOn} />
           </div>
           <div className="w-full pr-5 self-start">
             {filteredLogs.map((log) => {

@@ -1,15 +1,18 @@
 import { useState, useEffect } from "react";
 type LogsCategoryButtonProps = {
   label: string;
-  updateFilters: (filterName: string, isActive: Boolean) => void;
+  updateFilters?: (filterName: string, isActive: Boolean) => void;
+  setIsErrorFilterOn?: React.Dispatch<React.SetStateAction<boolean>>
 }
 
-export default function LogsCategoryButton({ label, updateFilters }: LogsCategoryButtonProps) {
+export default function LogsCategoryButton({ label, updateFilters, setIsErrorFilterOn }: LogsCategoryButtonProps) {
   const [isActive, setIsActive] = useState(false);
 
-  // ${(!isActive && label === "error") ? 'hover:bg-delete hover:text-white' : 'bg-delete text-white'}
   useEffect(() => {
-    updateFilters(label, isActive);
+    if (label !== "error" && updateFilters !== undefined)
+      updateFilters(label, isActive);
+    if (label === "error" && setIsErrorFilterOn !== undefined)
+      setIsErrorFilterOn((prev) => !prev);
   }, [isActive]);
 
   if (label !== "error") return (
