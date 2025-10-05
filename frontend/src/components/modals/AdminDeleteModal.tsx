@@ -4,6 +4,7 @@ import type { AdminUserType } from "../../types/user";
 import CloseButton from "../buttons/CloseButton";
 import CancelButton from "../buttons/CancelButton";
 import DeleteButton from "../buttons/DeleteButton";
+import { useToast } from "../../contexts/ToastProvider";
 
 type DeleteUserModalProps = {
   onClose: () => void;
@@ -14,6 +15,7 @@ type DeleteUserModalProps = {
 export default function AdminDeleteModal({ onClose, data, setAdmins }: DeleteUserModalProps) {
   const [errMessage, setErrMessage] = useState("");
   const [isLoading, setIsLoading] = useState(false);
+  const { addToast } = useToast();
 
   const isAdminUserType = (data: any): data is AdminUserType => {
     return (
@@ -51,6 +53,7 @@ export default function AdminDeleteModal({ onClose, data, setAdmins }: DeleteUse
 
         if (!result.success) {
           setErrMessage(`${result.data}.`);
+          addToast("Failed to delete admin.", { type: "error" });
           setIsLoading(false);
           return;
         }
@@ -60,10 +63,12 @@ export default function AdminDeleteModal({ onClose, data, setAdmins }: DeleteUse
             admin._id !== result.data._id
           )
         );
+        addToast("Admin deleted.");
         onClose();
       } catch (err) {
         console.error("delete user error: ", err);
         setErrMessage("Server error. Try again later.");
+        addToast("Failed to delete admin.", { type: "error" });
         setIsLoading(false);
       }
     } else {
@@ -88,6 +93,7 @@ export default function AdminDeleteModal({ onClose, data, setAdmins }: DeleteUse
 
         if (!result.success) {
           setErrMessage(`${result.data}.`);
+          addToast("Failed to delete admins.", { type: "error" });
           setIsLoading(false);
           return;
         }
@@ -99,9 +105,11 @@ export default function AdminDeleteModal({ onClose, data, setAdmins }: DeleteUse
             return !deletedIdsSet.has(admin._id);
           });
         })
+        addToast("Admins deleted.");
         onClose();
       } catch (err) {
         console.error("delete admins error: ", err);
+        addToast("Failed to delete admins.", { type: "error" });
         setErrMessage("Server error. Try again later.");
         setIsLoading(false);
       }

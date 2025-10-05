@@ -4,6 +4,7 @@ import { useState } from "react";
 import CloseButton from "../buttons/CloseButton";
 import CancelButton from "../buttons/CancelButton";
 import SubmitButton from "../buttons/SubmitButton";
+import { useToast } from "../../contexts/ToastProvider";
 
 type NewUserModalProps = {
   onClose: () => void;
@@ -19,6 +20,7 @@ export default function UserAddModal({ onClose, setUsers }: NewUserModalProps) {
   const [isLoading, setIsLoading] = useState(false);
   const [errMessage, setErrMessage] = useState("");
   const emailRegex: RegExp = /^[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,}$/;
+  const { addToast } = useToast();
 
   const handleSubmit = async (e: FormEvent<HTMLFormElement>) => {
     setIsLoading(true);
@@ -32,12 +34,14 @@ export default function UserAddModal({ onClose, setUsers }: NewUserModalProps) {
       !lastName
     ) {
       setErrMessage("Provide all fields.");
+      addToast("Add user failed.", { type: "error" });
       setIsLoading(false);
       return;
     }
 
     if (!emailRegex.test(email)) {
       setErrMessage("Invalid email address.");
+      addToast("Add user failed.", { type: "error" });
       setIsLoading(false);
       return;
     }
@@ -66,6 +70,7 @@ export default function UserAddModal({ onClose, setUsers }: NewUserModalProps) {
 
       if (!result.success) {
         setErrMessage(`${result.data}.`);
+        addToast("Add user failed.", { type: "error" });
         setIsLoading(false);
         return;
       }
@@ -73,10 +78,12 @@ export default function UserAddModal({ onClose, setUsers }: NewUserModalProps) {
       setUsers(prev =>
         [...prev, result.data]
       );
+      addToast("New user created.");
       onClose();
     } catch (err) {
       console.error("update user error: ", err);
       setErrMessage("Server error. Try again later.")
+      addToast("Add user failed.", { type: "error" });
       setIsLoading(false);
     }
   }

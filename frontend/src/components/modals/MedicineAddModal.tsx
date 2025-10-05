@@ -4,6 +4,7 @@ import CloseButton from "../buttons/CloseButton";
 import type { MedicineType } from "../../types/medicine";
 import SubmitButton from "../buttons/SubmitButton";
 import CancelButton from "../buttons/CancelButton";
+import { useToast } from "../../contexts/ToastProvider";
 
 type NewUserModalProps = {
   onClose: () => void;
@@ -21,6 +22,7 @@ export default function MedicineAddModal({ onClose, setMedicines }: NewUserModal
   const [atcCode, setAtcCode] = useState("");
   const [isLoading, setIsLoading] = useState(false);
   const [errMessage, setErrMessage] = useState("");
+  const { addToast } = useToast();
 
   const handleSubmit = async (e: FormEvent<HTMLFormElement>) => {
     setIsLoading(true);
@@ -37,6 +39,7 @@ export default function MedicineAddModal({ onClose, setMedicines }: NewUserModal
       !atcCode
     ) {
       setErrMessage("*Provide all fields.")
+      addToast("Failed to add new medicine.", { type: "error" });
       setIsLoading(false);
       return;
     }
@@ -53,7 +56,6 @@ export default function MedicineAddModal({ onClose, setMedicines }: NewUserModal
     };
 
     try {
-      console.log("starting create medicine request");
       const body = JSON.stringify(newMedicine)
       const response = await fetch(`/api/medicine/`, {
         mode: "cors",
@@ -69,6 +71,7 @@ export default function MedicineAddModal({ onClose, setMedicines }: NewUserModal
 
       if (!result.success) {
         setErrMessage(`${result.data}.`);
+        addToast("Failed to add new medicine.", { type: "error" });
         setIsLoading(false);
         return;
       }
@@ -76,11 +79,13 @@ export default function MedicineAddModal({ onClose, setMedicines }: NewUserModal
       setMedicines(prev =>
         [...prev, result.data]
       );
+      addToast("New medicine added.");
       onClose();
     } catch (err) {
       console.error("update user error: ", err);
+      addToast("Failed to add new medicine.", { type: "error" });
+      setIsLoading(false);
     }
-    onClose();
   }
 
   return (

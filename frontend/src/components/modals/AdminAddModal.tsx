@@ -4,6 +4,7 @@ import { useState } from "react";
 import CloseButton from "../buttons/CloseButton";
 import CancelButton from "../buttons/CancelButton";
 import SubmitButton from "../buttons/SubmitButton";
+import { useToast } from "../../contexts/ToastProvider";
 
 type NewUserModalProps = {
   onClose: () => void;
@@ -16,13 +17,10 @@ export default function AdminAddModal({ onClose, setAdmins }: NewUserModalProps)
   const [email, setEmail] = useState("");
   const [firstName, setFirstName] = useState("");
   const [lastName, setLastName] = useState("");
-  // const [password, setPassword] = useState("");
-  // const [confirmPassword, setConfirmPassword] = useState("");
   const [isLoading, setIsLoading] = useState(false);
   const [errMessage, setErrMessage] = useState("");
-  // const passwordRegex: RegExp =
-  //   /^(?=.*[a-z])(?=.*[A-Z])(?=.*\d)(?=.*[!@#$%^&*()_+={}[\]:;"'<>,.?/\\|`~-])[A-Za-z\d!@#$%^&*()_+={}[\]:;"'<>,.?/\\|`~-]{8,}$/;
   const emailRegex: RegExp = /^[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,}$/;
+  const { addToast } = useToast();
 
   const handleSubmit = async (e: FormEvent<HTMLFormElement>) => {
     setIsLoading(true);
@@ -34,31 +32,19 @@ export default function AdminAddModal({ onClose, setAdmins }: NewUserModalProps)
       !email ||
       !firstName ||
       !lastName
-      // !password ||
-      // !confirmPassword
     ) {
       setErrMessage("Provide all fields.");
+      addToast("Failed to add new admin.", { type: "error" });
       setIsLoading(false);
       return;
     }
 
     if (!emailRegex.test(email)) {
       setErrMessage("Invalid email address.");
+      addToast("Failed to add new admin.", { type: "error" });
       setIsLoading(false);
       return;
     }
-
-    // if (password !== confirmPassword) {
-    //   setErrMessage("Password does not match.");
-    //   setIsLoading(false);
-    //   return;
-    // }
-
-    // if (!passwordRegex.test(password)) {
-    //   setErrMessage("Password must be at least 8 characters with a mix of characters, numbers, and symbols.");
-    //   setIsLoading(false);
-    //   return;
-    // }
 
     const newAdmin: AdminUserType = {
       role: role,
@@ -66,7 +52,6 @@ export default function AdminAddModal({ onClose, setAdmins }: NewUserModalProps)
       email: email,
       firstName: firstName,
       lastName: lastName,
-      // password: password,
     };
 
     try {
@@ -85,6 +70,7 @@ export default function AdminAddModal({ onClose, setAdmins }: NewUserModalProps)
 
       if (!result.success) {
         setErrMessage(`${result.data}.`);
+        addToast("Failed to add new admin.", { type: "error" });
         setIsLoading(false);
         return;
       }
@@ -92,10 +78,12 @@ export default function AdminAddModal({ onClose, setAdmins }: NewUserModalProps)
       setAdmins(prev =>
         [...prev, result.data]
       );
+      addToast("New admin created.");
       onClose();
     } catch (err) {
       console.error("create admin error: ", err);
       setErrMessage("Server error. Try again later.")
+      addToast("Failed to add new admin.", { type: "error" });
       setIsLoading(false);
     }
   }
@@ -179,30 +167,6 @@ export default function AdminAddModal({ onClose, setAdmins }: NewUserModalProps)
               onChange={(e) => setLastName(e.target.value)}
             />
           </div>
-
-          {/* <div className="modal-input-container"> */}
-          {/*   <label htmlFor="password" className="w-8/12">Password</label> */}
-          {/*   <input */}
-          {/*     type="password" */}
-          {/*     id="password" */}
-          {/*     name="password" */}
-          {/*     className="modal-input" */}
-          {/*     value={password} */}
-          {/*     onChange={(e) => setPassword(e.target.value)} */}
-          {/*   /> */}
-          {/* </div> */}
-
-          {/* <div className="modal-input-container"> */}
-          {/*   <label htmlFor="confirm-password" className="w-8/12">Confirm Password</label> */}
-          {/*   <input */}
-          {/*     type="password" */}
-          {/*     id="confirm-password" */}
-          {/*     name="confirm-password" */}
-          {/*     className="modal-input" */}
-          {/*     value={confirmPassword} */}
-          {/*     onChange={(e) => setConfirmPassword(e.target.value)} */}
-          {/*   /> */}
-          {/* </div> */}
 
           <div className="max-w-8/12 ml-auto text-center text-delete">
             {errMessage}

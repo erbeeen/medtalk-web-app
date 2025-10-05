@@ -3,6 +3,7 @@ import type { UserType } from "../../types/user"
 import CloseButton from "../buttons/CloseButton";
 import CancelButton from "../buttons/CancelButton";
 import SubmitButton from "../buttons/SubmitButton";
+import { useToast } from "../../contexts/ToastProvider";
 
 type EditUserModalProps = {
   onClose: () => void;
@@ -18,6 +19,7 @@ export default function UserEditModal({ onClose, data, setUsers }: EditUserModal
   const [isLoading, setIsLoading] = useState(false);
   const [errMessage, setErrMessage] = useState("");
   const emailRegex: RegExp = /^[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,}$/;
+  const { addToast } = useToast();
 
   const handleSubmit = async (e: FormEvent<HTMLFormElement>) => {
     setIsLoading(true);
@@ -31,12 +33,14 @@ export default function UserEditModal({ onClose, data, setUsers }: EditUserModal
       !lastName
     ) {
       setErrMessage("Provide all fields.");
+      addToast("Failed to edit user.", { type: "error" });
       setIsLoading(false);
       return;
     }
 
     if (!emailRegex.test(email)) {
       setErrMessage("Invalid email address.");
+      addToast("Failed to edit user.", { type: "error" });
       setIsLoading(false);
       return;
     }
@@ -63,6 +67,7 @@ export default function UserEditModal({ onClose, data, setUsers }: EditUserModal
 
       if (!result.success) {
         setErrMessage(`${result.data}.`);
+        addToast("Failed to edit user.", { type: "error" });
         setIsLoading(false);
         return;
       }
@@ -72,10 +77,12 @@ export default function UserEditModal({ onClose, data, setUsers }: EditUserModal
           user._id === result.data._id ? { ...user, ...updatedData } : user
         )
       );
+      addToast("User edited.");
       onClose();
     } catch (err) {
       console.error("update user error: ", err);
       setErrMessage("Server error. Try again later.")
+      addToast("Failed to edit user.", { type: "error" });
       setIsLoading(false);
     }
   }

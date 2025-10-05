@@ -3,6 +3,7 @@ import CloseButton from "../buttons/CloseButton";
 import type { MedicineType } from "../../types/medicine";
 import CancelButton from "../buttons/CancelButton";
 import SubmitButton from "../buttons/SubmitButton";
+import { useToast } from "../../contexts/ToastProvider";
 
 type EditUserModalProps = {
   onClose: () => void;
@@ -21,6 +22,7 @@ export default function MedicineEditModal({ onClose, data, setMedicines }: EditU
   const [atcCode, setAtcCode] = useState(data["ATC Code"]);
   const [isLoading, setIsLoading] = useState(false);
   const [errMessage, setErrMessage] = useState("");
+  const {addToast} = useToast();
 
   const handleSubmit = async (e: FormEvent<HTMLFormElement>) => {
     setIsLoading(true);
@@ -37,6 +39,7 @@ export default function MedicineEditModal({ onClose, data, setMedicines }: EditU
       !atcCode
     ) {
       setErrMessage("*Provide all fields.")
+      addToast("Failed to edit medicine.", {type: "error"});
       setIsLoading(false);
       return;
     }
@@ -69,6 +72,7 @@ export default function MedicineEditModal({ onClose, data, setMedicines }: EditU
 
       if (!result.success) {
         setErrMessage(`${result.data}.`);
+      addToast("Failed to edit medicine.", {type: "error"});
         setIsLoading(false);
         return;
       }
@@ -78,10 +82,12 @@ export default function MedicineEditModal({ onClose, data, setMedicines }: EditU
           medicine._id === result.data._id ? { ...medicine, ...updatedData } : medicine
         )
       );
+      addToast("Medicine edited.");
       onClose();
     } catch (err) {
       console.error("update medicine error: ", err);
       setErrMessage("Server error. Try again later.")
+      addToast("Failed to edit medicine.", {type: "error"});
       setIsLoading(false);
     }
   }

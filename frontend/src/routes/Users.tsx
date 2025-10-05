@@ -8,6 +8,7 @@ import ScrollTableData from "../components/ScrollTableData";
 import UserAddModal from "../components/modals/UserAddModal";
 import UserDeleteModal from "../components/modals/UserDeleteModal";
 import UserEditModal from "../components/modals/UserEditModal";
+import { useToast } from "../contexts/ToastProvider";
 
 type UsersRouteProps = {
   scrollToTop: () => void;
@@ -17,7 +18,8 @@ type UsersRouteProps = {
 // select all checkbox selects data even outside the page
 
 export default function UsersRoute({ scrollToTop }: UsersRouteProps) {
-  const [isLoading, setIsLoading] = useState(false);
+  const { addToast } = useToast();
+  const [isLoading, setIsLoading] = useState(true);
   const [users, setUsers] = useState<Array<UserType>>([]);
   const [rowSelection, setRowSelection] = useState({});
   const [searchText, setSearchText] = useState("");
@@ -54,6 +56,7 @@ export default function UsersRoute({ scrollToTop }: UsersRouteProps) {
       try {
         setIsLoading(true);
         await fetchData();
+        addToast("Users Loaded.");
         setIsLoading(false);
       } catch (err) {
         console.error("error fetching data: ", err);

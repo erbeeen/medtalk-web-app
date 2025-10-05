@@ -6,6 +6,7 @@ import type { FormattedSchedule } from "../../types/formatted-schedule";
 import SubmitButton from "../buttons/SubmitButton";
 import CancelButton from "../buttons/CancelButton";
 import { useUser } from "../../contexts/UserContext";
+import { useToast } from "../../contexts/ToastProvider";
 
 type NewUserModalProps = {
   onClose: () => void;
@@ -23,9 +24,7 @@ export default function ScheduleAddModal({ onClose, setSchedules, userID, doctor
   const [times, setTimes] = useState<Array<string>>([]);
   const [errMessage, setErrMessage] = useState("");
   const { user } = useUser();
-
-  console.log('doctor name: ', doctorName);
-  
+  const { addToast } = useToast();
 
   const getTodayDateString = () => {
     const today = new Date();
@@ -118,7 +117,16 @@ export default function ScheduleAddModal({ onClose, setSchedules, userID, doctor
         credentials: "include",
       })
 
-      if (response.status === 201) {
+      const result = await response.json();
+
+      if (!result.success) {
+        setErrMessage(`${result.data}.`);
+        addToast("Failed to add new schedule.", { type: "error" });
+        setIsLoading(false);
+        return;
+      }
+
+      if (response.status === 201 && result.success) {
         const formattedIntakeTimes: string[] = [];
         for (let i = 0; i < schedule.intakeTimes.length; i++) {
           const temp = schedule.intakeTimes[i];
@@ -133,13 +141,14 @@ export default function ScheduleAddModal({ onClose, setSchedules, userID, doctor
         schedule.intakeTimes = formattedIntakeTimes;
         schedule.assignedBy = doctorName;
         setSchedules((prev) => [schedule, ...prev]);
+        addToast("New schedule added.");
         onClose();
+        setIsLoading(false);
       }
-
-      setIsLoading(false);
     } catch (err) {
       console.error("error saving schedule: ", err);
       setErrMessage("Server error. Try again later.");
+      addToast("Failed to add new schedule.", { type: "error" });
       setIsLoading(false);
     }
 

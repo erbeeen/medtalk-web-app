@@ -19,7 +19,7 @@ export function generateAccessToken(
         role: role,
       },
       process.env.SECRET_ACCESS_TOKEN,
-      { expiresIn: "30m" },
+      // { expiresIn: "30m" },
     );
     return [token, null];
   } catch (err) {

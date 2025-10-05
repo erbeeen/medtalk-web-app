@@ -3,15 +3,13 @@ import type { AdminUserType } from "../../types/user"
 import CloseButton from "../buttons/CloseButton";
 import CancelButton from "../buttons/CancelButton";
 import SubmitButton from "../buttons/SubmitButton";
+import { useToast } from "../../contexts/ToastProvider";
 
 type EditUserModalProps = {
   onClose: () => void;
   data: AdminUserType;
   setAdmins: Dispatch<SetStateAction<Array<AdminUserType>>>;
 }
-
-// TODO: 
-// add api request to edit record on database
 
 export default function AdminEditModal({ onClose, data, setAdmins }: EditUserModalProps) {
   const [role, setRole] = useState(data.role);
@@ -22,15 +20,12 @@ export default function AdminEditModal({ onClose, data, setAdmins }: EditUserMod
   const [isLoading, setIsLoading] = useState(false);
   const [errMessage, setErrMessage] = useState("");
   const emailRegex: RegExp = /^[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,}$/;
+  const { addToast } = useToast();
 
   const handleSubmit = async (e: FormEvent<HTMLFormElement>) => {
     setIsLoading(true);
     setErrMessage("");
     e.preventDefault();
-
-    if (!role) {
-      alert("Role is fucking up");
-    }
 
     if (
       !role ||
@@ -40,12 +35,14 @@ export default function AdminEditModal({ onClose, data, setAdmins }: EditUserMod
       !lastName
     ) {
       setErrMessage("Provide all fields.");
+      addToast("Failed to edit admin.", { type: "error" });
       setIsLoading(false);
       return;
     }
 
     if (!emailRegex.test(email)) {
       setErrMessage("Invalid email address.");
+      addToast("Failed to edit admin.", { type: "error" });
       setIsLoading(false);
       return;
     }
@@ -73,6 +70,7 @@ export default function AdminEditModal({ onClose, data, setAdmins }: EditUserMod
 
       if (!result.success) {
         setErrMessage(`${result.data}.`);
+        addToast("Failed to edit admin.", { type: "error" });
         setIsLoading(false);
         return;
       }
@@ -82,18 +80,14 @@ export default function AdminEditModal({ onClose, data, setAdmins }: EditUserMod
           admin._id === result.data._id ? { ...admin, ...updatedData } : admin
         )
       );
+      addToast("Admin Edited");
       onClose();
     } catch (err) {
       console.error("create admin error: ", err);
       setErrMessage("Server error. Try again later.")
+      addToast("Failed to edit admin.", { type: "error" });
       setIsLoading(false);
     }
-
-    // setAdmins(prevData =>
-    //   prevData.map((user) =>
-    //     user._id === updatedData._id ? { ...user, ...updatedData } : user
-    //   )
-    // );
   }
 
   return (

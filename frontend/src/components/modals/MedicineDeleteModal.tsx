@@ -3,6 +3,7 @@ import CloseButton from "../buttons/CloseButton";
 import type { MedicineType } from "../../types/medicine";
 import CancelButton from "../buttons/CancelButton";
 import DeleteButton from "../buttons/DeleteButton";
+import { useToast } from "../../contexts/ToastProvider";
 
 type DeleteUserModalProps = {
   onClose: () => void;
@@ -13,6 +14,7 @@ type DeleteUserModalProps = {
 export default function MedicineDeleteModal({ onClose, data, setMedicines }: DeleteUserModalProps) {
   const [errMessage, setErrMessage] = useState("");
   const [isLoading, setIsLoading] = useState(false);
+  const { addToast } = useToast();
 
   const isMedicineType = (data: any): data is MedicineType => {
     return (
@@ -51,6 +53,7 @@ export default function MedicineDeleteModal({ onClose, data, setMedicines }: Del
         if (!result.success) {
           setErrMessage(`${result.data}.`);
           setIsLoading(false);
+          addToast("Failed to delete medicine.", { type: "error" });
           return;
         }
 
@@ -59,10 +62,12 @@ export default function MedicineDeleteModal({ onClose, data, setMedicines }: Del
             medicine._id !== result.data._id
           )
         );
+        addToast("Medicine deleted.");
         onClose();
       } catch (err) {
         console.error("delete medicine error: ", err);
         setErrMessage("Server error. Try again later.");
+        addToast("Failed to delete medicine.", { type: "error" });
         setIsLoading(false);
       }
     } else {
@@ -73,7 +78,7 @@ export default function MedicineDeleteModal({ onClose, data, setMedicines }: Del
       }
 
       console.log("idList value: ", idList);
-      
+
       try {
         const body = JSON.stringify(idList);
         const response = await fetch("/api/medicine/delete/batch", {
@@ -90,6 +95,7 @@ export default function MedicineDeleteModal({ onClose, data, setMedicines }: Del
 
         if (!result.success) {
           setErrMessage(`${result.data}.`);
+          addToast("Failed to delete medicines.", { type: "error" });
           setIsLoading(false);
           return;
         }
@@ -101,10 +107,12 @@ export default function MedicineDeleteModal({ onClose, data, setMedicines }: Del
             return !deletedIdsSet.has(medicine._id);
           });
         })
+        addToast("Medicines deleted.");
         onClose();
       } catch (err) {
         console.error("delete medicines error: ", err);
         setErrMessage("Server error. Try again later.");
+        addToast("Failed to delete medicines.", { type: "error" });
         setIsLoading(false);
       }
     }

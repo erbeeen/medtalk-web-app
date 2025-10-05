@@ -3,6 +3,7 @@ import type { UserType } from "../../types/user";
 import CloseButton from "../buttons/CloseButton";
 import CancelButton from "../buttons/CancelButton";
 import DeleteButton from "../buttons/DeleteButton";
+import { useToast } from "../../contexts/ToastProvider";
 
 type DeleteUserModalProps = {
   onClose: () => void;
@@ -13,6 +14,7 @@ type DeleteUserModalProps = {
 export default function UserDeleteModal({ onClose, data, setUsers }: DeleteUserModalProps) {
   const [errMessage, setErrMessage] = useState("");
   const [isLoading, setIsLoading] = useState(false);
+  const { addToast } = useToast();
 
   const isUserType = (data: any): data is UserType => {
     return (
@@ -48,6 +50,7 @@ export default function UserDeleteModal({ onClose, data, setUsers }: DeleteUserM
 
         if (!result.success) {
           setErrMessage(`${result.data}.`);
+          addToast("Failed to delete user.", { type: "error" });
           setIsLoading(false);
           return;
         }
@@ -57,14 +60,15 @@ export default function UserDeleteModal({ onClose, data, setUsers }: DeleteUserM
             user._id !== result.data._id
           )
         );
+        addToast("User deleted.");
         onClose();
       } catch (err) {
         console.error("delete user error: ", err);
         setErrMessage("Server error. Try again later.");
+        addToast("Failed to delete user.", { type: "error" });
         setIsLoading(false);
       }
     } else {
-      console.log("starting batch delete request");
       const idList: Array<String> = [];
       for (const key of Object.keys(data)) {
         idList.push(key);
@@ -86,6 +90,7 @@ export default function UserDeleteModal({ onClose, data, setUsers }: DeleteUserM
 
         if (!result.success) {
           setErrMessage(`${result.data}.`);
+          addToast("Failed to delete users.", { type: "error" });
           setIsLoading(false);
           return;
         }
@@ -97,10 +102,12 @@ export default function UserDeleteModal({ onClose, data, setUsers }: DeleteUserM
             return !deletedIdsSet.has(user._id);
           });
         })
+        addToast("Users deleted.");
         onClose();
       } catch (err) {
         console.error("delete users error: ", err);
         setErrMessage("Server error. Try again later.");
+        addToast("Failed to delete users.", { type: "error" });
         setIsLoading(false);
       }
     }
