@@ -112,7 +112,7 @@ export default function SystemLogsRoute() {
             <LogsCategoryButton label="admin-management" updateFilters={updateFilters} />
             <LogsCategoryButton label="medicine-management" updateFilters={updateFilters} />
             <LogsCategoryButton label="schedule-management" updateFilters={updateFilters} />
-            <LogsCategoryButton label="error" setIsError={setIsErrorFilterOn} />
+            <LogsCategoryButton label="error" setIsErrorFilterOn={setIsErrorFilterOn} />
           </div>
           <div className="w-full pr-5 self-start">
             {filteredLogs.map((log) => {

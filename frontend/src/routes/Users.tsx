@@ -8,7 +8,6 @@ import ScrollTableData from "../components/ScrollTableData";
 import UserAddModal from "../components/modals/UserAddModal";
 import UserDeleteModal from "../components/modals/UserDeleteModal";
 import UserEditModal from "../components/modals/UserEditModal";
-import { useToast } from "../contexts/ToastProvider";
 
 type UsersRouteProps = {
   scrollToTop: () => void;
@@ -18,7 +17,6 @@ type UsersRouteProps = {
 // select all checkbox selects data even outside the page
 
 export default function UsersRoute({ scrollToTop }: UsersRouteProps) {
-  const { addToast } = useToast();
   const [isLoading, setIsLoading] = useState(true);
   const [users, setUsers] = useState<Array<UserType>>([]);
   const [rowSelection, setRowSelection] = useState({});
