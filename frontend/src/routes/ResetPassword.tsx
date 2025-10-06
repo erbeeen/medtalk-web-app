@@ -1,12 +1,15 @@
 import { useEffect, useState, type FormEvent } from "react";
 import { useSearchParams, useNavigate } from "react-router-dom";
 import SubmitButton from "../components/buttons/SubmitButton";
-import medtalkDarkLogo from "../assets/medtalk-dark-logo.png";
+import medTalkLogo from "../assets/light-logo-with-name.svg";
+import medtalkDarkLogo from "../assets/dark-logo-with-name.svg";
+import userPrefersDarkMode from "../contexts/DarkModeContext";
 
 export default function ResetPasswordRoute() {
   const [searchParams] = useSearchParams();
   const navigate = useNavigate();
   const token = searchParams.get("token") || "";
+  const isDarkMode = userPrefersDarkMode();
 
   useEffect(() => {
     document.title = "Reset Password | MedTalk";
@@ -50,7 +53,7 @@ export default function ResetPasswordRoute() {
     <div className="h-screen w-full flex justify-center items-center">
       <div className="p-6 flex justify-center items-center dark:bg-gray-800/50 border border-gray-700 rounded-4xl">
         <div className="h-full flex flex-col justify-center items-center">
-          <img src={medtalkDarkLogo} alt="medtalk logo" className="size-44 lg:size-96 self-center" />
+          <img src={`${!isDarkMode ? medTalkLogo : medtalkDarkLogo}`} alt="medtalk logo" className="size-44 lg:size-96 self-center" />
         </div>
         <form onSubmit={handleSubmit}>
           <div className="h-full px-10 flex flex-col justify-center gap-5 ">
