@@ -38,6 +38,17 @@ export default function UserEditModal({ onClose, data, setUsers }: EditUserModal
       return;
     }
 
+    if (
+      data.username === username &&
+      data.email === email &&
+      data.firstName === firstName &&
+      data.lastName === lastName
+    ) {
+      setErrMessage("No changes were made.");
+      setIsLoading(false);
+      return;
+    }
+
     if (!emailRegex.test(email)) {
       setErrMessage("Invalid email address.");
       addToast("Failed to edit user.", { type: "error" });
@@ -45,12 +56,16 @@ export default function UserEditModal({ onClose, data, setUsers }: EditUserModal
       return;
     }
 
-    const updatedData: UserType = {
-      email: email,
-      username: username,
+    let updatedData: any = {
       firstName: firstName,
       lastName: lastName,
     };
+
+    if (data.email !== email)
+      updatedData.email = email;
+
+    if (data.username !== username)
+      updatedData.username = username;
 
     try {
       const body = JSON.stringify(updatedData);

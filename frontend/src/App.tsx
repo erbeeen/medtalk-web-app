@@ -57,7 +57,7 @@ function App() {
           {!isLoading && (
             <div
               id="main"
-              className="h-screen flex bg-light dark:bg-dark
+              className="min-h-screen flex bg-light dark:bg-dark
         text-light-text dark:text-dark-text">
               {showSidebar && <Sidebar />}
               <div

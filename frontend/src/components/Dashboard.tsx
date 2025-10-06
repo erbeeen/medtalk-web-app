@@ -81,6 +81,13 @@ export default function Dashboard() {
       console.log(`error getting monthly analytics: ${err}`);
     }
   }
+  
+  const formatYAxisToWholeNumbers = (value: number) => {
+    if (Number.isInteger(value)) {
+      return value.toString();
+    }
+    return '';
+  };
 
   const generatePDF = async (e: FormEvent<HTMLFormElement>) => {
     e.preventDefault();
@@ -396,6 +403,7 @@ export default function Dashboard() {
                     type="number"
                     width={50}
                     stroke={`${isDarkMode ? 'white' : 'black'}`}
+                    tickFormatter={formatYAxisToWholeNumbers}
                     className="text-sm fill-gray-700"
                   />
                   <Tooltip
@@ -452,6 +460,7 @@ export default function Dashboard() {
                     width={50}
                     // stroke="oklch(92.8% 0.006 264.531)"
                     stroke={`${isDarkMode ? 'white' : 'black'}`}
+                    tickFormatter={formatYAxisToWholeNumbers}
                     className="text-sm fill-gray-700"
                   />
                   <Tooltip
@@ -507,6 +516,7 @@ export default function Dashboard() {
                   type="number"
                   width={50}
                   stroke={`${isDarkMode ? 'white' : 'black'}`}
+                    tickFormatter={formatYAxisToWholeNumbers}
                   className="text-sm fill-gray-700"
                 />
                 <Tooltip

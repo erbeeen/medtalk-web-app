@@ -8,13 +8,11 @@ import AdminAddModal from "../components/modals/AdminAddModal";
 import AdminDeleteModal from "../components/modals/AdminDeleteModal";
 import ScrollTableData from "../components/ScrollTableData";
 import AdminEditModal from "../components/modals/AdminEditModal";
+import { useUser } from "../contexts/UserContext";
 
 type AdminsRouteProps = {
   scrollToTop: () => void;
 }
-
-// FIX: 
-// checkbox selects data even outside the page
 
 export default function AdminsRoute({ scrollToTop }: AdminsRouteProps) {
   const [isLoading, setIsLoading] = useState(true);
@@ -24,6 +22,7 @@ export default function AdminsRoute({ scrollToTop }: AdminsRouteProps) {
   const [globalFilter, setGlobalFilter] = useState<any>([]);
   const [isAddModalOpen, setIsAddModalOpen] = useState(false);
   const [isDeleteAllModalOpen, setIsDeleteAllModalOpen] = useState(false);
+  const { user } = useUser();
   useEffect(() => {
     document.title = "Admins | MedTalk"
 
@@ -36,8 +35,10 @@ export default function AdminsRoute({ scrollToTop }: AdminsRouteProps) {
         })
 
         const data = await response.json();
-        console.log(data.data);
-        setAdmins(data.data);
+        const filteredData = data.data.filter((entry: any) => {
+          return entry._id != user?.id;
+        });
+        setAdmins(filteredData);
       } catch (err) {
         console.error("loading medicine data failed: ", err);
       }

@@ -8,6 +8,8 @@ import ScrollTableData from "../components/ScrollTableData";
 import UserAddModal from "../components/modals/UserAddModal";
 import UserDeleteModal from "../components/modals/UserDeleteModal";
 import UserEditModal from "../components/modals/UserEditModal";
+import { useUser } from "../contexts/UserContext";
+
 
 type UsersRouteProps = {
   scrollToTop: () => void;
@@ -24,6 +26,7 @@ export default function UsersRoute({ scrollToTop }: UsersRouteProps) {
   const [globalFilter, setGlobalFilter] = useState<any>([]);
   const [isAddModalOpen, setIsAddModalOpen] = useState(false);
   const [isDeleteAllModalOpen, setIsDeleteAllModalOpen] = useState(false);
+  const { user } = useUser();
 
   useEffect(() => {
     document.title = "Users | MedTalk";
@@ -44,7 +47,10 @@ export default function UsersRoute({ scrollToTop }: UsersRouteProps) {
 
         const data = await response.json();
 
-        setUsers(data.data);
+        const filteredData = data.data.filter((entry: any) => {
+          return entry._id != user?.id;
+        });
+        setUsers(filteredData);
       } catch (err) {
         console.error("loading medicine data failed: ", err);
       }

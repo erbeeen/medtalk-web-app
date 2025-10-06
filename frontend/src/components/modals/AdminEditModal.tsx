@@ -40,6 +40,19 @@ export default function AdminEditModal({ onClose, data, setAdmins }: EditUserMod
       return;
     }
 
+    if (
+      data.role === role &&
+      data.username === username &&
+      data.email === email &&
+      data.firstName === firstName &&
+      data.lastName === lastName
+    ) {
+      setErrMessage("No changes were made");
+      setIsLoading(false);
+      return;
+    }
+
+
     if (!emailRegex.test(email)) {
       setErrMessage("Invalid email address.");
       addToast("Failed to edit admin.", { type: "error" });
@@ -47,13 +60,17 @@ export default function AdminEditModal({ onClose, data, setAdmins }: EditUserMod
       return;
     }
 
-    const updatedData: AdminUserType = {
+    let updatedData: any = {
       role: role,
-      email: email,
-      username: username,
       firstName: firstName,
       lastName: lastName,
     };
+
+    if (data.email !== email) 
+      updatedData.email = email;
+
+    if (data.username !== username)
+      updatedData.username = username;
 
     try {
       const body = JSON.stringify(updatedData);

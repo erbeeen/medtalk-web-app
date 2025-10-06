@@ -834,8 +834,6 @@ export default class UserController {
       return;
     }
     const id = String(req.query.id);
-    console.log("from updateAdmin");
-    console.log("id value: ", id);
 
     const editedAdminDetails: UserType = req.body;
 
@@ -863,8 +861,6 @@ export default class UserController {
 
     if (
       !editedAdminDetails.role ||
-      !editedAdminDetails.username ||
-      !editedAdminDetails.email ||
       !editedAdminDetails.firstName ||
       !editedAdminDetails.lastName
     ) {
@@ -872,28 +868,23 @@ export default class UserController {
       return;
     }
 
-    // FIX: This triggers when username/email
-    // are not changed
-    //
-    // const [usernameExists, emailExists, userExistsErr] = await doesUserExist(
-    //   editedAdminDetails.username,
-    //   editedAdminDetails.email,
-    // );
-    // if (userExistsErr !== null) {
-    //   next(userExistsErr);
-    //   sendJsonResponse(res, 500);
-    //   return;
-    // }
-    //
-    // if (usernameExists) {
-    //   sendJsonResponse(res, 409, "username is already taken");
-    //   return;
-    // }
-    //
-    // if (emailExists) {
-    //   sendJsonResponse(res, 409, "email is already taken");
-    //   return;
-    // }
+    if (editedAdminDetails.email || editedAdminDetails.username) {
+      if (editedAdminDetails.username) {
+        const usernameResult = await User.findOne({ username: editedAdminDetails.username });
+        if (usernameResult) {
+          sendJsonResponse(res, 409, "username is already taken");
+          return;
+        }
+      }
+
+      if (editedAdminDetails.email) {
+        const emailResult = await User.findOne({ email: editedAdminDetails.email });
+        if (emailResult) {
+          sendJsonResponse(res, 409, "email is already taken");
+          return;
+        }
+      }
+    }
 
     try {
       const updatedAdmin: UserDocument = await User.findByIdAndUpdate(
@@ -984,7 +975,13 @@ export default class UserController {
 
     const user: UserType = req.body;
     const saltRounds = 10;
-    if (!user.role || !user.email || !user.username || !user.firstName || !user.lastName) {
+    if (
+      !user.role ||
+      !user.email ||
+      !user.username ||
+      !user.firstName ||
+      !user.lastName
+    ) {
       sendJsonResponse(res, 400, "provide all fields");
       return;
     }
@@ -1095,25 +1092,26 @@ export default class UserController {
         return;
       }
 
-      if (editedUserDetails.email || editedUserDetails.username) {
-        const [usernameExists, emailExists, userExistsErr] =
-          await doesUserExist(
-            editedUserDetails.username,
-            editedUserDetails.email,
-          );
-        if (userExistsErr !== null) {
-          throw userExistsErr;
-        }
+      if (
+        !editedUserDetails.firstName ||
+        !editedUserDetails.lastName
+      ) {
+        sendJsonResponse(res, 400, "provide all fields");
+        return;
+      }
 
+      if (editedUserDetails.email || editedUserDetails.username) {
         if (editedUserDetails.username) {
-          if (usernameExists) {
+        const usernameResult = await User.findOne({ username: editedUserDetails.username });
+          if (usernameResult) {
             sendJsonResponse(res, 409, "username is already taken");
             return;
           }
         }
 
         if (editedUserDetails.email) {
-          if (emailExists) {
+        const emailResult = await User.findOne({ email: editedUserDetails.email });
+          if (emailResult) {
             sendJsonResponse(res, 409, "email is already taken");
             return;
           }
