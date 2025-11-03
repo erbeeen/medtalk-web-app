@@ -1,5 +1,5 @@
 # MedTalk Web App
-A web application for maintaining a medicine catalog and patient medication scheduling with medicine analytics.
+A web application for maintaining medicine catalog and patient medication scheduling with medicine analytics.
 
 ## Setup
 Welcome! Before you run, make sure to install dependencies using
