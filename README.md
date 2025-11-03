@@ -1,5 +1,8 @@
 # MedTalk Web App
-## Welcome! Before you run, make sure to install dependencies using
+A web application for maintaining a medicine catalog and patient medication scheduling with medicine analytics.
+
+## Setup
+Welcome! Before you run, make sure to install dependencies using
 `npm i`
 
 ## Set up your .env file which will need the following fields:
