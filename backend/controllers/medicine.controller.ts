@@ -308,4 +308,8 @@ export default class MedicineController {
       sendJsonResponse(res, 500, "Error searching medicines");
     }
   };
+
+  generateMedicineReport = async (req: Request, res: Response): Promise<void> => {
+
+  }
 }

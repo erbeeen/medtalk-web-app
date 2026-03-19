@@ -29,7 +29,6 @@ type LoginCredentials = {
 };
 
 const USER_ROLE = "user";
-const DOCTOR_ROLE = "doctor";
 const FROM_EMAIL = `MedTalk <${process.env.MAIL_USERNAME}>`;
 
 export default class UserController {
