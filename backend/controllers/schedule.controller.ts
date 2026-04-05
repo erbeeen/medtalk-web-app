@@ -78,13 +78,12 @@ export default class ScheduleController {
 
       const batchId = uuidv4();
 
-      schedules.map((schedule) => { 
+      schedules.map((schedule) => {
         if (!schedule.assignedBy) {
           schedule.assignedBy = "Self";
         }
         schedule.batchId = batchId;
       });
-
 
       const result = await Schedule.insertMany(schedules);
       sendJsonResponse(res, 201, result);
@@ -261,9 +260,9 @@ export default class ScheduleController {
           startDate,
           endDate,
           intakeTimes: Array.from(intakeTimes),
-          assignedBy
+          assignedBy,
         };
-      }); 
+      });
 
       sendJsonResponse(res, 200, formattedSchedules);
       const user = await User.findById(userID);
@@ -274,7 +273,7 @@ export default class ScheduleController {
         message: "Doctor fetching user schedules successful",
         initiated_by: req.user.username,
         data: {
-          "User selected": `${user.firstName} ${user.lastName}`
+          "User selected": `${user.firstName} ${user.lastName}`,
         },
       });
     } catch (err) {
@@ -287,14 +286,13 @@ export default class ScheduleController {
         message: "Doctor fetching user schedules failed",
         initiated_by: req.user.username,
         data: {
-          error: err
+          error: err,
         },
       });
       next(err);
     }
   };
 
-  // TODO: Test functionality of updating future doses
   updateSchedule = async (req: Request, res: Response, next: NextFunction) => {
     const scheduleID = String(req.query.id);
     const scheduleDetails: ScheduleType = req.body.schedule;
@@ -358,9 +356,6 @@ export default class ScheduleController {
   };
 
   deleteSchedule = async (req: Request, res: Response, next: NextFunction) => {
-    // NOTE: This implementation uses the id of a schedule
-    // deleting future schedules is not yet available
-
     if (req.query.id === undefined) {
       sendJsonResponse(res, 400, "No ID provided");
     }

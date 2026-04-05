@@ -25,8 +25,10 @@ if (!isProduction) {
   );
 }
 
-analyticsRouter.get("/day", authenticateJwt, ac.getDaily);
-analyticsRouter.get("/week", authenticateJwt, ac.getWeekly);
-analyticsRouter.get("/month", authenticateJwt, ac.getMonthly);
+analyticsRouter.use(authenticateJwt);
+
+analyticsRouter.get("/day", ac.getDaily);
+analyticsRouter.get("/week", ac.getWeekly);
+analyticsRouter.get("/month", ac.getMonthly);
 
 export default analyticsRouter;

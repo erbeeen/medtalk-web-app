@@ -124,6 +124,7 @@ const scheduleSchema = new mongoose.Schema({
   },
 });
 scheduleSchema.set("timestamps", true);
+scheduleSchema.index({ medicineName: 1, date: -1});
 
 export type ScheduleDocument = ScheduleType & mongoose.Document;
 

@@ -25,13 +25,15 @@ if (!isProduction) {
   );
 }
 
-scheduleRouter.get("/user", authenticateJwt, sc.getSchedulesByUserID);
-scheduleRouter.get("/all", authenticateJwt, sc.getAllSchedule);
-scheduleRouter.get("/format", authenticateJwt, sc.getFormattedSchedulesByID);
-scheduleRouter.delete("/batch", authenticateJwt, sc.deleteSchedules);
-scheduleRouter.post("/", authenticateJwt, sc.addBatchSchedule);
-scheduleRouter.get("/", authenticateJwt, sc.getSchedule);
-scheduleRouter.put("/", authenticateJwt, sc.updateSchedule);
-scheduleRouter.delete("/", authenticateJwt, sc.deleteSchedule);
+scheduleRouter.use(authenticateJwt);
+
+scheduleRouter.get("/user", sc.getSchedulesByUserID);
+scheduleRouter.get("/all", sc.getAllSchedule);
+scheduleRouter.get("/format", sc.getFormattedSchedulesByID);
+scheduleRouter.delete("/batch", sc.deleteSchedules);
+scheduleRouter.post("/", sc.addBatchSchedule);
+scheduleRouter.get("/", sc.getSchedule);
+scheduleRouter.put("/", sc.updateSchedule);
+scheduleRouter.delete("/", sc.deleteSchedule);
 
 export default scheduleRouter;
