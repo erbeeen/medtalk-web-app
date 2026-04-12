@@ -59,7 +59,11 @@ export default class MedicineController {
   };
 
   getAllMedicines = async (req: Request, res: Response) => {
-    if (req.user.role !== "super admin" && req.user.role !== "doctor") {
+    if (
+      req.user.role !== "super admin" &&
+      req.user.role !== "doctor" &&
+      req.user.role !== "pharmacist"
+    ) {
       res.sendStatus(403);
       return;
     }

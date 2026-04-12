@@ -13,16 +13,20 @@ export default function UnauthorizedRoute() {
 
   const handleGoBack = () => {
     // Redirect based on user role
-    if (user?.role === "user") {
-      navigate("/account");
-    } else if (user?.role === "doctor") {
-      navigate("/medicine");
-    } else if (user?.role === "admin") {
-      navigate("/users");
-    } else if (user?.role === "super admin") {
-      navigate("/");
-    } else {
-      navigate("/login");
+    switch (user?.role) {
+      case "doctor":
+        navigate("/medicine");
+        break;
+      case "super admin":
+      case "pharmacist":
+        navigate("/");
+        break;
+      case "admin":
+        navigate("/users");
+        break;
+      default:
+        navigate("/login");
+        break;
     }
   };
 

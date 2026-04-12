@@ -30,6 +30,7 @@ type LoginCredentials = {
 
 const USER_ROLE = "user";
 const FROM_EMAIL = `MedTalk <${process.env.MAIL_USERNAME}>`;
+const ADMIN_ROLES = ["super admin", "admin", "doctor", "pharmacist"]
 
 export default class UserController {
   constructor() {}
@@ -652,10 +653,7 @@ export default class UserController {
 
   loginAdmin = async (req: Request, res: Response, next: NextFunction) => {
     if (req.user !== undefined) {
-      const isTokenFromUser =
-        req.user.role !== "super admin" &&
-        req.user.role !== "admin" &&
-        req.user.role !== "doctor";
+      const isTokenFromUser = !ADMIN_ROLES.includes(req.user.role);
       const isBodyEmpty =
         req.body === undefined || Object.keys(req.body).length === 0;
 
@@ -685,10 +683,7 @@ export default class UserController {
       return;
     }
 
-    const isNotAdmin =
-      user.role !== "super admin" &&
-      user.role !== "admin" &&
-      user.role !== "doctor";
+    const isNotAdmin = !ADMIN_ROLES.includes(user.role);
     if (isNotAdmin) {
       sendJsonResponse(res, 401, "invalid email or password");
       return;
@@ -960,7 +955,7 @@ export default class UserController {
     }
   };
 
-  // NOTE: For creating a user/doctor account in web app
+  // NOTE: For creating a user/doctor/pharmacist account in web app
   adminCreateUser = async (req: Request, res: Response, next: NextFunction) => {
     if (req.user.role !== "super admin" && req.user.role !== "admin") {
       res.sendStatus(403);

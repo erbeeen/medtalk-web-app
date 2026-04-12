@@ -85,7 +85,7 @@ function App() {
 
                     {/* Dashboard - only for super admin and doctor */}
                     <Route path="/" element={
-                      <RoleGuard allowedRoles={["super admin", "doctor"]}>
+                      <RoleGuard allowedRoles={["super admin", "doctor", "pharmacist"]}>
                         <HomeRoute />
                       </RoleGuard>
                     } />
@@ -113,7 +113,7 @@ function App() {
 
                     {/* Medicine - only for doctor and super admin */}
                     <Route path="/medicine" element={
-                      <RoleGuard allowedRoles={["doctor", "super admin"]}>
+                      <RoleGuard allowedRoles={["pharmacist", "super admin"]}>
                         <MedicineRoute scrollToTop={scrollToTop} />
                       </RoleGuard>
                     } />
