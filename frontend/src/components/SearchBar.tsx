@@ -9,10 +9,6 @@ type SearchBarProps = {
   value: any;
 }
 
-// FIX: when searching for paracetamol and ibuprofen on medicine,
-// no results show but records on the database exist. Bug might exist
-// on other types of searches
-
 export default function SearchBar({ onChange, searchFn, clearFn, value }: SearchBarProps) {
   const [isTextboxClear, setisTextboxClear] = useState(true);
 

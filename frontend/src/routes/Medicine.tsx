@@ -4,10 +4,11 @@ import type { MedicineType } from "../types/medicine";
 import ScrollTableData from "../components/ScrollTableData";
 import { FaEdit, FaPlus, FaTrash } from "react-icons/fa";
 import SearchBar from "../components/SearchBar";
-import Table from "../components/Table";
+import Table from "../components/medicine/Table";
 import MedicineAddModal from "../components/modals/MedicineAddModal";
 import MedicineEditModal from "../components/modals/MedicineEditModal";
 import MedicineDeleteModal from "../components/modals/MedicineDeleteModal";
+import MedicineAnalytics from "../components/medicine/MedicineAnalytics";
 
 type MedicineRouteProps = {
   scrollToTop: () => void;
@@ -21,6 +22,7 @@ export default function MedicineRoute({ scrollToTop }: MedicineRouteProps) {
   const [globalFilter, setGlobalFilter] = useState<any>([]);
   const [isAddModalOpen, setIsAddModalOpen] = useState(false);
   const [isDeleteAllModalOpen, setIsDeleteAllModalOpen] = useState(false);
+  const [isMedicineAnalyticsModalOpen, setisMedicineAnalyticsModalOpen] = useState(false);
 
   useEffect(() => {
     document.title = "Medicines | MedTalk";
@@ -56,7 +58,6 @@ export default function MedicineRoute({ scrollToTop }: MedicineRouteProps) {
     loadData();
 
   }, []);
-
 
   const medicineColumnHelper = createColumnHelper<MedicineType>();
   const medicineColumns = [
@@ -248,6 +249,13 @@ export default function MedicineRoute({ scrollToTop }: MedicineRouteProps) {
             globalFilter={globalFilter}
             setGlobalFilter={setGlobalFilter}
             scrollToTop={scrollToTop}
+            onRowClick={() => setisMedicineAnalyticsModalOpen(true)}
+          />
+
+          <MedicineAnalytics 
+            showModal={isMedicineAnalyticsModalOpen}
+            onClose={() => setisMedicineAnalyticsModalOpen(false)}
+            medicine={medicines[0]}
           />
         </>
       }

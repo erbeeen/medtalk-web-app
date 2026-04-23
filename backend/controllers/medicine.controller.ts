@@ -358,7 +358,7 @@ export default class MedicineController {
           },
         },
 
-        // Optional: Format the output
+        // Format the output
         {
           $project: {
             _id: 0,

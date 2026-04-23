@@ -26,7 +26,7 @@ if (!isProduction) {
   );
 }
 
-medicineRouter.use(authenticateJwt);
+// medicineRouter.use(authenticateJwt);
 
 // CRUD routes
 medicineRouter.get("/all", mc.getAllMedicines);

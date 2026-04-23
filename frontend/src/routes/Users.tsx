@@ -15,9 +15,7 @@ type UsersRouteProps = {
   scrollToTop: () => void;
 }
 
-// FIX: 
-// select all checkbox selects data even outside the page
-
+// FIX: select all checkbox selects data even outside the page
 export default function UsersRoute({ scrollToTop }: UsersRouteProps) {
   const [isLoading, setIsLoading] = useState(true);
   const [users, setUsers] = useState<Array<UserType>>([]);
