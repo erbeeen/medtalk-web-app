@@ -26,14 +26,6 @@ export default function UserDeleteModal({ onClose, data, setUsers }: DeleteUserM
     );
   }
 
-  // const isMapType = (data: any): data is Record<string, boolean> => {
-  //   return (
-  //     typeof data === "object" &&
-  //     data !== null &&
-  //     Object.values(data).every(value => typeof value === "boolean")
-  //   );
-  // }
-
   const handleDelete = async (e: FormEvent<HTMLFormElement>) => {
     setIsLoading(true);
     setErrMessage("");

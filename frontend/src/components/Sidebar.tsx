@@ -1,4 +1,4 @@
-import { Link, useNavigate } from "react-router-dom";
+import { Link } from "react-router-dom";
 import { FaCalendarAlt } from "react-icons/fa";
 import { MdDashboard, MdLogout } from "react-icons/md";
 import { FaUser, FaPills, FaUserEdit, FaFileAlt } from "react-icons/fa";
@@ -6,14 +6,17 @@ import { useUser } from "../contexts/UserContext";
 import UserInfo from "./UserInfo";
 
 export default function Sidebar() {
-  const navigate = useNavigate();
   const { user } = useUser();
+
+  if (!user) {
+    return <div className="hidden"></div>
+  }
 
   return (
     <div className="sidebar dark:bg-[#053143] ">
       <UserInfo />
       <hr className="w-3/4 mx-auto my-4 text-gray-300" />
-      {(user?.role === "super admin" || user?.role === "doctor") &&
+      {(user?.role === "super admin" || user?.role === "doctor" || user?.role === "pharmacist") &&
         <Link to="/" className="sidebar-link hover:bg-gray-200 hover:text-black dark:hover:bg-primary-dark/50">
           <div className="sidebar-icon text-current">
             <MdDashboard size="1.2rem" />
@@ -45,7 +48,7 @@ export default function Sidebar() {
           <span className="sidebar-label text-current">Admins</span>
         </Link>
       }
-      {(user?.role === "doctor" || user?.role === "super admin") && (
+      {(user?.role === "pharmacist" || user?.role === "super admin") && (
         <>
           <Link to="/medicine" className="sidebar-link hover:bg-gray-200 hover:text-black dark:hover:bg-primary-dark/50">
             <div className="sidebar-icon text-current">
@@ -54,6 +57,11 @@ export default function Sidebar() {
             <span className="sidebar-label text-current">Medicines</span>
           </Link>
 
+        </>
+      )}
+
+      {(user?.role === "doctor" || user?.role === "super admin") && (
+        <>
           <Link to="/schedules" className="sidebar-link hover:bg-gray-200 hover:text-black dark:hover:bg-primary-dark/50">
             <div className="sidebar-icon text-current">
               <FaCalendarAlt size="1.2rem" />
@@ -75,7 +83,7 @@ export default function Sidebar() {
               });
 
               if (response.status === 200) {
-                navigate("/login");
+                window.location.replace("/login");
               }
             } catch (err) {
               console.error("error while logging out: ", err);

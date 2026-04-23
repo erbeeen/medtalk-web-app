@@ -4,10 +4,11 @@ import type { MedicineType } from "../types/medicine";
 import ScrollTableData from "../components/ScrollTableData";
 import { FaEdit, FaPlus, FaTrash } from "react-icons/fa";
 import SearchBar from "../components/SearchBar";
-import Table from "../components/Table";
+import Table from "../components/medicine/Table";
 import MedicineAddModal from "../components/modals/MedicineAddModal";
 import MedicineEditModal from "../components/modals/MedicineEditModal";
 import MedicineDeleteModal from "../components/modals/MedicineDeleteModal";
+import MedicineAnalytics from "../components/medicine/MedicineAnalytics";
 
 type MedicineRouteProps = {
   scrollToTop: () => void;
@@ -21,6 +22,8 @@ export default function MedicineRoute({ scrollToTop }: MedicineRouteProps) {
   const [globalFilter, setGlobalFilter] = useState<any>([]);
   const [isAddModalOpen, setIsAddModalOpen] = useState(false);
   const [isDeleteAllModalOpen, setIsDeleteAllModalOpen] = useState(false);
+  const [isMedicineAnalyticsModalOpen, setisMedicineAnalyticsModalOpen] = useState(false);
+  const [selectedMedicine, setSelectedMedicine] = useState<MedicineType | null>(null);
 
   useEffect(() => {
     document.title = "Medicines | MedTalk";
@@ -57,7 +60,6 @@ export default function MedicineRoute({ scrollToTop }: MedicineRouteProps) {
 
   }, []);
 
-
   const medicineColumnHelper = createColumnHelper<MedicineType>();
   const medicineColumns = [
     medicineColumnHelper.accessor("status", {
@@ -70,7 +72,7 @@ export default function MedicineRoute({ scrollToTop }: MedicineRouteProps) {
         </div>
       ),
       cell: (props) => (
-        <div className="w-full flex justify-center items-center">
+        <div className="w-full flex justify-center items-center" onClick={(e) => e.stopPropagation()}>
           <input
             type="checkbox"
             checked={props.row.getIsSelected()}
@@ -142,7 +144,7 @@ export default function MedicineRoute({ scrollToTop }: MedicineRouteProps) {
         const [isEditModalOpen, setIsEditModalOpen] = useState(false);
         const [isDeleteModalOpen, setIsDeleteModalOpen] = useState(false);
         return (
-          <div className="text-center">
+          <div className="text-center" onClick={(e) => e.stopPropagation()}>
             <button
               type="button"
               className="p-1.5 mx-1 border bg-edit hover:bg-edit/70 border-edit text-black rounded-md cursor-pointer"
@@ -248,7 +250,25 @@ export default function MedicineRoute({ scrollToTop }: MedicineRouteProps) {
             globalFilter={globalFilter}
             setGlobalFilter={setGlobalFilter}
             scrollToTop={scrollToTop}
+            onRowClick={(row) => {
+              setSelectedMedicine(row);
+              setisMedicineAnalyticsModalOpen(true);
+            }}
           />
+
+          {selectedMedicine && (
+            <MedicineAnalytics
+              showModal={isMedicineAnalyticsModalOpen}
+              onClose={() => {
+                setisMedicineAnalyticsModalOpen(false);
+                setSelectedMedicine(null);
+              }}
+              medicine={selectedMedicine as MedicineType}
+            />
+
+          )
+
+          }
         </>
       }
     </div >

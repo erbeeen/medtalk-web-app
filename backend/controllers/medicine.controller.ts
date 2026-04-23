@@ -1,5 +1,6 @@
 import { NextFunction, Request, Response } from "express";
 import Medicine, { MedicineType } from "../models/medicine.model.js";
+import Schedule, { ScheduleType } from "../models/schedule.model.js";
 import sendJsonResponse from "../utils/httpResponder.js";
 import { logError } from "../middleware/logger.js";
 import SearchedMedicine from "../models/searched-medicines.model.js";
@@ -58,15 +59,22 @@ export default class MedicineController {
   };
 
   getAllMedicines = async (req: Request, res: Response) => {
-    if (req.user.role !== "super admin" && req.user.role !== "doctor") {
-      res.sendStatus(403);
-      return;
-    }
-
     try {
+      if (
+        req.user.role !== "super admin" &&
+        req.user.role !== "doctor" &&
+        req.user.role !== "pharmacist"
+      ) {
+        res.sendStatus(403);
+        return;
+      }
+
       const medicines = await Medicine.find();
       sendJsonResponse(res, 200, medicines);
     } catch (err) {
+      console.error("Error getting all medicines");
+      console.error("Typeof error: ", typeof err);
+      console.error(err);
       sendJsonResponse(res, 500, "cannot get all medicine");
     } finally {
       return;
@@ -261,7 +269,6 @@ export default class MedicineController {
         initiated_by: req.user.username,
         data: { ...result },
       });
-
     } catch (err) {
       console.error(`${this.deleteMedicines.name} error`);
       logError(err);
@@ -306,6 +313,91 @@ export default class MedicineController {
     } catch (err) {
       console.error("searchMedicines error:", err);
       sendJsonResponse(res, 500, "Error searching medicines");
+    }
+  };
+
+  getMedicineUsageStatistics = async (
+    req: Request,
+    res: Response,
+    next: NextFunction,
+  ) => {
+    if (req.query.medicineName === undefined) {
+      sendJsonResponse(res, 400, "no medicineName provided");
+      return;
+    }
+
+    const medicineName = String(req.query.medicineName);
+    try {
+      const now = new Date();
+      const month = now.getMonth();
+      const year = now.getFullYear();
+      const startDate = new Date(Date.UTC(year - 1, month, 1, 0, 0, 0));
+
+      const medicineSchedules = await Schedule.aggregate([
+        // Get all the medicine in the past year
+        {
+          $match: {
+            medicineName: medicineName,
+            date: { $gte: startDate },
+          },
+        },
+
+        // Group by Year & Month and count them
+        {
+          $group: {
+            _id: {
+              year: { $year: "$date" },
+              month: { $month: "$date" },
+            },
+            count: { $sum: 1 },
+          },
+        },
+
+        // Sort from oldest to newest
+        {
+          $sort: {
+            "_id.year": 1,
+            "_id.month": 1,
+          },
+        },
+
+        // Format the output
+        {
+          $project: {
+            _id: 0,
+            month: {
+              $concat: [
+                { $toString: "$_id.year" },
+                "-",
+                {
+                  $cond: [
+                    { $lt: ["$_id.month", 10] },
+                    { $concat: ["0", { $toString: "$_id.month" }] },
+                    { $toString: "$_id.month" },
+                  ],
+                },
+              ],
+            },
+            count: 1,
+          },
+        },
+      ]);
+
+      sendJsonResponse(res, 200, medicineSchedules);
+    } catch (err) {
+      logError(err);
+      sendJsonResponse(res, 500);
+      await SystemLog.create({
+        level: "error",
+        source: "medicine-panel",
+        category: "medicine-management",
+        message: "Fetching medicine usage statistics failed",
+        initiated_by: req.user.username,
+        data: {
+          error: err,
+        },
+      });
+      next(err);
     }
   };
 }

@@ -25,8 +25,10 @@ if (!isProduction) {
   );
 }
 
-authRouter.post("/validate", authenticateJwt, ac.validateAccessToken);
-authRouter.post("/refresh-token", authenticateJwt, ac.refreshAccessToken);
-authRouter.post("/logout", authenticateJwt, ac.logout);
+authRouter.use(authenticateJwt);
+
+authRouter.post("/validate", ac.validateAccessToken);
+authRouter.post("/refresh-token", ac.refreshAccessToken);
+authRouter.post("/logout", ac.logout);
 
 export default authRouter;

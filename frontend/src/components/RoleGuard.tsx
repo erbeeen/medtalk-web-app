@@ -13,7 +13,11 @@ export default function RoleGuard({ children, allowedRoles, fallbackPath = "/una
 
   // If user is not loaded yet, show loading or wait
   if (!user) {
-    return <div>Loading...</div>;
+    return (
+      <div className="w-full h-full flex justify-center items-center">
+        <div className="spinner size-10"></div>
+      </div>
+    )
   }
 
   // Check if user's role is in the allowed roles

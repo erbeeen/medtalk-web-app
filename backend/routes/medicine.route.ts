@@ -6,7 +6,7 @@ import cookieParser from "cookie-parser";
 
 const medicineRouter: Router = Router();
 medicineRouter.use(cookieParser());
-const medicineController = new MedicineController();
+const mc = new MedicineController();
 const isProduction = process.env.NODE_ENV === "production";
 const corsOrigin = isProduction
   ? [
@@ -26,30 +26,17 @@ if (!isProduction) {
   );
 }
 
+medicineRouter.use(authenticateJwt);
+
 // CRUD routes
-medicineRouter.get("/all", authenticateJwt, medicineController.getAllMedicines);
-medicineRouter.get(
-  "/search",
-  authenticateJwt,
-  medicineController.searchMedicines,
-);
-medicineRouter.get("/get", authenticateJwt, medicineController.getMedicineById);
-medicineRouter.put(
-  "/update",
-  authenticateJwt,
-  medicineController.updateMedicine,
-);
-medicineRouter.delete(
-  "/delete/batch",
-  authenticateJwt,
-  medicineController.deleteMedicines,
-);
-medicineRouter.delete(
-  "/delete",
-  authenticateJwt,
-  medicineController.deleteMedicine,
-);
-medicineRouter.post("/", authenticateJwt, medicineController.createMedicine);
-medicineRouter.get("/", authenticateJwt, medicineController.getMedicineByName);
+medicineRouter.get("/all", mc.getAllMedicines);
+medicineRouter.get("/search", mc.searchMedicines);
+medicineRouter.get("/get", mc.getMedicineById);
+medicineRouter.put("/update", mc.updateMedicine);
+medicineRouter.delete("/delete/batch", mc.deleteMedicines);
+medicineRouter.delete("/delete", mc.deleteMedicine);
+medicineRouter.get("/statistics", mc.getMedicineUsageStatistics);
+medicineRouter.post("/", mc.createMedicine);
+medicineRouter.get("/", mc.getMedicineByName);
 
 export default medicineRouter;

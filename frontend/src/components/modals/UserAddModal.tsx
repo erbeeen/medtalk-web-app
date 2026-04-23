@@ -117,6 +117,7 @@ export default function UserAddModal({ onClose, setUsers }: NewUserModalProps) {
               <option value="">Select an option</option>
               <option value="user">User</option>
               <option value="doctor">Doctor</option>
+              <option value="pharmacist">Pharmacist</option>
             </select>
           </div>
 

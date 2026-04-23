@@ -13,6 +13,7 @@ export default function RoleBasedRedirect() {
   switch (user.role) {
     case "super admin":
     case "doctor":
+    case "pharmacist":
       return <Navigate to="/" replace />; // Dashboard
     case "admin":
       return <Navigate to="/users" replace />; // Users management

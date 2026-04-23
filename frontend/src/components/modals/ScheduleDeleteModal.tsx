@@ -24,15 +24,6 @@ export default function ScheduleDeleteModal({ onClose, data, setSchedules }: Del
     );
   }
 
-
-  // const isMapType = (data: any): data is Record<string, boolean> => {
-  //   return (
-  //     typeof data === "object" &&
-  //     data !== null &&
-  //     Object.values(data).every(value => typeof value === "boolean")
-  //   );
-  // }
-
   const handleDelete = async (e: FormEvent<HTMLFormElement>) => {
     setIsLoading(true);
     setErrMessage("");

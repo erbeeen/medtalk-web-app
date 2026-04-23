@@ -54,7 +54,7 @@ export default function LoginRoute() {
 
       if (response.status === 400 || response.status === 401) {
         const errResult = await response.json();
-        setErrMessage(`*${errResult.data}`);
+        setErrMessage(`* ${errResult.data}`);
         setIsLoading(false);
         return;
       }
@@ -73,16 +73,14 @@ export default function LoginRoute() {
       switch (result.data.role) {
         case "super admin":
         case "doctor":
-          navigate("/"); // Dashboard
+        case "pharmacist":
+          window.location.replace("/"); // Dashboard
           break;
         case "admin":
-          navigate("/users"); // Users management
-          break;
-        case "user":
-          navigate("/account"); // Profile page
+          window.location.replace("/users"); // Users management
           break;
         default:
-          navigate("/unauthorized");
+          window.location.replace("/unauthorized");
       }
     } catch (err) {
       console.error(`Error executing login function: ${err}`);
@@ -127,6 +125,7 @@ export default function LoginRoute() {
                 className="modal-input"
                 value={credentials.password}
                 onChange={(e) => setCredentials({ ...credentials, password: e.target.value })}
+                autoComplete="off"
                 required
               />
             </div>
