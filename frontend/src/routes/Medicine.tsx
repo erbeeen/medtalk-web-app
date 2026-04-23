@@ -23,6 +23,7 @@ export default function MedicineRoute({ scrollToTop }: MedicineRouteProps) {
   const [isAddModalOpen, setIsAddModalOpen] = useState(false);
   const [isDeleteAllModalOpen, setIsDeleteAllModalOpen] = useState(false);
   const [isMedicineAnalyticsModalOpen, setisMedicineAnalyticsModalOpen] = useState(false);
+  const [selectedMedicine, setSelectedMedicine] = useState<MedicineType | null>(null);
 
   useEffect(() => {
     document.title = "Medicines | MedTalk";
@@ -71,7 +72,7 @@ export default function MedicineRoute({ scrollToTop }: MedicineRouteProps) {
         </div>
       ),
       cell: (props) => (
-        <div className="w-full flex justify-center items-center">
+        <div className="w-full flex justify-center items-center" onClick={(e) => e.stopPropagation()}>
           <input
             type="checkbox"
             checked={props.row.getIsSelected()}
@@ -143,7 +144,7 @@ export default function MedicineRoute({ scrollToTop }: MedicineRouteProps) {
         const [isEditModalOpen, setIsEditModalOpen] = useState(false);
         const [isDeleteModalOpen, setIsDeleteModalOpen] = useState(false);
         return (
-          <div className="text-center">
+          <div className="text-center" onClick={(e) => e.stopPropagation()}>
             <button
               type="button"
               className="p-1.5 mx-1 border bg-edit hover:bg-edit/70 border-edit text-black rounded-md cursor-pointer"
@@ -249,14 +250,22 @@ export default function MedicineRoute({ scrollToTop }: MedicineRouteProps) {
             globalFilter={globalFilter}
             setGlobalFilter={setGlobalFilter}
             scrollToTop={scrollToTop}
-            onRowClick={() => setisMedicineAnalyticsModalOpen(true)}
+            onRowClick={(row) => {
+              setSelectedMedicine(row);
+              setisMedicineAnalyticsModalOpen(true);
+            }}
           />
 
-          <MedicineAnalytics 
-            showModal={isMedicineAnalyticsModalOpen}
-            onClose={() => setisMedicineAnalyticsModalOpen(false)}
-            medicine={medicines[0]}
-          />
+          {selectedMedicine && (
+            <MedicineAnalytics
+              showModal={isMedicineAnalyticsModalOpen}
+              onClose={() => setisMedicineAnalyticsModalOpen(false)}
+              medicine={selectedMedicine as MedicineType}
+            />
+
+          )
+
+          }
         </>
       }
     </div >

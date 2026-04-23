@@ -29,7 +29,7 @@ type TableProps = {
   setGlobalFilter?: OnChangeFn<any>;
   scrollToTop: () => void;
   onRowSelectionChange?: (updater: Updater<RowSelectionState>) => void;
-  onRowClick: () => void;
+  onRowClick: (row: any) => void;
 };
 
 export default function Table({
@@ -170,7 +170,7 @@ export default function Table({
           <tbody className="flex-1 overflow-y-scroll">
             {/* FIX: When clicking the checkbox it opens the modal for analytics */}
             {table.getRowModel().rows.map((row) => (
-              <tr key={row.id} onClick={onRowClick} 
+              <tr key={row.id} onClick={() => onRowClick(row.original)}
                 className="border-b border-dark/10 dark:border-light/10 text-sm font-medium align-middle cursor-pointer
                 hover:bg-zinc-200 dark:hover:bg-[#CCECEE]/10 transition duration-150"
               >
