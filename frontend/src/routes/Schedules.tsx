@@ -126,26 +126,6 @@ export default function ScheduleRoute({ scrollToTop }: ScheduleRouteProps) {
 
   const scheduleColumnHelper = createColumnHelper<FormattedSchedule>();
   const scheduleColumns = [
-    // scheduleColumnHelper.accessor("status", {
-    //   header: (props) => (
-    //     <div className="w-full flex justify-center items-center">
-    //       <input
-    //         type="checkbox"
-    //         checked={props.table.getIsAllRowsSelected()}
-    //         onChange={props.table.getToggleAllRowsSelectedHandler()} />
-    //     </div>
-    //   ),
-    //   cell: (props) => (
-    //     <div className="w-full flex justify-center items-center">
-    //       <input
-    //         type="checkbox"
-    //         checked={props.row.getIsSelected()}
-    //         onChange={props.row.getToggleSelectedHandler()} />
-    //     </div>
-    //   ),
-    //   size: 50,
-    //   minSize: 50,
-    // }),
     scheduleColumnHelper.accessor("medicineName", {
       header: "Medicine",
       cell: props => <ScrollTableData props={props} />,
@@ -177,162 +157,7 @@ export default function ScheduleRoute({ scrollToTop }: ScheduleRouteProps) {
       cell: props => <ScrollTableData props={props} />,
       size: 150,
     })
-    // scheduleColumnHelper.accessor("actions", {
-    //   header: "",
-    //   size: 125,
-    //   cell: (props) => {
-    //     const [isEditModalOpen, setIsEditModalOpen] = useState(false);
-    //     const [isDeleteModalOpen, setIsDeleteModalOpen] = useState(false);
-    //     return (
-    //       <div className="text-center">
-    //         <button
-    //           type="button"
-    //           className="p-1.5 mx-1.5 border border-edit-dark/70 dark:hover:bg-edit-dark/70 
-    //           dark:text-edit-dark dark:hover:text-dark-text rounded-md cursor-pointer"
-    //           onClick={() => setIsEditModalOpen(true)}>
-    //           <FaEdit size="1.2rem" />
-    //         </button>
-    //         {isEditModalOpen && (
-    //           <ScheduleEditModal
-    //             key={props.row.id}
-    //             onClose={() => {
-    //               setIsEditModalOpen(false);
-    //               setRowSelection({});
-    //             }}
-    //             data={props.row.original}
-    //             setSchedules={setSchedules} />
-    //         )}
-    //         <button
-    //           type="button"
-    //           className="p-1.5 mx-1.5 border dark:border-delete-dark/50 dark:hover:bg-delete-dark/50 
-    //           dark:text-delete-dark/50 dark:hover:text-dark-text rounded-md cursor-pointer"
-    //           onClick={() => setIsDeleteModalOpen(true)}>
-    //           <FaTrash size="1.2rem" />
-    //         </button>
-    //         {isDeleteModalOpen && (
-    //           <ScheduleDeleteModal
-    //             onClose={() => {
-    //               setIsDeleteModalOpen(false);
-    //               setRowSelection({});
-    //             }}
-    //             data={props.row.original}
-    //             setSchedules={setSchedules} />
-    //         )}
-    //       </div>
-    //     );
-    //   }
-    // }),
   ]
-
-  // const scheduleColumnHelper = createColumnHelper<ScheduleType>();
-  // const scheduleColumns = [
-  //   scheduleColumnHelper.accessor("status", {
-  //     header: (props) => (
-  //       <div className="w-full flex justify-center items-center">
-  //         <input
-  //           type="checkbox"
-  //           checked={props.table.getIsAllRowsSelected()}
-  //           onChange={props.table.getToggleAllRowsSelectedHandler()} />
-  //       </div>
-  //     ),
-  //     cell: (props) => (
-  //       <div className="w-full flex justify-center items-center">
-  //         <input
-  //           type="checkbox"
-  //           checked={props.row.getIsSelected()}
-  //           onChange={props.row.getToggleSelectedHandler()} />
-  //       </div>
-  //     ),
-  //     size: 50,
-  //     minSize: 50,
-  //   }),
-  //   scheduleColumnHelper.accessor("_id", {
-  //     header: "_id",
-  //     cell: props => <ScrollTableData props={props} />,
-  //     size: 100,
-  //   }),
-  //   scheduleColumnHelper.accessor("batchId", {
-  //     header: "Batch ID",
-  //     cell: props => <ScrollTableData props={props} />,
-  //     size: 100,
-  //   }),
-  //   scheduleColumnHelper.accessor("userID", {
-  //     header: "User ID",
-  //     cell: props => <ScrollTableData props={props} />,
-  //     size: 100,
-  //     minSize: 100,
-  //   }),
-  //   scheduleColumnHelper.accessor("medicineName", {
-  //     header: "Medicine Name",
-  //     cell: props => <ScrollTableData props={props} />,
-  //     size: 200,
-  //   }),
-  //   scheduleColumnHelper.accessor("measurement", {
-  //     header: "Measurement",
-  //     cell: props => <ScrollTableData props={props} />,
-  //     size: 150,
-  //   }),
-  //   scheduleColumnHelper.accessor("intakeInstruction", {
-  //     header: "Intake Instruction",
-  //     cell: props => <ScrollTableData props={props} />,
-  //     size: 200,
-  //   }),
-  //   scheduleColumnHelper.accessor("isTaken", {
-  //     header: "Is Taken",
-  //     cell: props => <ScrollTableData props={props} value={String(props.getValue())} />,
-  //     size: 100,
-  //   }),
-  //   scheduleColumnHelper.accessor("date", {
-  //     header: "date",
-  //     cell: props => <ScrollTableData props={props} value={String(props.getValue())} />,
-  //     size: 100,
-  //   }),
-  //   scheduleColumnHelper.accessor("actions", {
-  //     header: "",
-  //     size: 125,
-  //     cell: (props) => {
-  //       const [isEditModalOpen, setIsEditModalOpen] = useState(false);
-  //       const [isDeleteModalOpen, setIsDeleteModalOpen] = useState(false);
-  //       return (
-  //         <div className="text-center">
-  //           <button
-  //             type="button"
-  //             className="p-1.5 mx-1.5 border border-edit-dark/70 dark:hover:bg-edit-dark/70 
-  //             dark:text-edit-dark dark:hover:text-dark-text rounded-md cursor-pointer"
-  //             onClick={() => setIsEditModalOpen(true)}>
-  //             <FaEdit size="1.2rem" />
-  //           </button>
-  //           {isEditModalOpen && (
-  //             <ScheduleEditModal
-  //               key={props.row.id}
-  //               onClose={() => {
-  //                 setIsEditModalOpen(false);
-  //                 setRowSelection({});
-  //               }}
-  //               data={props.row.original}
-  //               setSchedules={setSchedules} />
-  //           )}
-  //           <button
-  //             type="button"
-  //             className="p-1.5 mx-1.5 border dark:border-delete-dark/50 dark:hover:bg-delete-dark/50 
-  //             dark:text-delete-dark/50 dark:hover:text-dark-text rounded-md cursor-pointer"
-  //             onClick={() => setIsDeleteModalOpen(true)}>
-  //             <FaTrash size="1.2rem" />
-  //           </button>
-  //           {isDeleteModalOpen && (
-  //             <ScheduleDeleteModal
-  //               onClose={() => {
-  //                 setIsDeleteModalOpen(false);
-  //                 setRowSelection({});
-  //               }}
-  //               data={props.row.original}
-  //               setSchedules={setSchedules} />
-  //           )}
-  //         </div>
-  //       );
-  //     }
-  //   }),
-  // ]
 
   return (
     <div className="base-layout flex flex-col items-center gap-4">
@@ -340,20 +165,6 @@ export default function ScheduleRoute({ scrollToTop }: ScheduleRouteProps) {
       <div className="self-start">
         <h1 className="text-2xl font-bold">Schedule Management</h1>
       </div>
-
-      {/* <div className="h-10 w-full mb-2 self-start flex items-center gap-5"> */}
-      {/* <div className="w-10/12"> */}
-      {/*   <SearchBar */}
-      {/*     onChange={(value: string) => setSearchText(value)} */}
-      {/*     searchFn={() => setGlobalFilter(searchText)} */}
-      {/*     clearFn={() => { */}
-      {/*       setSearchText(""); */}
-      {/*       setGlobalFilter([]); */}
-      {/*     }} */}
-      {/*     value={searchText} */}
-      {/*   /> */}
-      {/* </div> */}
-      {/* </div> */}
 
       {isLoading ?
         <div className="w-full h-full flex justify-center items-center">
@@ -414,40 +225,3 @@ export default function ScheduleRoute({ scrollToTop }: ScheduleRouteProps) {
   );
 }
 
-// function scratch() {
-//   return (
-// {/* <div className="w-2/12 flex justify-end gap-2"> */ }
-// {/*   <div className="px-2 py-1.5 flex justify-center flex-nowrap items-center  */ }
-// {/*     cursor-pointer rounded-md bg-primary hover:bg-primary/80 text-white" */ }
-// {/*     onClick={() => setIsAddModalOpen(true)} */ }
-// {/*   > */ }
-// {/*     <FaPlus size="1.2rem" /> */ }
-// {/*   </div> */ }
-// {/*   {isAddModalOpen && ( */ }
-// {/*     <ScheduleAddModal */ }
-// {/*       onClose={() => setIsAddModalOpen(false)} */ }
-// {/*       setSchedules={setSchedules} */ }
-// {/*     /> */ }
-// {/*   )} */ }
-// {/*   <div> */ }
-// {/*     {Object.keys(rowSelection).length != 0 && ( */ }
-// {/*       <button */ }
-// {/*         type="button" */ }
-// {/*         className="p-2 rounded-md text-white bg-delete hover:bg-delete/70 cursor-pointer" */ }
-// {/*         onClick={() => setIsDeleteAllModalOpen(true)}> */ }
-// {/*         <FaTrash size="1.2rem" /> */ }
-// {/*       </button> */ }
-// {/*     )} */ }
-// {/*     {isDeleteAllModalOpen && ( */ }
-// {/*       <ScheduleDeleteModal */ }
-// {/*         onClose={() => setIsDeleteAllModalOpen(false)} */ }
-// {/*         data={rowSelection} */ }
-// {/*         setSchedules={setSchedules} */ }
-// {/*       /> */ }
-// {/*     )} */ }
-// {/*   </div> */ }
-// {/* </div> */ }
-
-//   <></>
-// );
-// }

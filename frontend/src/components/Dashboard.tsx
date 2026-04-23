@@ -16,8 +16,11 @@ import userPrefersDarkMode from "../contexts/DarkModeContext";
 import SubmitButton from "./buttons/SubmitButton";
 import { type MedicineSearchType } from "../types/medicine-search";
 import PdfTemplate from "./PdfTemplate";
+import type { UserType } from "../types/user";
+import { useUser } from "../contexts/UserContext";
 
 export default function Dashboard() {
+  const { user } = useUser();
   const isDarkMode = userPrefersDarkMode();
   const reportRef = useRef<HTMLDivElement>(null);
   const currentDate = new Date();
@@ -36,7 +39,25 @@ export default function Dashboard() {
   const [monthlyData, setMonthlyData] = useState<Array<MedicineSearchType>>([]);
   const [_debouncedMonth] = useDebounce(monthlyData, 1000);
   const [isLoading, setIsLoading] = useState(false);
+  const [userDetails, setUserDetails] = useState<UserType>();
   const emptyData: Array<MedicineSearchType> = [{ name: "", count: 0 }];
+
+  const fetchUserDetails = async () => {
+    try {
+      if (!user?.id) return;
+      const response = await fetch(`/api/users/?id=${user.id}`, {
+        mode: "cors",
+        method: "GET",
+        credentials: "include",
+      });
+      const result = await response.json();
+      if (result.success) {
+        setUserDetails(result.data);
+      }
+    } catch (err) {
+      console.error(err);
+    }
+  };
 
   const getDailyAnalytics = async () => {
     try {
@@ -81,7 +102,7 @@ export default function Dashboard() {
       console.log(`error getting monthly analytics: ${err}`);
     }
   }
-  
+
   const formatYAxisToWholeNumbers = (value: number) => {
     if (Number.isInteger(value)) {
       return value.toString();
@@ -103,6 +124,7 @@ export default function Dashboard() {
     const root = createRoot(tempContainer);
     root.render(
       <PdfTemplate
+        generatedBy={`${userDetails?.firstName} ${userDetails?.lastName}`}
         reportRef={reportRef}
         currentDate={currentDate}
         dailyDate={dailyDate}
@@ -129,6 +151,8 @@ export default function Dashboard() {
       const height = reportElement.offsetHeight * scale;
 
       const imgData = await domtoimage.toBlob(reportElement, {
+        quality: 0.8,
+        bgcolor: "#ffffff",
         width,
         height,
         style: {
@@ -167,7 +191,7 @@ export default function Dashboard() {
         }
         // const xPos = (pageWidth - scaledWidth) / 2;
         // const yPos = (pageHeight - scaledHeight) / 3;
-        pdf.addImage(img, "PNG", 0, 0, scaledWidth, scaledHeight);
+        pdf.addImage(img, "JPEG", 0, 0, scaledWidth, scaledHeight);
         pdf.save(`${formattedDate}-analytics-report.pdf`);
         URL.revokeObjectURL(objectUrl);
         tempContainer.remove();
@@ -181,160 +205,9 @@ export default function Dashboard() {
     }
   }
 
-  // const generatePDF2 = async (e: FormEvent<HTMLFormElement>) => {
-  //   const generateFunction = async () => {
-  //     await document.fonts.ready;
-  //
-  //     const tempContainer = document.createElement("div");
-  //     tempContainer.style.position = "absolute";
-  //     tempContainer.style.left = "-9999px";
-  //     document.body.appendChild(tempContainer);
-  //
-  //     const root = createRoot(tempContainer);
-  //     root.render(<PdfComponent />);
-  //
-  //     const svgElements = reportRef.current?.querySelectorAll("svg");
-  //     if (!svgElements?.length) {
-  //       setIsLoading(false);
-  //       return;
-  //     }
-  //
-  //     await new Promise((resolve) => setTimeout(resolve, 500));
-  //
-  //     const pdf = new jsPDF({ orientation: "portrait", unit: "pt", format: "a4" });
-  //
-  //
-  //     let yOffset = 40;
-  //
-  //     pdf.setFont("Helvetica");
-  //     pdf.setFontSize(18);
-  //     pdf.text('Multi-Chart Report', 40, yOffset);
-  //     yOffset += 20;
-  //
-  //     for (const element of svgElements) {
-  //       const bbox = element.getBoundingClientRect();
-  //       const width = bbox.width;
-  //       const height = bbox.height;
-  //
-  //       // yOffset += 20;
-  //       //
-  //       await svg2pdf(element, pdf, {
-  //         x: 40,
-  //         y: yOffset,
-  //         width: width * 0.75,
-  //         height: height * 0.75,
-  //       });
-  //
-  //       yOffset += height;
-  //     }
-  //
-  //     pdf.save(`${formattedDate}-analytics-report.pdf`);
-  //     tempContainer.remove();
-  //     root.unmount();
-  //     setIsLoading(false);
-  //   }
-  //
-  //   e.preventDefault();
-  //   if (isLoading) return;
-  //   setIsLoading(true);
-  //   await generateFunction();
-  // }
-
-  // const generatePDF3 = async (e: FormEvent<HTMLFormElement>) => {
-  //   e.preventDefault();
-  //   if (isLoading) return;
-  //   setIsLoading(true);
-  //   await document.fonts.ready;
-  //
-  //   const tempContainer = document.createElement("div");
-  //   tempContainer.style.position = "absolute";
-  //   tempContainer.style.left = "-9999px";
-  //   document.body.appendChild(tempContainer);
-  //
-  //   const root = createRoot(tempContainer);
-  //   root.render(<PdfComponent />);
-  //
-  //   await new Promise((resolve) => setTimeout(resolve, 500));
-  //
-  //   try {
-  //     const reportElement = reportRef.current;
-  //     if (!reportElement) {
-  //       setIsLoading(false);
-  //       return;
-  //     }
-  //
-  //     // STEP 1: Get SVG string
-  //     const svgString = await domtoimage.toSvg(reportElement, {
-  //       style: {
-  //         width: `${reportElement.offsetWidth}px`,
-  //         height: `${reportElement.offsetHeight}px`,
-  //       }
-  //     });
-  //
-  //     // STEP 2: Create an image from SVG string
-  //     const svgBlob = new Blob([svgString], { type: "image/svg+xml;charset=utf-8" });
-  //     const url = URL.createObjectURL(svgBlob);
-  //
-  //     const img = new Image();
-  //     img.crossOrigin = "anonymous"; // helpful for CORS issues
-  //     img.onload = () => {
-  //       const canvas = document.createElement("canvas");
-  //       canvas.width = img.width;
-  //       canvas.height = img.height;
-  //
-  //       const ctx = canvas.getContext("2d");
-  //       if (!ctx) {
-  //         console.error("Could not get canvas context");
-  //         return;
-  //       }
-  //
-  //       ctx.drawImage(img, 0, 0);
-  //
-  //       const imgDataUrl = canvas.toDataURL("image/png");
-  //
-  //       // Convert px to mm
-  //       const pxToMm = (px: number) => px * 25.4 / 96;
-  //       const imgWidthMm = pxToMm(img.width);
-  //       const imgHeightMm = pxToMm(img.height);
-  //
-  //       const pdf = new jsPDF("portrait", "mm", "a4");
-  //       const pageWidth = pdf.internal.pageSize.getWidth();
-  //       const pageHeight = pdf.internal.pageSize.getHeight();
-  //
-  //       let scaledWidth = imgWidthMm;
-  //       let scaledHeight = imgHeightMm;
-  //
-  //       if (imgWidthMm > pageWidth || imgHeightMm > pageHeight) {
-  //         const widthRatio = pageWidth / imgWidthMm;
-  //         const heightRatio = pageHeight / imgHeightMm;
-  //         const scale = Math.min(widthRatio, heightRatio);
-  //         scaledWidth = imgWidthMm * scale;
-  //         scaledHeight = imgHeightMm * scale;
-  //       }
-  //
-  //       pdf.addImage(imgDataUrl, "PNG", 0, 0, scaledWidth, scaledHeight);
-  //       pdf.save(`${formattedDate}-analytics-report.pdf`);
-  //
-  //       URL.revokeObjectURL(url);
-  //       tempContainer.remove();
-  //       root.unmount();
-  //     };
-  //
-  //     img.onerror = (err) => {
-  //       console.error("Failed to load SVG image", err);
-  //       URL.revokeObjectURL(url);
-  //       tempContainer.remove();
-  //       root.unmount();
-  //     };
-  //
-  //     img.src = url;
-  //
-  //   } catch (err) {
-  //     console.error("Error generating PDF:", err);
-  //   } finally {
-  //     setIsLoading(false);
-  //   }
-  // };
+  useEffect(() => {
+    fetchUserDetails();
+  }, []);
 
   useEffect(() => {
     getDailyAnalytics();
@@ -516,7 +389,7 @@ export default function Dashboard() {
                   type="number"
                   width={50}
                   stroke={`${isDarkMode ? 'white' : 'black'}`}
-                    tickFormatter={formatYAxisToWholeNumbers}
+                  tickFormatter={formatYAxisToWholeNumbers}
                   className="text-sm fill-gray-700"
                 />
                 <Tooltip

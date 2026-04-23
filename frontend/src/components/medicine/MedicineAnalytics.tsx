@@ -21,7 +21,7 @@ type StatType = {
 
 export default function MedicineAnalytics({ medicine, showModal, onClose }: MedicineAnalyticsProps) {
   const { user } = useUser();
-  const [doctorDetails, setDoctorDetails] = useState<UserType>();
+  const [userDetails, setUserDetails] = useState<UserType>();
   const [stats, setStats] = useState<StatType[]>([]);
   const [isLoading, setIsLoading] = useState(false);
   const [isPdfGenerating, setIsPdfGenerating] = useState(false);
@@ -39,7 +39,7 @@ export default function MedicineAnalytics({ medicine, showModal, onClose }: Medi
         });
         const result = await response.json();
         if (result.success) {
-          setDoctorDetails(result.data);
+          setUserDetails(result.data);
         }
       } catch (err) {
         console.error(err);
@@ -92,7 +92,8 @@ export default function MedicineAnalytics({ medicine, showModal, onClose }: Medi
 
       // Generate a base-64 PNG data URL directly, avoiding Blob and ObjectURL bugs
       const processPage = async (element: HTMLElement) => {
-        return await domtoimage.toPng(element, {
+        return await domtoimage.toJpeg(element, {
+          quality: 0.8,
           width: element.offsetWidth * scale,
           height: element.offsetHeight * scale,
           bgcolor: '#ffffff', // Prevent transparent background rendering as black
@@ -107,12 +108,12 @@ export default function MedicineAnalytics({ medicine, showModal, onClose }: Medi
 
       // Process Page 1
       const img1DataUrl = await processPage(page1);
-      pdf.addImage(img1DataUrl, "PNG", 0, 0, pdfWidth, pdfHeight);
+      pdf.addImage(img1DataUrl, "JPEG", 0, 0, pdfWidth, pdfHeight);
 
       // Process Page 2
       pdf.addPage();
       const img2DataUrl = await processPage(page2);
-      pdf.addImage(img2DataUrl, "PNG", 0, 0, pdfWidth, pdfHeight);
+      pdf.addImage(img2DataUrl, "JPEG", 0, 0, pdfWidth, pdfHeight);
 
       pdf.save(`${medicine.Molecule}-Report.pdf`);
     } catch (err) {
@@ -167,7 +168,7 @@ export default function MedicineAnalytics({ medicine, showModal, onClose }: Medi
           {/* PAGE 1 */}
           <div id="pdf-page-1" className="w-[800px] h-[1131px] p-12 flex flex-col bg-white text-black box-border shrink-0 shadow-sm relative">
             <h1 className="text-4xl font-bold mb-2">Annual Product Performance Report: {medicine.Molecule}</h1>
-            <p className="text-lg text-gray-600 mb-6">By: {doctorDetails?.firstName || user?.username} {doctorDetails?.lastName || ""}</p>
+            <p className="text-lg text-gray-600 mb-6">By: {userDetails?.firstName || user?.username} {userDetails?.lastName || ""}</p>
             <hr className="border-t-2 border-black mb-6" />
 
             <h2 className="text-2xl font-semibold mb-4">{medicine.Molecule} ({medicine["ATC Code"]})</h2>
