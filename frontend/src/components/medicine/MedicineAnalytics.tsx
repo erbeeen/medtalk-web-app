@@ -3,9 +3,9 @@ import { createPortal } from "react-dom";
 import type { MedicineType } from "../../types/medicine";
 import { useUser } from "../../contexts/UserContext";
 import type { UserType } from "../../types/user";
-import { LineChart, Line, XAxis, YAxis, Tooltip, CartesianGrid } from "recharts";
+import { BarChart, Bar, XAxis, YAxis, Tooltip, CartesianGrid } from "recharts";
 import jsPDF from "jspdf";
-import html2canvas from "html2canvas";
+import domtoimage from "dom-to-image";
 import CloseButton from "../buttons/CloseButton";
 import SubmitButton from "../buttons/SubmitButton";
 
@@ -22,10 +22,10 @@ type StatType = {
 
 export default function MedicineAnalytics({ medicine, showModal, onClose }: MedicineAnalyticsProps) {
   const { user } = useUser();
-  const[doctorDetails, setDoctorDetails] = useState<UserType>();
-  const [stats, setStats] = useState<StatType[]>([]);
+  const [doctorDetails, setDoctorDetails] = useState<UserType>();
+  const[stats, setStats] = useState<StatType[]>([]);
   const [isLoading, setIsLoading] = useState(false);
-  const[isPdfGenerating, setIsPdfGenerating] = useState(false);
+  const [isPdfGenerating, setIsPdfGenerating] = useState(false);
 
   useEffect(() => {
     if (!showModal) return;
@@ -68,7 +68,7 @@ export default function MedicineAnalytics({ medicine, showModal, onClose }: Medi
     
     fetchDoctorDetails();
     fetchStats();
-  }, [showModal, medicine.Molecule, user?.id]);
+  },[showModal, medicine.Molecule, user?.id]);
 
   const handleOnEscapeKeydown = (e: React.KeyboardEvent<HTMLDivElement>) => {
     if (e.key === "Escape") onClose();
@@ -81,21 +81,49 @@ export default function MedicineAnalytics({ medicine, showModal, onClose }: Medi
     try {
       const page1 = document.getElementById("pdf-page-1");
       const page2 = document.getElementById("pdf-page-2");
-      if (!page1 || !page2) return;
+      if (!page1 || !page2) {
+        setIsPdfGenerating(false);
+        return;
+      }
 
       const pdf = new jsPDF("p", "mm", "a4");
       const pdfWidth = pdf.internal.pageSize.getWidth();
       const pdfHeight = pdf.internal.pageSize.getHeight();
+      const scale = 2; // For higher quality/resolution
 
-      const canvas1 = await html2canvas(page1, { scale: 2 });
-      const imgData1 = canvas1.toDataURL("image/png");
-      pdf.addImage(imgData1, "PNG", 0, 0, pdfWidth, pdfHeight);
+      // Helper function to turn a DOM node into an Image using dom-to-image
+      const processPage = async (element: HTMLElement) => {
+        const imgData = await domtoimage.toBlob(element, {
+          width: element.offsetWidth * scale,
+          height: element.offsetHeight * scale,
+          style: {
+            transform: `scale(${scale})`,
+            transformOrigin: "top left",
+            width: `${element.offsetWidth}px`,
+            height: `${element.offsetHeight}px`
+          }
+        });
 
+        return new Promise<HTMLImageElement>((resolve, reject) => {
+          const img = new Image();
+          const objectUrl = URL.createObjectURL(imgData);
+          img.onload = () => {
+            URL.revokeObjectURL(objectUrl);
+            resolve(img);
+          };
+          img.onerror = reject;
+          img.src = objectUrl;
+        });
+      };
+
+      // Process Page 1
+      const img1 = await processPage(page1);
+      pdf.addImage(img1, "PNG", 0, 0, pdfWidth, pdfHeight);
+
+      // Process Page 2
       pdf.addPage();
-
-      const canvas2 = await html2canvas(page2, { scale: 2 });
-      const imgData2 = canvas2.toDataURL("image/png");
-      pdf.addImage(imgData2, "PNG", 0, 0, pdfWidth, pdfHeight);
+      const img2 = await processPage(page2);
+      pdf.addImage(img2, "PNG", 0, 0, pdfWidth, pdfHeight);
 
       pdf.save(`${medicine.Molecule}-Report.pdf`);
     } catch (err) {
@@ -141,7 +169,7 @@ export default function MedicineAnalytics({ medicine, showModal, onClose }: Medi
 
         <div className="overflow-y-auto p-8 bg-gray-100 dark:bg-gray-800 flex flex-col items-center gap-8">
           <div id="pdf-page-1" className="w-[800px] h-[1131px] p-12 flex flex-col bg-white text-black box-border shrink-0 shadow-sm relative">
-            <h1 className="text-4xl font-bold mb-2">Product Performance Report: {medicine.Molecule}</h1>
+            <h1 className="text-4xl font-bold mb-2">Annual Product Performance Report: {medicine.Molecule}</h1>
             <p className="text-lg text-gray-600 mb-6">By: {doctorDetails?.firstName || user?.username} {doctorDetails?.lastName || ""}</p>
             <hr className="border-t-2 border-black mb-6" />
             
@@ -192,13 +220,13 @@ export default function MedicineAnalytics({ medicine, showModal, onClose }: Medi
               {isLoading ? (
                 <div className="flex justify-center items-center h-[368px]">Loading chart...</div>
               ) : (
-                <LineChart width={670} height={368} data={formattedStats}>
+                <BarChart width={670} height={368} data={formattedStats}>
                   <CartesianGrid strokeDasharray="3 3" vertical={false} stroke="#ccc" />
                   <XAxis dataKey="displayDate" stroke="#000" tick={{ fill: '#000' }} />
                   <YAxis stroke="#000" tick={{ fill: '#000' }} />
                   <Tooltip contentStyle={{ backgroundColor: "#fff", color: "#000" }} itemStyle={{ color: "#000" }} />
-                  <Line type="monotone" dataKey="count" stroke="#000" strokeWidth={2} dot={{ r: 4, fill: '#000' }} activeDot={{ r: 6 }} />
-                </LineChart>
+                  <Bar dataKey="count" fill="#14967F" barSize={50} />
+                </BarChart>
               )}
             </div>
 
