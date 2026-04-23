@@ -259,7 +259,10 @@ export default function MedicineRoute({ scrollToTop }: MedicineRouteProps) {
           {selectedMedicine && (
             <MedicineAnalytics
               showModal={isMedicineAnalyticsModalOpen}
-              onClose={() => setisMedicineAnalyticsModalOpen(false)}
+              onClose={() => {
+                setisMedicineAnalyticsModalOpen(false);
+                setSelectedMedicine(null);
+              }}
               medicine={selectedMedicine as MedicineType}
             />
 

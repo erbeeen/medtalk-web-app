@@ -125,6 +125,7 @@ export default function LoginRoute() {
                 className="modal-input"
                 value={credentials.password}
                 onChange={(e) => setCredentials({ ...credentials, password: e.target.value })}
+                autoComplete="off"
                 required
               />
             </div>

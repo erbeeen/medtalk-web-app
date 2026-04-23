@@ -1,5 +1,4 @@
 import React, { useState, useEffect, type FormEvent } from "react";
-import { createPortal } from "react-dom";
 import type { MedicineType } from "../../types/medicine";
 import { useUser } from "../../contexts/UserContext";
 import type { UserType } from "../../types/user";
@@ -23,13 +22,13 @@ type StatType = {
 export default function MedicineAnalytics({ medicine, showModal, onClose }: MedicineAnalyticsProps) {
   const { user } = useUser();
   const [doctorDetails, setDoctorDetails] = useState<UserType>();
-  const[stats, setStats] = useState<StatType[]>([]);
+  const [stats, setStats] = useState<StatType[]>([]);
   const [isLoading, setIsLoading] = useState(false);
   const [isPdfGenerating, setIsPdfGenerating] = useState(false);
 
   useEffect(() => {
     if (!showModal) return;
-    
+
     const fetchDoctorDetails = async () => {
       try {
         if (!user?.id) return;
@@ -65,10 +64,10 @@ export default function MedicineAnalytics({ medicine, showModal, onClose }: Medi
         setIsLoading(false);
       }
     };
-    
+
     fetchDoctorDetails();
     fetchStats();
-  },[showModal, medicine.Molecule, user?.id]);
+  }, [showModal, medicine.Molecule, user?.id]);
 
   const handleOnEscapeKeydown = (e: React.KeyboardEvent<HTMLDivElement>) => {
     if (e.key === "Escape") onClose();
@@ -91,11 +90,12 @@ export default function MedicineAnalytics({ medicine, showModal, onClose }: Medi
       const pdfHeight = pdf.internal.pageSize.getHeight();
       const scale = 2; // For higher quality/resolution
 
-      // Helper function to turn a DOM node into an Image using dom-to-image
+      // Generate a base-64 PNG data URL directly, avoiding Blob and ObjectURL bugs
       const processPage = async (element: HTMLElement) => {
-        const imgData = await domtoimage.toBlob(element, {
+        return await domtoimage.toPng(element, {
           width: element.offsetWidth * scale,
           height: element.offsetHeight * scale,
+          bgcolor: '#ffffff', // Prevent transparent background rendering as black
           style: {
             transform: `scale(${scale})`,
             transformOrigin: "top left",
@@ -103,31 +103,20 @@ export default function MedicineAnalytics({ medicine, showModal, onClose }: Medi
             height: `${element.offsetHeight}px`
           }
         });
-
-        return new Promise<HTMLImageElement>((resolve, reject) => {
-          const img = new Image();
-          const objectUrl = URL.createObjectURL(imgData);
-          img.onload = () => {
-            URL.revokeObjectURL(objectUrl);
-            resolve(img);
-          };
-          img.onerror = reject;
-          img.src = objectUrl;
-        });
       };
 
       // Process Page 1
-      const img1 = await processPage(page1);
-      pdf.addImage(img1, "PNG", 0, 0, pdfWidth, pdfHeight);
+      const img1DataUrl = await processPage(page1);
+      pdf.addImage(img1DataUrl, "PNG", 0, 0, pdfWidth, pdfHeight);
 
       // Process Page 2
       pdf.addPage();
-      const img2 = await processPage(page2);
-      pdf.addImage(img2, "PNG", 0, 0, pdfWidth, pdfHeight);
+      const img2DataUrl = await processPage(page2);
+      pdf.addImage(img2DataUrl, "PNG", 0, 0, pdfWidth, pdfHeight);
 
       pdf.save(`${medicine.Molecule}-Report.pdf`);
     } catch (err) {
-      console.error(err);
+      console.error("Error generating PDF:", err);
     } finally {
       setIsPdfGenerating(false);
     }
@@ -137,7 +126,7 @@ export default function MedicineAnalytics({ medicine, showModal, onClose }: Medi
 
   const today = new Date();
   const generatedDate = today.toLocaleDateString("en-US", { month: "long", day: "numeric", year: "numeric" });
-  
+
   const formattedStats = stats.map(s => {
     const [year, month] = s.month.split("-");
     const date = new Date(parseInt(year), parseInt(month) - 1);
@@ -151,10 +140,17 @@ export default function MedicineAnalytics({ medicine, showModal, onClose }: Medi
   const startMonth = formattedStats.length > 0 ? formattedStats[0].fullDisplayDate : "";
   const endMonth = formattedStats.length > 0 ? formattedStats[formattedStats.length - 1].fullDisplayDate : "";
 
-  return createPortal(
+  const formatYAxisToWholeNumbers = (value: number) => {
+    if (Number.isInteger(value)) {
+      return value.toString();
+    }
+    return '';
+  };
+
+  return (
     <div tabIndex={0} onKeyDown={handleOnEscapeKeydown} className="fixed inset-0 z-50 flex justify-center items-center py-10">
       <div className="fixed inset-0 bg-black/50" aria-hidden={true} onClick={onClose}></div>
-      <div 
+      <div
         className="z-10 flex flex-col bg-white dark:bg-[#181924] rounded-xl overflow-hidden shadow-2xl h-full max-h-[90vh] w-11/12 max-w-[900px]"
       >
         <div className="flex justify-between items-center p-4 border-b dark:border-gray-700 bg-white dark:bg-[#181924]">
@@ -168,13 +164,14 @@ export default function MedicineAnalytics({ medicine, showModal, onClose }: Medi
         </div>
 
         <div className="overflow-y-auto p-8 bg-gray-100 dark:bg-gray-800 flex flex-col items-center gap-8">
+          {/* PAGE 1 */}
           <div id="pdf-page-1" className="w-[800px] h-[1131px] p-12 flex flex-col bg-white text-black box-border shrink-0 shadow-sm relative">
             <h1 className="text-4xl font-bold mb-2">Annual Product Performance Report: {medicine.Molecule}</h1>
             <p className="text-lg text-gray-600 mb-6">By: {doctorDetails?.firstName || user?.username} {doctorDetails?.lastName || ""}</p>
             <hr className="border-t-2 border-black mb-6" />
-            
+
             <h2 className="text-2xl font-semibold mb-4">{medicine.Molecule} ({medicine["ATC Code"]})</h2>
-            
+
             <h3 className="text-xl font-medium mb-4">Drug Profile</h3>
             <table className="w-full border-collapse border border-black mb-8 text-left">
               <tbody>
@@ -206,11 +203,12 @@ export default function MedicineAnalytics({ medicine, showModal, onClose }: Medi
             </table>
 
             <div className="absolute bottom-12 left-12 right-12 flex justify-between text-sm text-gray-500 border-t border-gray-300 pt-4">
-              <span>Page 1 of 2</span>
-              <span>Generated on {generatedDate}</span>
+              <span className="whitespace-nowrap">Page 1 of 2</span>
+              <span className="whitespace-nowrap">Generated on {generatedDate}</span>
             </div>
           </div>
 
+          {/* PAGE 2 */}
           <div id="pdf-page-2" className="w-[800px] h-[1131px] p-12 flex flex-col bg-white text-black box-border shrink-0 shadow-sm relative">
             <h2 className="text-2xl font-semibold mb-8">
               Sales Performance {startMonth && endMonth ? `(${startMonth} - ${endMonth})` : ""}
@@ -219,14 +217,16 @@ export default function MedicineAnalytics({ medicine, showModal, onClose }: Medi
             <div className="w-full mb-8 border border-black p-8 flex justify-center">
               {isLoading ? (
                 <div className="flex justify-center items-center h-[368px]">Loading chart...</div>
-              ) : (
+              ) : formattedStats.length > 0 ? (
                 <BarChart width={670} height={368} data={formattedStats}>
                   <CartesianGrid strokeDasharray="3 3" vertical={false} stroke="#ccc" />
                   <XAxis dataKey="displayDate" stroke="#000" tick={{ fill: '#000' }} />
-                  <YAxis stroke="#000" tick={{ fill: '#000' }} />
+                  <YAxis stroke="#000" tickFormatter={formatYAxisToWholeNumbers} tick={{ fill: '#000' }} />
                   <Tooltip contentStyle={{ backgroundColor: "#fff", color: "#000" }} itemStyle={{ color: "#000" }} />
-                  <Bar dataKey="count" fill="#14967F" barSize={50} />
+                  <Bar dataKey="count" fill="#14967F" barSize={20} name="Units Sold" />
                 </BarChart>
+              ) : (
+                <span>No data available</span>
               )}
             </div>
 
@@ -240,8 +240,8 @@ export default function MedicineAnalytics({ medicine, showModal, onClose }: Medi
               <tbody>
                 {formattedStats.map((stat, index) => (
                   <tr key={index}>
-                    <td className="border border-black p-3">{stat.fullDisplayDate}</td>
-                    <td className="border border-black p-3">{stat.count}</td>
+                    <td className="border border-black px-3">{stat.fullDisplayDate}</td>
+                    <td className="border border-black px-3">{stat.count}</td>
                   </tr>
                 ))}
                 {formattedStats.length === 0 && !isLoading && (
@@ -253,13 +253,12 @@ export default function MedicineAnalytics({ medicine, showModal, onClose }: Medi
             </table>
 
             <div className="absolute bottom-12 left-12 right-12 flex justify-between text-sm text-gray-500 border-t border-gray-300 pt-4">
-              <span>Page 2 of 2</span>
-              <span>Generated on {generatedDate}</span>
+              <span className="whitespace-nowrap">Page 2 of 2</span>
+              <span className="whitespace-nowrap">Generated on {generatedDate}</span>
             </div>
           </div>
         </div>
       </div>
-    </div>,
-    document.body
+    </div>
   );
 }

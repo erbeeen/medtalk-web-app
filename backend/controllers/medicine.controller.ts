@@ -59,19 +59,22 @@ export default class MedicineController {
   };
 
   getAllMedicines = async (req: Request, res: Response) => {
-    if (
-      req.user.role !== "super admin" &&
-      req.user.role !== "doctor" &&
-      req.user.role !== "pharmacist"
-    ) {
-      res.sendStatus(403);
-      return;
-    }
-
     try {
+      if (
+        req.user.role !== "super admin" &&
+        req.user.role !== "doctor" &&
+        req.user.role !== "pharmacist"
+      ) {
+        res.sendStatus(403);
+        return;
+      }
+
       const medicines = await Medicine.find();
       sendJsonResponse(res, 200, medicines);
     } catch (err) {
+      console.error("Error getting all medicines");
+      console.error("Typeof error: ", typeof err);
+      console.error(err);
       sendJsonResponse(res, 500, "cannot get all medicine");
     } finally {
       return;

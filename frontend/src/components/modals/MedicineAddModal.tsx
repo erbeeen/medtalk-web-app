@@ -5,7 +5,6 @@ import type { MedicineType } from "../../types/medicine";
 import SubmitButton from "../buttons/SubmitButton";
 import CancelButton from "../buttons/CancelButton";
 import { useToast } from "../../contexts/ToastProvider";
-import { createPortal } from "react-dom";
 
 type NewUserModalProps = {
   onClose: () => void;
@@ -89,7 +88,7 @@ export default function MedicineAddModal({ onClose, setMedicines }: NewUserModal
     }
   }
 
-  return createPortal(
+  return (
     <div className="fixed inset-0 z-50 flex justify-center items-center" onClick={onClose}>
       <div className="fixed inset-0 bg-black/30" aria-hidden={true}>
       </div>
@@ -217,7 +216,6 @@ export default function MedicineAddModal({ onClose, setMedicines }: NewUserModal
           </div>
         </form>
       </div>
-    </div>,
-    document.body
+    </div>
   )
 }
