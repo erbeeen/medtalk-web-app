@@ -108,7 +108,7 @@ export default function UserAddModal({ onClose, setUsers }: NewUserModalProps) {
             <select
               name="role"
               id="role"
-              className="modal-input dark:text-white"
+              className="modal-input bg-light text-light-text dark:bg-[#181924] dark:text-dark-text"
               value={role}
               onChange={(e) => {
                 setRole(e.target.value)
