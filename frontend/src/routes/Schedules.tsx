@@ -181,12 +181,14 @@ export default function ScheduleRoute({ scrollToTop }: ScheduleRouteProps) {
               className="self-start w-3/12 dark:text-black"
             />
 
-            <div className={`self-end px-2 py-1.5 flex justify-center flex-nowrap items-center 
+            {!isLoading && !isTableLoading && (
+              <div className={`self-end px-2 py-1.5 flex justify-center flex-nowrap items-center 
             cursor-pointer rounded-md bg-primary hover:bg-primary/80 text-white ${!selectedUser ? "hidden" : ""}`}
-              onClick={() => setIsAddModalOpen(true)}
-            >
-              <FaPlus size="1.2rem" />
-            </div>
+                onClick={() => setIsAddModalOpen(true)}
+              >
+                <FaPlus size="1.2rem" />
+              </div>
+            )}
             {isAddModalOpen && (
               <ScheduleAddModal
                 onClose={() => setIsAddModalOpen(false)}
