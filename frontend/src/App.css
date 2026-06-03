@@ -91,7 +91,7 @@
     ::-webkit-scrollbar-corner {
       background: transparent;
       height: 2px;
-      width: 1px;
+      width: 3px;
     }
 
     ::-webkit-scrollbar-thumb {
