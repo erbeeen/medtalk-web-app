@@ -1,14 +1,9 @@
 import { useState, useEffect } from "react";
-// import type { ScheduleType } from "../types/schedule";
 import { FaPlus } from "react-icons/fa";
 import { createColumnHelper } from "@tanstack/react-table";
 import ScrollTableData from "../components/ScrollTableData";
-// import { FaEdit, FaTrash } from "react-icons/fa";
-// import SearchBar from "../components/SearchBar";
 import Table from "../components/Table";
 import ScheduleAddModal from "../components/modals/ScheduleAddModal";
-// import ScheduleEditModal from "../components/modals/ScheduleEditModal";
-// import ScheduleDeleteModal from "../components/modals/ScheduleDeleteModal";
 import { type UserType } from "../types/user";
 import Select from "react-select";
 import type { FormattedSchedule } from "../types/formatted-schedule";
@@ -29,10 +24,8 @@ export default function ScheduleRoute({ scrollToTop }: ScheduleRouteProps) {
   const [isTableLoading, setIsTableLoading] = useState(false);
   const [schedules, setSchedules] = useState<Array<FormattedSchedule>>([]);
   const [rowSelection, setRowSelection] = useState({});
-  // const [searchText, setSearchText] = useState("");
   const [globalFilter, setGlobalFilter] = useState<any>([]);
   const [isAddModalOpen, setIsAddModalOpen] = useState(false);
-  // const [isDeleteAllModalOpen, setIsDeleteAllModalOpen] = useState(false);
   const [doctorDetails, setDoctorDetails] = useState<UserType>();
   const { user } = useUser();
 
@@ -173,13 +166,16 @@ export default function ScheduleRoute({ scrollToTop }: ScheduleRouteProps) {
         :
         <>
           <div className="self-start w-full flex flex-row justify-between items-center">
-            <Select<SelectOption>
-              options={userOptions}
-              value={selectedUser}
-              onChange={handlePatientChange}
-              placeholder="Search by name"
-              className="self-start w-3/12 dark:text-black"
-            />
+            <div className="flex-1">
+              <h2 className="text-lg font-semibold">Patient</h2>
+              <Select<SelectOption>
+                options={userOptions}
+                value={selectedUser}
+                onChange={handlePatientChange}
+                placeholder="Search Patient by Name"
+                className="self-start w-4/12 dark:text-black"
+              />
+            </div>
 
             {!isLoading && !isTableLoading && (
               <div className={`self-end px-2 py-1.5 flex justify-center flex-nowrap items-center 
