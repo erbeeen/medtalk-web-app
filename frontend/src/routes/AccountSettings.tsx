@@ -202,7 +202,7 @@ export default function AccountSettingsRoute() {
             </form>
 
             <form onSubmit={handleUpdatePassword} className="w-full">
-              <div className="h-full px-6 md:px-10 py-6 flex flex-col justify-center gap-5 bg-gray-200 dark:bg-gray-700/30 rounded-lg">
+              <div className="h-full px-6 md:px-10 py-6 flex flex-col justify-between gap-5 bg-gray-200 dark:bg-gray-700/30 rounded-lg">
                 <h2 className="text-xl font-bold mb-2">Change Password</h2>
                 <div className="flex flex-col gap-1">
                   <label htmlFor="password" className="pl-1">New Password</label>
