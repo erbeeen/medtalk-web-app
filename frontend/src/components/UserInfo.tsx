@@ -29,11 +29,11 @@ export default function UserInfo() {
           </Link>
           <div className="w-8/12 hidden md:flex lg:flex xl:flex flex-col">
             <h1 className="mb-0.5 font-medium">{user?.username !== undefined ? user.username : ""}</h1>
-            <div className="flex flex-row text-[11px]">
+            <div className="flex flex-col lg:flex-row text-[11px]">
               <h3>{role !== undefined ? role : ""}</h3>
-              <span className="px-0.5">|</span>
+              <span className="hidden lg:block px-0.5 ">|</span>
                 <Link to={"/account"}>
-                  View Profile
+                  <span className="font-medium text-primary underline">View Profile</span>
                 </Link>
             </div>
           </div>
