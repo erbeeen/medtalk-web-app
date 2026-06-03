@@ -3,6 +3,44 @@ import LogsCategoryButton from "../components/buttons/LogsCategoryButton";
 import { type SystemLogType } from "../types/systemlogs";
 import SystemLogCard from "../components/SystemLogCard";
 
+type FilterType = {
+  label: string;
+  value: string;
+  errorFilterOn?: boolean;
+}
+
+const LogFilters: Array<FilterType> = [
+  {
+    label: "Analytics",
+    value: "analytics",
+  },
+  {
+    label: "Authentication",
+    value: "authentication",
+  },
+  {
+    label: "User Management",
+    value: "user-management",
+  },
+  {
+    label: "Admin Management",
+    value: "admin-management",
+  },
+  {
+    label: "Medicine Management",
+    value: "medicine-management",
+  },
+  {
+    label: "Schedule Management",
+    value: "schedule-management",
+  },
+  {
+    label: "Error",
+    value: "error",
+    errorFilterOn: true,
+  }
+]
+
 export default function SystemLogsRoute() {
   const [isLoading, setIsLoading] = useState(false);
   const [logs, setLogs] = useState<Array<SystemLogType>>([]);
@@ -39,7 +77,7 @@ export default function SystemLogsRoute() {
     if (filters.length === 0 && !isErrorFilterOn) {
       setFilteredLogs(logs);
       return;
-    } 
+    }
 
     if (filters.length === 0 && isErrorFilterOn) {
       const updatedLogs = logs.filter((log) => {
@@ -58,7 +96,7 @@ export default function SystemLogsRoute() {
       });
     });
     setFilteredLogs(updatedLogs);
-  }, [filters]);
+  }, [filters, isErrorFilterOn]);
 
 
 
@@ -105,16 +143,20 @@ export default function SystemLogsRoute() {
         </div>
         :
         <>
-          <div className="w-full flex flex-row justify-start gap-3">
-            <LogsCategoryButton label="analytics" updateFilters={updateFilters} />
-            <LogsCategoryButton label="authentication" updateFilters={updateFilters} />
-            <LogsCategoryButton label="user-management" updateFilters={updateFilters} />
-            <LogsCategoryButton label="admin-management" updateFilters={updateFilters} />
-            <LogsCategoryButton label="medicine-management" updateFilters={updateFilters} />
-            <LogsCategoryButton label="schedule-management" updateFilters={updateFilters} />
-            <LogsCategoryButton label="error" setIsErrorFilterOn={setIsErrorFilterOn} />
-          </div>
-          <div className="w-full pr-5 self-start">
+          <div className="flex w-full flex-col justify-start gap-3">
+            <div className="w-full flex flex-row justify-start items-center gap-3">
+              <span className="text-sm">Filter by:</span>
+              {LogFilters.map((filter) => (
+                <LogsCategoryButton
+                  label={filter.label}
+                  value={filter.value}
+                  updateFilters={filter.errorFilterOn ? undefined : updateFilters}
+                  setIsErrorFilterOn={filter.errorFilterOn ? setIsErrorFilterOn : undefined}
+                />
+              ))}
+            </div>
+            <div className="w-full pr-5 self-start">
+            </div>
             {filteredLogs.map((log) => {
               return (<SystemLogCard key={log._id} log={log} />);
             })}
