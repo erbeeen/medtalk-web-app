@@ -5,6 +5,7 @@ import SubmitButton from "../components/buttons/SubmitButton";
 import medTalkLogo from "../assets/light-logo-with-name.svg";
 import medtalkDarkLogo from "../assets/dark-logo-with-name.svg";
 import userPrefersDarkMode from "../contexts/DarkModeContext";
+import { FaRegEye, FaRegEyeSlash } from "react-icons/fa";
 
 export default function LoginRoute() {
   const isDarkMode = userPrefersDarkMode();
@@ -16,6 +17,7 @@ export default function LoginRoute() {
     email: "",
     password: "",
   });
+  const [showPassword, setShowPassword] = useState(false);
   const [isLoading, setIsLoading] = useState(false);
   const [errMessage, setErrMessage] = useState("");
   const emailRegex: RegExp = /^[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,}$/;
@@ -67,8 +69,8 @@ export default function LoginRoute() {
         return;
       }
 
-      setUser({id: result.data.id, username: result.data.username, role: result.data.role});
-      
+      setUser({ id: result.data.id, username: result.data.username, role: result.data.role });
+
       // Redirect based on user role
       switch (result.data.role) {
         case "super admin":
@@ -90,10 +92,9 @@ export default function LoginRoute() {
   }
 
   return (
-    <div className="h-screen w-full flex justify-center items-center">
-      {/* <div className="p-6 flex justify-center items-center dark:bg-gray-800/50 border border-gray-700 rounded-4xl"> */}
-      <div className="p-6 flex justify-center items-center">
-        <div className="h-full flex flex-col justify-center items-center">
+    <div className={`h-screen w-full flex justify-center items-center`}>
+      <div className="flex p-6 pb-10 flex-col lg:flex-row justify-center items-center gap-3 lg:gap-5">
+        <div className="flex h-full mb-5 lg:mb-0 flex-col justify-center items-center">
           <img
             src={`${!isDarkMode ? medTalkLogo : medtalkDarkLogo}`}
             alt="medtalk logo"
@@ -102,8 +103,8 @@ export default function LoginRoute() {
         </div>
 
         <form onSubmit={handleLogin}>
-          <div className="h-full px-10 flex flex-col justify-center gap-5 ">
-            <h1 className="text-5xl font-bold mb-auto self-center">Login</h1>
+          <div className="h-full min-w-[400px] px-10 flex flex-col justify-center gap-5 ">
+            <h1 className="text-4xl font-bold mb-5">Login</h1>
             <div className="flex flex-col gap-1">
               <label htmlFor="email" className="pl-1">Email</label>
               <input
@@ -119,23 +120,37 @@ export default function LoginRoute() {
 
             <div className="flex flex-col gap-1">
               <label htmlFor="password" className="pl-1">Password</label>
-              <input
-                type="password"
-                name="password"
-                className="modal-input"
-                value={credentials.password}
-                onChange={(e) => setCredentials({ ...credentials, password: e.target.value })}
-                autoComplete="off"
-                required
-              />
+              <div className="relative">
+                <input
+                  type={showPassword ? "text" : "password"}
+                  name="password"
+                  className="modal-input"
+                  value={credentials.password}
+                  onChange={(e) => setCredentials({ ...credentials, password: e.target.value })}
+                  autoComplete="off"
+                  required
+                />
+
+                <button
+                  type="button"
+                  onClick={() => setShowPassword((prev) => !prev)}
+                  className="absolute right-2.5 top-2.5"
+                >
+                  {showPassword ? (
+                    <FaRegEyeSlash className="h-5 w-5" />
+                  ) : (
+                    <FaRegEye className="h-5 w-5" />
+                  )}
+                </button>
+              </div>
             </div>
 
-            <div className="flex justify-center items-center text-delete">
+            <div className="flex items-center text-delete">
               {errMessage}
             </div>
 
             <SubmitButton isLoading={isLoading}>Sign in</SubmitButton>
-            <div className="text-sm text-center mt-2">
+            <div className="pl-1 mt-2 text-sm">
               <button
                 type="button"
                 className="underline decoration-1 hover:opacity-80 cursor-pointer"
