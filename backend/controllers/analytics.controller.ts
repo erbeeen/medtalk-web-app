@@ -58,7 +58,7 @@ export default class AnalyticsController {
         level: "error",
         source: "analytics",
         category: "analytics",
-        message: "Get analytics by day failed.",
+        message: "Get analytics by day failed",
         data: { ...err },
       });
       next(err);
@@ -97,7 +97,7 @@ export default class AnalyticsController {
         level: "error",
         source: "analytics",
         category: "analytics",
-        message: "Get analytics by week failed.",
+        message: "Get analytics by week failed",
         data: { ...err },
       });
       next(err);
@@ -154,7 +154,7 @@ export default class AnalyticsController {
         level: "error",
         source: "analytics",
         category: "analytics",
-        message: "Get analytics by month failed.",
+        message: "Get analytics by month failed",
         data: {  ...err },
       });
       next(err);

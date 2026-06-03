@@ -93,7 +93,7 @@ export default class ScheduleController {
         level: "info",
         source: "schedule-panel",
         category: "schedule-management",
-        message: "User schedule creation successful.",
+        message: "User schedule creation successful",
         initiated_by: req.user.username,
         data: {
           batchId: batchId,
@@ -108,7 +108,7 @@ export default class ScheduleController {
         level: "error",
         source: "schedule-panel",
         category: "schedule-management",
-        message: "User schedule creation failed.",
+        message: "User schedule creation failed",
         initiated_by: req.user.username,
         data: {
           error: err,

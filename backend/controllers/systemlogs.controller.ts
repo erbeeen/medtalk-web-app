@@ -5,7 +5,7 @@ import sendJsonResponse from "../utils/httpResponder.js";
 export default class SystemLogsController {
   constructor() {}
 
-  getLogs = async (req: Request, res: Response, next: NextFunction) => {
+  getLogs = async (_req: Request, res: Response, next: NextFunction) => {
     try {
       const result = await SystemLog.find().sort({ timestamp: -1 });
       sendJsonResponse(res, 200, result);
@@ -18,7 +18,7 @@ export default class SystemLogsController {
         level: "error",
         source: "system-logs",
         category: "system-logs",
-        message: "Failed to fetch system logs.",
+        message: "Failed to fetch system logs",
         data: { ...err },
       });
     }

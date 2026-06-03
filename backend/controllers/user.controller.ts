@@ -153,7 +153,7 @@ export default class UserController {
             level: "info",
             source: "user-registration",
             category: "authentication",
-            message: "User registration successful.",
+            message: "User registration successful",
             data: {
               _id: result._id,
               email: result.email,
@@ -169,7 +169,7 @@ export default class UserController {
             level: "error",
             source: "user-registration",
             category: "authentication",
-            message: "User registration failed.",
+            message: "User registration failed",
             data: {
               error: err,
             },
@@ -206,7 +206,7 @@ export default class UserController {
         level: "info",
         source: "user-authentication",
         category: "authentication",
-        message: "User email verification successful.",
+        message: "User email verification successful",
         data: {
           _id: result._id,
           email: result.email,
@@ -221,7 +221,7 @@ export default class UserController {
         level: "error",
         source: "user-authentication",
         category: "authentication",
-        message: "User email verification failed.",
+        message: "User email verification failed",
         data: {
           error: err,
         },
@@ -332,7 +332,7 @@ export default class UserController {
             level: "info",
             source: "user-authentication",
             category: "authentication",
-            message: "User login successful.",
+            message: "User login successful",
             initiated_by: user.username,
           });
         } catch (err) {
@@ -345,7 +345,7 @@ export default class UserController {
             level: "error",
             source: "user-authentication",
             category: "authentication",
-            message: "User login failed.",
+            message: "User login failed",
             initiated_by: user.username,
           });
           next(err);
@@ -455,7 +455,7 @@ export default class UserController {
         level: "info",
         source: "user-logout",
         category: "authentication",
-        message: "User logout successful.",
+        message: "User logout successful",
         initiated_by: req.user.username,
       });
     } catch (err) {
@@ -465,7 +465,7 @@ export default class UserController {
         level: "error",
         source: "user-logout",
         category: "authentication",
-        message: "User logout failed.",
+        message: "User logout failed",
         initiated_by: req.user.username,
         data: {
           error: err,
@@ -624,7 +624,7 @@ export default class UserController {
             level: "info",
             source: "admin-creation",
             category: "admin-management",
-            message: "Admin account creation successful.",
+            message: "Admin account creation successful",
             initiated_by: req.user.username,
             data: {
               email: result.email,
@@ -639,7 +639,7 @@ export default class UserController {
             level: "error",
             source: "admin-creation",
             category: "admin-management",
-            message: "Admin account creation failed.",
+            message: "Admin account creation failed",
             initiated_by: req.user.username,
             data: {
               error: err,
@@ -760,7 +760,7 @@ export default class UserController {
             level: "info",
             source: "authentication",
             category: "authentication",
-            message: "Admin login successful.",
+            message: "Admin login successful",
             initiated_by: user.username,
           });
         } catch (err) {
@@ -773,7 +773,7 @@ export default class UserController {
             level: "error",
             source: "authentication",
             category: "authentication",
-            message: "Admin login failed.",
+            message: "Admin login failed",
             initiated_by: user.username,
           });
           next(err);
@@ -899,7 +899,7 @@ export default class UserController {
         level: "info",
         source: "admin-panel",
         category: "admin-management",
-        message: "Admin profile update successful.",
+        message: "Admin profile update successful",
         initiated_by: req.user.username,
         data: {
           role: updatedAdmin.role,
@@ -917,7 +917,7 @@ export default class UserController {
         level: "error",
         source: "admin-panel",
         category: "admin-management",
-        message: "Admin profile update failed.",
+        message: "Admin profile update failed",
         initiated_by: req.user.username,
         data: {
           error: err,
@@ -1044,7 +1044,7 @@ export default class UserController {
             level: "info",
             source: "admin-panel",
             category: "user-management",
-            message: "User creation successful.",
+            message: "User creation successful",
             initiated_by: req.user.username,
             data: {
               email: result.email,
@@ -1059,7 +1059,7 @@ export default class UserController {
             level: "error",
             source: "admin-panel",
             category: "user-management",
-            message: "User creation successful.",
+            message: "User creation successful",
             initiated_by: req.user.username,
             data: {
               error: err,
@@ -1138,7 +1138,7 @@ export default class UserController {
         level: "info",
         source: "admin-panel",
         category: "user-management",
-        message: "User update profile successful.",
+        message: "User update profile successful",
         initiated_by: req.user.username,
       });
     } catch (err) {
@@ -1149,7 +1149,7 @@ export default class UserController {
         level: "error",
         source: "admin-panel",
         category: "user-management",
-        message: "User update profile failed.",
+        message: "User update profile failed",
         initiated_by: req.user.username,
         data: { ...err },
       });
@@ -1187,7 +1187,7 @@ export default class UserController {
         level: "error",
         source: "admin-management",
         category: "user-management",
-        message: "User account deletion failed.",
+        message: "User account deletion failed",
         initiated_by: req.user.username,
         data: { ...err },
       });
@@ -1203,7 +1203,7 @@ export default class UserController {
         level: "info",
         source: "admin-management",
         category: "user-management",
-        message: "User account deletion successful.",
+        message: "User account deletion successful",
         initiated_by: req.user.username,
       });
     } catch (err) {
@@ -1214,7 +1214,7 @@ export default class UserController {
         level: "error",
         source: "admin-management",
         category: "user-management",
-        message: "User account deletion failed.",
+        message: "User account deletion failed",
         initiated_by: req.user.username,
         data: { ...err },
       });
@@ -1239,7 +1239,7 @@ export default class UserController {
         level: "info",
         source: "admin-management",
         category: "user-management",
-        message: "User batch account deletion successful.",
+        message: "User batch account deletion successful",
         initiated_by: req.user.username,
       });
     } catch (err) {
@@ -1250,7 +1250,7 @@ export default class UserController {
         level: "error",
         source: "admin-management",
         category: "user-management",
-        message: "User batch account deletion failed.",
+        message: "User batch account deletion failed",
         initiated_by: req.user.username,
         data: { ...err },
       });
@@ -1287,7 +1287,7 @@ export default class UserController {
             level: "info",
             source: "password-change",
             category: "user-management",
-            message: "User change password successful.",
+            message: "User change password successful",
             initiated_by: req.user.username,
           });
         },
@@ -1300,7 +1300,7 @@ export default class UserController {
         level: "info",
         source: "password-change",
         category: "user-management",
-        message: "User change password failed.",
+        message: "User change password failed",
         initiated_by: req.user.username,
         data: { ...err },
       });
@@ -1368,7 +1368,7 @@ export default class UserController {
         level: "error",
         source: "password-reset",
         category: "authentication",
-        message: "Request password reset failed.",
+        message: "Request password reset failed",
         data: { ...err },
       });
       next(err);
