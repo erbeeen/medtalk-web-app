@@ -167,7 +167,7 @@ export default function Table({
           </thead>
           <tbody className="flex-1 overflow-y-scroll">
             {table.getRowModel().rows.map((row) => (
-              <tr key={row.id} className="border-b border-dark/10 dark:border-light/10 text-sm font-medium align-middle">
+              <tr key={row.id} className="border-b last:border-b-0 border-dark/10 dark:border-light/10 text-sm font-medium align-middle">
                 {row.getVisibleCells().map((cell) => (
                   <td className="py-1 px-4" key={cell.id} id={cell.id}>
                     {flexRender(cell.column.columnDef.cell, cell.getContext())}
@@ -179,13 +179,13 @@ export default function Table({
         </table>
 
       </div>
-      <div className={`w-full px-3 mb-5 flex justify-center items-center gap-2 overflow-x-clip ${table.getPageCount() <= 1 ? "hidden py-5" : ""}`}>
+      <div className={`w-full px-3 mb-5 flex justify-center items-center gap-2 overflow-x-clip ${table.getPageCount() <= 1 && "hidden py-5"}`}>
 
         <div className={
           `p-1 flex justify-center items-center border rounded-sm 
           dark:border-secondary-dark/50 dark:hover:bg-secondary/50 
           dark:text-secondary-dark/50 dark:hover:text-dark-text 
-          ${table.getCanPreviousPage() ? "cursor-pointer" : ""}`}
+          ${table.getCanPreviousPage() && "cursor-pointer"}`}
           onClick={() => {
             if (table.getCanPreviousPage()) {
               table.firstPage();
