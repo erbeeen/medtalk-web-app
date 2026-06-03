@@ -78,71 +78,8 @@ export default function Table({
     <>
       <div className={`w-full px-3 flex justify-center items-center gap-2 overflow-x-clip ${table.getPageCount() <= 1 ? "hidden py-5" : ""}`}>
 
-        <div className={
-          `p-1 flex justify-center items-center border rounded-sm 
-          dark:border-secondary-dark/50 dark:hover:bg-secondary/50 
-          dark:text-secondary-dark/50 dark:hover:text-dark-text 
-          ${table.getCanPreviousPage() ? "cursor-pointer" : ""}`}
-          onClick={() => {
-            if (table.getCanPreviousPage()) {
-              table.firstPage();
-              scrollToTop();
-            }
-          }}>
-          <button className={table.getCanPreviousPage() ? "cursor-pointer" : ""}>
-            <FaAngleDoubleLeft />
-          </button>
-        </div>
-
-        <div className={`p-1 flex justify-center items-center border rounded-sm 
-          dark:border-secondary-dark/50 dark:hover:bg-secondary/50 
-          dark:text-secondary-dark/50 dark:hover:text-dark-text 
-          ${table.getCanPreviousPage() ? "cursor-pointer" : ""}`}
-          onClick={() => {
-            if (table.getCanPreviousPage()) {
-              table.previousPage();
-              scrollToTop();
-            }
-          }}>
-          <button className={table.getCanPreviousPage() ? "cursor-pointer" : ""}>
-            <FaAngleLeft />
-          </button>
-        </div>
-
-        <span className="mx-2 text-xs dark:text-dark-text/80">
-          {`${pagination.pageIndex + 1} of ${table.getPageCount()}`}
-        </span>
-
-        <div className={`p-1 flex justify-center items-center border rounded-sm
-          dark:border-secondary-dark/50 dark:hover:bg-secondary/50 
-          dark:text-secondary-dark/50 dark:hover:text-dark-text 
-          ${table.getCanNextPage() ? "cursor-pointer" : ""}`}
-          onClick={() => {
-            if (table.getCanNextPage()) {
-              scrollToTop();
-              table.nextPage();
-            }
-          }}>
-          <button className={`${table.getCanNextPage() ? "cursor-pointer" : ""}`}>
-            <FaAngleRight />
-          </button>
-        </div>
-        <div className={`p-1 flex justify-center items-center border rounded-sm
-          dark:border-secondary-dark/50 dark:hover:bg-secondary/50 
-          dark:text-secondary-dark/50 dark:hover:text-dark-text 
-          ${table.getCanNextPage() ? "cursor-pointer" : ""}`}
-          onClick={() => {
-            if (table.getCanNextPage()) {
-              table.lastPage();
-              scrollToTop();
-            }
-          }}>
-          <button className={table.getCanNextPage() ? "cursor-pointer" : ""}>
-            <FaAngleDoubleRight />
-          </button>
-        </div>
       </div>
-      <div id="table-ref" ref={tableRef} className="w-full border border-dark/10 dark:border-light/10 rounded-xl overflow-x-scroll">
+      <div id="table-ref" ref={tableRef} className="w-full border border-dark/10 dark:border-light/10 rounded-xl overflow-x-auto">
         <table className="w-full text-left border-collapse border-spacing-0 table-fixed">
           <thead>
             {table.getHeaderGroups().map((headerGroup) => (
@@ -168,10 +105,9 @@ export default function Table({
             ))}
           </thead>
           <tbody className="flex-1 overflow-y-scroll">
-            {/* FIX: When clicking the checkbox it opens the modal for analytics */}
             {table.getRowModel().rows.map((row) => (
               <tr key={row.id} onClick={() => onRowClick(row.original)}
-                className="border-b border-dark/10 dark:border-light/10 text-sm font-medium align-middle cursor-pointer
+                className="border-b last:border-b-0 border-dark/10 dark:border-light/10 text-sm font-medium align-middle cursor-pointer
                 hover:bg-zinc-200 dark:hover:bg-[#CCECEE]/10 transition duration-150"
               >
                 {row.getVisibleCells().map((cell) => (

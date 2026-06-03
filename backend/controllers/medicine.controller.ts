@@ -6,6 +6,7 @@ import { logError } from "../middleware/logger.js";
 import SearchedMedicine from "../models/searched-medicines.model.js";
 import SystemLog from "../models/system-logs.model.js";
 import mongoose from "mongoose";
+import generateMedicineInfo from "../services/ai.js";
 
 export default class MedicineController {
   constructor() {}
@@ -37,7 +38,7 @@ export default class MedicineController {
         level: "info",
         source: "medicine-panel",
         category: "medicine-management",
-        message: "Medicine creation successful.",
+        message: "Medicine creation successful",
         initiated_by: req.user.username,
         data: {
           _id: savedMedicine._id,
@@ -51,7 +52,7 @@ export default class MedicineController {
         level: "error",
         source: "medicine-panel",
         category: "medicine-management",
-        message: "Medicine creation failed.",
+        message: "Medicine creation failed",
         initiated_by: req.user.username,
         data: { ...err },
       });
@@ -177,7 +178,7 @@ export default class MedicineController {
         level: "info",
         source: "medicine-panel",
         category: "medicine-management",
-        message: "Medicine information update successful.",
+        message: "Medicine information update successful",
         initiated_by: req.user.username,
         data: { ...updatedMedicine },
       });
@@ -189,7 +190,7 @@ export default class MedicineController {
         level: "error",
         source: "medicine-panel",
         category: "medicine-management",
-        message: "Medicine creation failed.",
+        message: "Medicine creation failed",
         initiated_by: req.user.username,
         data: { ...err },
       });
@@ -224,7 +225,7 @@ export default class MedicineController {
         level: "info",
         source: "medicine-panel",
         category: "medicine-management",
-        message: "Medicine deletion successful.",
+        message: "Medicine deletion successful",
         initiated_by: req.user.username,
         data: { ...deletedMedicine },
       });
@@ -236,7 +237,7 @@ export default class MedicineController {
         level: "error",
         source: "medicine-panel",
         category: "medicine-management",
-        message: "Medicine deletion successful.",
+        message: "Medicine deletion successful",
         initiated_by: req.user.username,
         data: { ...err },
       });
@@ -265,7 +266,7 @@ export default class MedicineController {
         level: "info",
         source: "medicine-panel",
         category: "medicine-management",
-        message: "Medicine batch deletion successful.",
+        message: "Medicine batch deletion successful",
         initiated_by: req.user.username,
         data: { ...result },
       });
@@ -277,7 +278,7 @@ export default class MedicineController {
         level: "error",
         source: "medicine-panel",
         category: "medicine-management",
-        message: "Medicine batch deletion failed.",
+        message: "Medicine batch deletion failed",
         initiated_by: req.user.username,
         data: { ...err },
       });
@@ -285,7 +286,9 @@ export default class MedicineController {
     }
   };
 
-  // Search medicines with advanced filtering
+  /**
+  * Search medicines with advanced filtering
+  */
   searchMedicines = async (req: Request, res: Response): Promise<void> => {
     try {
       const { brandName, genericName, source, manufacturer, classification } =
@@ -383,7 +386,26 @@ export default class MedicineController {
         },
       ]);
 
-      sendJsonResponse(res, 200, medicineSchedules);
+      const [medicineInfo, err] = await generateMedicineInfo(
+        req.query.medicineName as string,
+      );
+      if (err) {
+        throw err;
+      }
+
+      sendJsonResponse(res, 200, { medicineInfo, medicineSchedules });
+      await SystemLog.create({
+        level: "info",
+        source: "medicine-panel",
+        category: "medicine-management",
+        message: "Medicine statistics report generated",
+        initiated_by: req.user.username,
+        data: {
+          medicine: req.query.medicineName,
+          startDate: startDate.getFullYear(),
+          endDate: now.getFullYear(),
+        }
+      })
     } catch (err) {
       logError(err);
       sendJsonResponse(res, 500);
@@ -391,7 +413,7 @@ export default class MedicineController {
         level: "error",
         source: "medicine-panel",
         category: "medicine-management",
-        message: "Fetching medicine usage statistics failed",
+        message: "Medicine statistics report failed",
         initiated_by: req.user.username,
         data: {
           error: err,

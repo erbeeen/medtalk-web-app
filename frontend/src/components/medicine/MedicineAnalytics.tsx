@@ -14,16 +14,27 @@ type MedicineAnalyticsProps = {
   onClose: () => void;
 };
 
-type StatType = {
+type MedicineInfoType = {
+  sideEffects: string;
+  usage: string;
+  warnings: string;
+}
+
+type MedicineSchedulesType = {
   month: string;
   count: number;
+}
+
+type StatType = {
+  medicineInfo: MedicineInfoType
+  medicineSchedules: Array<MedicineSchedulesType>,
 };
 
 export default function MedicineAnalytics({ medicine, showModal, onClose }: MedicineAnalyticsProps) {
   const { user } = useUser();
   const [userDetails, setUserDetails] = useState<UserType>();
-  const [stats, setStats] = useState<StatType[]>([]);
-  const [isLoading, setIsLoading] = useState(false);
+  const [stats, setStats] = useState<StatType>();
+  const [isLoading, setIsLoading] = useState(true);
   const [isPdfGenerating, setIsPdfGenerating] = useState(false);
 
   useEffect(() => {
@@ -56,6 +67,8 @@ export default function MedicineAnalytics({ medicine, showModal, onClose }: Medi
         });
         const result = await response.json();
         if (result.success) {
+          console.log("result:");
+          console.log(result.data);
           setStats(result.data);
         }
       } catch (err) {
@@ -128,7 +141,7 @@ export default function MedicineAnalytics({ medicine, showModal, onClose }: Medi
   const today = new Date();
   const generatedDate = today.toLocaleDateString("en-US", { month: "long", day: "numeric", year: "numeric" });
 
-  const formattedStats = stats.map(s => {
+  const formattedStats = stats?.medicineSchedules.map(s => {
     const [year, month] = s.month.split("-");
     const date = new Date(parseInt(year), parseInt(month) - 1);
     return {
@@ -138,8 +151,8 @@ export default function MedicineAnalytics({ medicine, showModal, onClose }: Medi
     };
   });
 
-  const startMonth = formattedStats.length > 0 ? formattedStats[0].fullDisplayDate : "";
-  const endMonth = formattedStats.length > 0 ? formattedStats[formattedStats.length - 1].fullDisplayDate : "";
+  const startMonth = formattedStats && formattedStats.length > 0 ? formattedStats[0].fullDisplayDate : "";
+  const endMonth = formattedStats && formattedStats.length > 0 ? formattedStats[formattedStats.length - 1].fullDisplayDate : "";
 
   const formatYAxisToWholeNumbers = (value: number) => {
     if (Number.isInteger(value)) {
@@ -148,13 +161,21 @@ export default function MedicineAnalytics({ medicine, showModal, onClose }: Medi
     return '';
   };
 
+  if (isLoading) {
+    return (
+      <div className="flex fixed inset-0 z-50 bg-black/50 justify-center items-center">
+        <div className="spinner size-10 border-5" />
+      </div>
+    )
+  }
+
   return (
     <div tabIndex={0} onKeyDown={handleOnEscapeKeydown} className="fixed inset-0 z-50 flex justify-center items-center py-10">
       <div className="fixed inset-0 bg-black/50" aria-hidden={true} onClick={onClose}></div>
       <div
         className="z-10 flex flex-col bg-white dark:bg-[#181924] rounded-xl overflow-hidden shadow-2xl h-full max-h-[90vh] w-11/12 max-w-[900px]"
       >
-        <div className="flex justify-between items-center p-4 border-b dark:border-gray-700 bg-white dark:bg-[#181924]">
+        <div className="flex justify-between items-center p-4 border-b border-gray-300 dark:border-gray-700 bg-white dark:bg-[#181924]">
           <h2 className="text-xl font-bold">Medicine Report</h2>
           <div className="flex items-center gap-4">
             <form onSubmit={generatePDF}>
@@ -203,6 +224,21 @@ export default function MedicineAnalytics({ medicine, showModal, onClose }: Medi
               </tbody>
             </table>
 
+            <div className="flex flex-col gap-4">
+              <p>
+                <span className="font-bold">Usage: </span>
+                {stats?.medicineInfo.usage}
+              </p>
+              <p>
+                <span className="font-bold">Side Effects: </span>
+                {stats?.medicineInfo.sideEffects}
+              </p>
+              <p>
+                <span className="font-bold">Warnings: </span>
+                {stats?.medicineInfo.warnings}
+              </p>
+            </div>
+
             <div className="absolute bottom-12 left-12 right-12 flex justify-between text-sm text-gray-500 border-t border-gray-300 pt-4">
               <span className="whitespace-nowrap">Page 1 of 2</span>
               <span className="whitespace-nowrap">Generated on {generatedDate}</span>
@@ -218,7 +254,7 @@ export default function MedicineAnalytics({ medicine, showModal, onClose }: Medi
             <div className="w-full mb-8 border border-black p-8 flex justify-center">
               {isLoading ? (
                 <div className="flex justify-center items-center h-[368px]">Loading chart...</div>
-              ) : formattedStats.length > 0 ? (
+              ) : formattedStats && formattedStats.length > 0 ? (
                 <BarChart width={670} height={368} data={formattedStats}>
                   <CartesianGrid strokeDasharray="3 3" vertical={false} stroke="#ccc" />
                   <XAxis dataKey="displayDate" stroke="#000" tick={{ fill: '#000' }} />
@@ -239,13 +275,13 @@ export default function MedicineAnalytics({ medicine, showModal, onClose }: Medi
                 </tr>
               </thead>
               <tbody>
-                {formattedStats.map((stat, index) => (
+                {formattedStats && formattedStats.map((stat, index) => (
                   <tr key={index}>
                     <td className="border border-black px-3">{stat.fullDisplayDate}</td>
                     <td className="border border-black px-3">{stat.count}</td>
                   </tr>
                 ))}
-                {formattedStats.length === 0 && !isLoading && (
+                {formattedStats && formattedStats.length === 0 && !isLoading && (
                   <tr>
                     <td colSpan={2} className="border border-black p-3 text-center">No sales data available</td>
                   </tr>
