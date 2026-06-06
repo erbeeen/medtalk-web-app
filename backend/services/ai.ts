@@ -16,7 +16,7 @@ export default async function generateMedicineInfo(
 
   try {
     const response = await ai.models.generateContent({
-      model: "gemini-3-flash-preview",
+      model: "gemini-3.1-flash-lite",
       contents: `You are a medical information assistant. Provide accurate and concise information about medications.
               Format your response as a JSON object with exactly these keys:
               - usage: Detailed usage instructions
