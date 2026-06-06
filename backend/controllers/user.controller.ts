@@ -679,14 +679,12 @@ export default class UserController {
     }
 
     if (!user) {
-      console.log("no user found");
       sendJsonResponse(res, 401, "invalid email or password");
       return;
     }
 
     const isNotAdmin = !ADMIN_ROLES.includes(user.role);
     if (isNotAdmin) {
-      console.log(`user ${user.username} is not an admin`);
       sendJsonResponse(res, 401, "invalid email or password");
       return;
     }
@@ -703,8 +701,6 @@ export default class UserController {
           return;
         }
         if (!result) {
-          console.log(`user ${user.username} wrong password`);
-          
           sendJsonResponse(res, 401, "invalid email or password");
           return;
         }
